@@ -1,5 +1,5 @@
 #include <stdio.h>
-
+/* Given a number finds its factorial */
 int fact(int val) {
 	if(val == 0 || val == 1)
 			return (1);
@@ -8,5 +8,6 @@ int fact(int val) {
 
 int main(int argc, char *argv[]) {
 	int val = 5;
+
 	printf("Factorial of %d using recursion is %d",val, fact(val));
 }
