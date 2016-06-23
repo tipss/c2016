@@ -19,14 +19,53 @@ void treeSize(struct TreeNode *root,int *size) {
 	}
 }
 
+#define INORDER   0x1  //LDR
+#define PREORDER  0x2  //DLR
+#define POSTORDER 0x3  //LRD
 /* O(n) */
-void walkinorder(struct TreeNode *root, int *a, int *idx) {
+void walk(struct TreeNode *root, int *a, int *idx ,int order) {
         if (root) {
-	 walkinorder(root->left, a, idx);	
-	//Remember how to increement pointer here
-   	 a[(*idx)++] = root->val;
-	 walkinorder(root->right, a, idx);	
+        switch (order){	
+	 case INORDER:
+	   walk(root->left, a, idx, order);	
+   	   a[(*idx)++] = root->val;
+	   walk(root->right, a, idx, order);	
+	   break;
+	 case PREORDER:
+   	   a[(*idx)++] = root->val;
+	   walk(root->left, a, idx, order);	
+	   walk(root->right, a, idx, order);	
+	   break;
+	 case POSTORDER:
+	   walk(root->left, a, idx, order);	
+	   walk(root->right, a, idx, order);	
+   	   a[(*idx)++] = root->val;
+	   break;
 	}
+       }
+}
+
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* preorderTraversal(struct TreeNode* root, int* returnSize) {
+    
+	int *intarray,ix = 0;
+	if (!root) {
+	   printf("Received NULL root\n");
+	   return NULL;
+	}
+
+	treeSize(root,returnSize);
+	printf("\nReceived tree with %d elements\n", *returnSize);
+	intarray = (int *)malloc(1+ sizeof(int) * (*returnSize));
+
+	if (intarray == NULL)
+	  return NULL;
+
+        walk(root,intarray, &ix,PREORDER);
+	return intarray;
 }
 
 /*
@@ -34,7 +73,7 @@ void walkinorder(struct TreeNode *root, int *a, int *idx) {
  * Note: The returned array must be malloced, assume caller calls free().
  */
 int * inorderTraversal(struct TreeNode* root, int* returnSize) {
-	int n = 0, *intarray,ix = 0;
+	int *intarray,ix = 0;
    /*
     0  compute size of tree, so you can allocate arrary
     1. InOrder means LDR traversal 
@@ -55,13 +94,13 @@ int * inorderTraversal(struct TreeNode* root, int* returnSize) {
 	if (intarray == NULL)
 	  return NULL;
 
-        walkinorder(root,intarray, &ix);
+        walk(root,intarray, &ix,INORDER);
 	return intarray;
 }
 
 int main(int argc, char *argv[]) {
 int size = 0;
-int *inorderarray;
+int *out;
 
 /*
   1 a
@@ -84,11 +123,18 @@ b.left = &c;
 c.right = NULL;
 c.left  = NULL;
 
-inorderarray = inorderTraversal(&a, &size);
-printf("\n");
+out = inorderTraversal(&a, &size);
+printf("\n InOrder");
 for(int i=0; i<size; i++) {
-   printf("%d, ", inorderarray[i]);
+   printf("%d, ", out[i]);
 }
-printf("\n");
+
+size=0;
+out = preorderTraversal(&a, &size);
+printf("\n PreOrder");
+
+for(int i=0; i<size; i++) {
+   printf("%d, ", out[i]);
+}
 
 }
