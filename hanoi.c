@@ -12,7 +12,7 @@ void TH(int p, char F, char T, char A) {
 }
 
 int main(int argc, char *argv[]) {
-  int num_plates=3;
+  int num_plates = 3;
   printf("Input Number of Plates %d(default)\n",num_plates);
   //scanf("%d",&num_plates);
   TH(num_plates,'F','T','A');

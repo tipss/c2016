@@ -6,8 +6,8 @@
 typedef struct elem_t {
 	int     value;
 	int     count;
-	elem_t *left;
-	elem_t *right;
+	struct elem_t *left;
+	struct elem_t *right;
 
 } elem_t;
 
@@ -15,26 +15,30 @@ elem_t *bstInsert(elem_t **root, int val) {
 
 	elem_t *tmp;
 
-	if (root == NULL) {
+	if (*root == NULL) {
 		tmp        = (elem_t *)malloc( sizeof(elem_t));
 		tmp->left  = NULL;
 		tmp->right = NULL;
 		tmp->value = val;
 		tmp->count = 1;
 		*root      = tmp;
+        printf("Insert value %d\n",val);
 		return tmp;
 	} else {
 
-		if(val > root->value) {
-			root->left  = bstInsert(root->right, val);
-		} else if(val < root->value) {
-			root->right = bstInsert(root->left, val);
+		if(val > (*root)->value) {
+			(*root)->left  = bstInsert(&((*root)->right), val);
+            return (*root)->left;
+		} else if(val < (*root)->value) {
+			(*root)->right = bstInsert(&((*root)->left), val);
+            return (*root)->right;
 		} else {
-			root->count++;
-			return root;
+			(*root)->count++;
+            printf("increment value %d by %d\n",val, (*root)->count);
+			return *root;
 		}
 	}
-
+    return NULL;
 }
 
 /* Method 1: Two Loops  O(n^2)
@@ -75,7 +79,7 @@ int findMaxElem(int A[], int n) {
 int findMaxElem2(int A[], int n) {
 
 	
-
+elem_t *tmp, *root=NULL;
 	int count = 0;
 
 	if (n <= 0) {
@@ -87,8 +91,9 @@ int findMaxElem2(int A[], int n) {
 */
 for (int i = 0; i < n; i++) {
 	
-	bstInsert(A[i], &count);
-	if (count > n/2) {
+	tmp = bstInsert(&root, A[i]);
+    printf("Insert i=%d, count %d n/2 = %d\n",i, tmp->count,n/2);
+	if (tmp->count > n/2) {
 		return i;
 	}
 }
@@ -99,6 +104,7 @@ return (-2);
 int main(int argc, char *argv[]) {
 
 	int A[] = { 1,2,3,4,5,6,7,7,7,7,7,7,7,7 };
-	int b = findMaxElem(A, 13);
-	printf("MaxElem index %d val\n", b, b?A[b]::b);
+	//int b = findMaxElem(A, 13);
+	int b = findMaxElem2(A, 13);
+	printf("MaxElem index %d val %d\n", b, b?A[b]:b);
 }

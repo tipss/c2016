@@ -7,9 +7,9 @@ struct NumArray {
 /** Initialize your data structure here. */
 struct NumArray* NumArrayCreate(int* nums, int numsSize) {
     int i;
-    struct NumArray *n=(struct NumArray *)malloc(sizeof(struct NumArray));
     if(!nums || numsSize == 0)
         return NULL;
+    struct NumArray *n=(struct NumArray *)malloc(sizeof(struct NumArray));
     n->nums = (int *)malloc(sizeof(int) * numsSize);
     //memcpy(n->nums,nums, sizeof(int) * numsSize);
     for(i=0;i < numsSize;i++) {

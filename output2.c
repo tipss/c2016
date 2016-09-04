@@ -14,13 +14,13 @@ char * getStackStr(void) {
 }
 int main(int argc, char *argv[]) {
 	int i=1;
-	enum { truee, falsee };
+	enum { true, false };
 	//Data Section Print
 	printf("Data Section : ptr-val %p %s\n",(void *)getDataStr(), getDataStr());
 	//Stack Section Print
 	printf("Stack Section : ptr-val %p %s\n",(void *)getStackStr(), getStackStr());
 	
-	printf("enum true = %d, false =%d\n", truee, falsee);
+	printf("enum true = %d, false =%d\n", true, false);
    //Note: Continue statement will evalute to while() before 
 	// continue. 
    do
