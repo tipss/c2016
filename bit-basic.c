@@ -1,5 +1,5 @@
 #include <stdio.h>
-
+// Easy to Remember
 int getBit (int in, int index) {
   if ((in & (0x1 << index)) == 0)
     return 0;

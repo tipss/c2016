@@ -1,0 +1,21 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+
+
+
+
+typedef struct node_t {
+    int val;
+    struct node_t *next;
+    } node;
+
+
+//Given head, for unsorded Linked List, remove duplicate nodes
+void rem_duplicates(node *nd) {
+    //Use two pointer method.
+
+    
+}

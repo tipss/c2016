@@ -1,0 +1,26 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+/*
+ * 1. sptSet[] : Hold vertices that are already part of Shortest Path Tree
+ * 2. distance[]: Minimum distance from a single source Vertix to this node found
+ * 3. Initialize distance[] to INFINITI for all vertices, except for the source vertice(Val Zero)
+ * 4. Find index of verterx,whose distance is minimum from the 'distance[] using min_key API,
+ * 5. Add this vertex to sptSet[] by setting it to 1/TRUE.
+ * 6. Find all its adjacent vertices using supplied Graph[current-vertex][i]
+ * 7. Update the distance of those adjacent vertices into distance[],if vertex is not in sptSet[].
+ * 8. Continue, until there are no more index with min-distance
+*/
+
+#define V 5
+/*
+ return -1 : No more node left
+ */
+int min_vertex_index(int sptSet[], int dist[]) {
+  int min=INT_MAX;
+  int index=-1;
+  for(int i=0;i< V;i++){
+    
+  }
+  return (-1);
+}

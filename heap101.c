@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-/* ADT : Heap: Its a tree based data structure, common implementation is based on binary tree
+/* ADT : Heap(Priority Queue): Its a tree based data structure, common implementation is based on binary tree
 *   max-heap: Highest key is at the root, key's of parent node is always >= to those of the child
 * =======BST vs Heap======
     The abstract data structures (objects stored, their operations) in this question are different. 
@@ -18,6 +18,18 @@
     standard implementation using pointers. 
     A binary heap to the contrary has an efficient implementation using an array (precisely because of the restricted structure).
 */
+
+
+/*
+ * A node's RChild is at the array location 2i+2
+ *          LChild is at the array location 2i+1
+ * A node's Parent is at (i-1)/2 location.
+ * All leaves should be at the height H or H-1, meaning it must be a complete binary tree.
+ *    e.g  17
+ *       13  6
+ *     1  4 2 5
+ *    how its actually stored :[17,13,6,1,4,2,5]
+ */
 typedef enum { min_h, max_h} h_type;
 
 typedef struct heap_s {
@@ -42,10 +54,16 @@ void PercolateDown(heap_t *h, int index){
 //TBD
 }
 
-void Delete(heap_t *h, int index){
+/*
+ * Replace 0th element with last element,
+ * Reduce array size
+ * Percolate Down
+ */
+void Delete(heap_t *h){
 //TBD
 }
 
+/* Insert : Insert at the end and precolate-up */
 void Insert(heap_t *h, int val){
 //TBD
 }

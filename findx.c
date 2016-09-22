@@ -1,7 +1,11 @@
 #include<stdio.h>
 /*
- * Given a sorted number array, find index of two number, whose sum= X
- */
+ * Given a sorted number array in ascending, find index of two number, whose sum= X
+ * E.g     1 2 3 4 5 6 7 
+ * Find Sum   7.
+ * Start l =1 + r=7= 8   
+ *       l =2 + r=6 = 7 exits
+*/
 int findx(int A[], int size, int *first, int *second, int X) {
   
   if(A== NULL)

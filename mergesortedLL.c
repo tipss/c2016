@@ -19,10 +19,10 @@ nd * merge(nd *a,  nd *b){
 
   if(a->val >= b->val) {
     result =a;
-    result->next = b;
+    result->next = merge(a->next,b);
   } else {
     result = b;
-    result->next = a;
+    result->next = merge(b->next,a);
   }
   return (result);
 }

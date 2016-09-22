@@ -1,2 +1,0 @@
-1. Defining function below the function where its used.
-2. Initializing arry with Size(dynamic) 

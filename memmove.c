@@ -9,37 +9,42 @@
 – If the beginning of dest overlaps, copy from end to beginning
 – If the end of dest overlaps, copy from beginning to end
 */
-//TBD need little more work
 void mymove(void *dst , void *src, int size) {
   char *d =(char *)dst;
   char *s =(char *)src;
-  if( size <=0 || !dst || !src) 
-    return;
 
-  if(d == s) {
-    printf("dst %p src %p Equal PTRs no need to copy\n",d,s);
+  if( size <= 0 || !dst || !src) {
+    printf("invalid input\n");
+
+    return;
   }
+
+  if (d == s) {
+    printf("dst %p src %p Equal PTRs no need to copy\n",d,s);
+    return;
+   }
 
   for (int i = 0; i < size; i++) {
+
     if(d == s+i ) {
       printf("Overlap detected at index %d  BEGINNING of DST overlaps, Copy  End-to-End\n",i);
-      for(i=size-1;i>=0;i--) {
+      for(i=size-1; i>=0; i--) {
 	d[i] = s[i];
-      }
-	return;
-     }
-    if(s == d+i) {
-      printf("Overlap detected at index %d  END of destination overaps, Copy Beg-to-Beg\n",i);
-      for (i=0;i<size;i++) {  
-	d[i] = s[i];
-
       }
       return;
-     }
+    }
   }
+ 
+ for (int i = 0; i < size; i++) {
+    if(s == d+i) {
+      printf("Overlap detected at index %d  END of destination overaps, Copy Beg-to-Beg\n",i);
+      for (i = 0; i<size; i++) {  
+	d[i] = s[i];
+      }
+      return;
+    }
+ }
   
-
-
 }
 
 
@@ -53,7 +58,7 @@ int main (int argc, char *argv[]) {
   printf("src %s, dst(+8) %s %d\n",src,dst,len);
  
   // dst = ((char *)dst-8);
-  //mymove((void *)dst,(void *)(src),len+1);
+    //mymove((void *)dst,(void *)(src),len+1);
   //printf("src %s, dst(+8) %s %d\n",src,dst,len);
  
 
