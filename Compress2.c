@@ -56,6 +56,6 @@ int main()
   printf("InPut: %s\n", str);
  
  char *res = encode(str);
- printf("OPut:%s\n", res);
+ printf("%s => %s\n", str, res);
   getchar();
 }

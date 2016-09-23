@@ -1,6 +1,35 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+/* Same logic works for display repeated char in a string 
+ * At the end of walk, walk the hash , and print repeated chars.
+ */
+
+
+void findFirstNonRepeatedChar(char *str){
+  /*
+   * 1. Store in hash repeated char,
+   * 2. Walk string char by char , and see if you hit count 1.
+   */
+  int c[256];
+  for (int i=0;i<256;i++){
+    c[i]=0;
+  }
+
+
+  for (int i = 0; i<strlen(str); i++){
+    c[str[i]] += 1;
+  }
+
+  for (int i = 0; i<strlen(str); i++) {
+    if(c[str[i]] == 1){
+      printf("First non repeated char is \'%c\' in str %s\n", str[i], str);
+      break;
+    };
+  }
+
+}
+
 
 /*
 1. API to find First repeated char
@@ -48,4 +77,5 @@ int main (int argc, char *argv[]) {
     char *str = "acba";
     //findRepeatedChar(str);
     findRepeatedChar2(str);
+    findFirstNonRepeatedChar(str);
 }
