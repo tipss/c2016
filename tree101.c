@@ -13,40 +13,6 @@ typedef struct elem_t {
 	struct elem_t *right;
 
 } elem_t;
-
-/* Breadth First Search */
-elem_t *BFS(elem_t *r, int value) {
-  elem_t *ret = NULL;
-  /*
-   * BFS :  1. Visit r
-   2. Enqueue r
-   3. Dequeue Until queue is empty
-   4  For every dequeued node, visit it , and enqueue their ADJ nodes
-  */
-
-  if (r == NULL)
-    return ret;
-  printf("%d ", r->value);
-  r->count = 1;
-  enQueue(Q, r);
-
-  while(QueueNotEmpty(Q)) {
-    temp = deQueue(Q);
-    if(temp->left && temp->left->count == 0) {
-      printf("%d ", temp->left->value);
-      temp->left->count = 1;
-      enQueue(temp->left);
-    }
-
-    if(temp->right && temp->right->count == 0) {
-      printf("%d ", temp->right->value);
-      temp->right->count = 1;
-      enQueue(temp->right);
-    }
-  }
-
-  return ret;
-}
 /* 
  * DFS : Depth First Search: Used to traverse a Graph(not tree),
  *       which needs additional precaution to not revist the same node,
@@ -57,6 +23,9 @@ elem_t *BFS(elem_t *r, int value) {
  *      Steps 1. Visit node r
  *            2. Iterate through all adjacent nodes of r.(in case of tree, it will be left and right)            3. For every adjacent node found(n), visit it, but iterate all its adj-nodes, before
                  going to the next adjacent node of r.
+* This can also be used to find if there exits a route between two nodes.
+* first node you pass as start and use it as root,  second node as usual.
+	   
 */
 elem_t * DFS(elem_t *r,int value){
   elem_t *ret = NULL;
@@ -73,6 +42,80 @@ elem_t * DFS(elem_t *r,int value){
   if(!ret && r->right && r->right->count == 0)
     ret = DFS(r->right, value);
   return ret;
+}
+
+#define INT_MIN 0
+#define INT_MAX 0xffff
+
+int findMax(elem_t *root) {
+  int max=0;
+  int l,r;
+  if (root == NULL)
+    return INT_MIN;
+  l = findMax(root->left);
+  r = findMax(root->right);
+
+  if(l > r)
+    max = l;
+  else 
+    max = r;
+  if(root->value > max)
+    max = root->value;
+  return max;
+
+}
+
+
+int findMax2(elem_t *root){
+  if (root == NULL)
+    return (INT_MIN);
+  if(root->right == NULL)
+    return (root->value);
+  return findMax2(root->right);
+}
+
+/* This work in any binary tree, does not ncesessarily be a binarysearch tree, were
+left subtree has lower values 
+*/
+int findMin(elem_t *root) {
+  int min=0;
+  int l,r;
+  if (root == NULL)
+    return INT_MAX;
+  l = findMin(root->left);
+  r = findMin(root->right);
+
+  if(l < r)
+    min = l;
+  else 
+    min = r;
+  if(root->value < min)
+    min = root->value;
+  return min;
+
+}
+/*
+ findMin2 : Left most node which does not have left child
+ * This only works in 'Binary Search Tree 
+*/
+int findMin2(elem_t *root){
+  if(root == NULL){
+    return INT_MAX;
+  }
+  if(root->left == NULL)
+    //Found min
+    return root->value;
+  return findMin2(root->left);
+}
+
+
+/* Count the number of nodes in tree including root */
+int sizeoftree (elem_t *root) {
+
+  if(root == NULL) {
+    return 0;
+  }
+  return 1+ sizeoftree(root->left) + sizeoftree(root->right);
 }
 
 /* Print TREE contents by using pre-order traversal method( DLR)*/
@@ -144,42 +187,31 @@ void bstInsert(int key, struct elem_t **root) {
       (*root)->count++;
     }
 }
-/*
-elem_t *bstInsert(elem_t *root, int val) {
 
-  if (root == NULL) {
-    root        = (elem_t *)malloc( sizeof(elem_t));
-    root->left  = NULL;
-    root->right = NULL;
-    root->value = val;
-    root->count = 1;
-    printf("Insert value %d\n",val);
-  } else {
-    if(val > (root)->value) {
-      printf("val(%d)> root->value(%d) insert at root->right\n",val, root->value );
-      root->right  = bstInsert(root->right, val);
-    } else if(val < (root)->value) {
-      printf("val(%d) < root->value(%d) insert at root->left\n",val, root->value);
-      root->left = bstInsert(root->left, val);
-    } else {
-      (root)->count++;
-      printf("increment value %d by %d\n",val, (root)->count);
-    }
-  }
-  return root;
-}
+/* Height of Tree : from a given node to the deeptest node 
+   Depth of Tree : From root to given node 
+   Height = Depth for a given tree from 'root'
 */
-
-/* Find the Tree Height */
-int maxDepth(elem_t *root) {
+/* Find the Tree Height , when balancedCheck is 1, it will 
+* be similar to isBalanced(), ret -1 meaning not balanced
+*/
+int maxDepth(elem_t *root, int balancedCheck) {
   int l,r,d;
   if(root == NULL)
     return 0;
-  r = maxDepth(root->right);
-  l = maxDepth(root->left);
+  r = maxDepth(root->right, balancedCheck);
+  l = maxDepth(root->left, balancedCheck);
+
+  if(balancedCheck ==1  && (r == -1 || l == -1))
+    return (-1);
   if (l > r){
+    if((balancedCheck == 1) && (l-r > 1)){
+      return (-1);
+    }
     d = l+ 1;
   } else {
+    if( (balancedCheck == 1) && (r-l > 1))
+      return (-1);
     d = r + 1;
   }
   return (d);
@@ -201,11 +233,11 @@ void printPerLevel(elem_t *root,int level) {
 }
 
 void printLevelOrder (elem_t *root) {
-  int height,k;
+  int height, k;
   if (root == NULL)
     return;
-  height = maxDepth(root);
-  printf("Height %d\n", height);
+  height = maxDepth(root,0);
+  printf("      Tree Height %d\n", height);
   for (int i = 1; i <= height; i++) {
     k= height - i;
     while (k>0) {
@@ -220,7 +252,6 @@ void printLevelOrder (elem_t *root) {
 /* Find Lowest Common Ancestor of elements a and b starting from root node 
  * Remeber : 
 */
-
 elem_t * LCA (elem_t *root, int a, int b) {
   elem_t *left;
   elem_t *right;
@@ -239,33 +270,32 @@ elem_t * LCA (elem_t *root, int a, int b) {
 }
 
 
-
-/* Method 1: Two Loops  O(n^2)
+/* Given an unsorted array of number, find a number that repeats more than half the size of array
+* Method 1: Two Loops  O(n^2)
 * Input A integer array of size 'n'
 * Return -1: invalid input
 *        -2: No MaxElem found, or no element repeats more than n/2 times
 *         index: Valid index of number which repeats more than n/2 times
 */
 int findMaxElem(int A[], int n) {
+  int count = 0;
+  printf("Array Count %d\n",n);
+  if (n <= 0) {
+    return (-1);
+  }	
 
-	int count = 0;
-
-	if (n <= 0) {
-		return (-1);
-	}	
-
-	for (int i = 0; i < n; i++) {
-		count = 0;
-		for (int j = 0; j < n; j++) {
-			if (A[j] == A[i]) {
-				count++;
-				if (count > n/2) {
-					return j;
-				}
-			}
-		}
+  for (int i = 0; i < n; i++) {
+    count = 0;
+    for (int j = 0; j < n; j++) {
+      if (A[j] == A[i]) {
+	count++;
+	if (count > n/2) {
+	  return j;
 	}
-	return (-2);
+      }
+    }
+  }
+  return (-2);
 }
 
 /* 
@@ -322,8 +352,8 @@ void testVariousTreeAPI(int A[], int n)
 {
   elem_t *lca = NULL; 
   elem_t *root = NULL;
-  int count = 0;
-
+  int count  = 0;
+  int height = 0;
   if (n <= 0) {
     return;
   }	
@@ -335,43 +365,47 @@ void testVariousTreeAPI(int A[], int n)
     bstInsert(A[i], &root);
   }
 
-  printf("Print LevelOrder:\n");
+  printf("Max value in the tree :%d\n", findMax(root));
+  printf("Min value in the tree :%d\n", findMin(root));
+
+  printf("Max value in the bin-search-tree :%d\n", findMax2(root));
+  printf("Min value in the bin-search-tree :%d\n", findMin2(root));
+ 
+ printf("Print LevelOrder:\n");
   printLevelOrder(root);
   printf("\nPrint PreOrder:\n");
   preOrderTraversal(root);
-  printf("\nFind using DFS 4\n");
-  lca = DFS(root,4);
-  printf("\nDFS node with value 4 %s\n", lca?"FOUND":"NOT FOUND");
-
-  printf("\nFind using DFS 4\n");
-  preOrderTraversalCleanup(root);
- lca = DFS(root,4);
-  printf("\nDFS node with value 4 %s\n", lca?"FOUND":"NOT FOUND");
-  preOrderTraversalCleanup(root);
-
-
-  printf("\nFind using DFS value 100\n");
-  lca = DFS(root,100);
-  printf("\nDFS node with value 100 %s\n", lca?"FOUND":"NOT FOUND");
-  preOrderTraversalCleanup(root);
 
   printf("\nPrint PostOrder:\n");
   postOrderTraversal(root);
 
   printf("\nPrint InOrder:\n");
   inOrderTraversal(root);
+  printf("Search using DepthFirstSearch for value 4 :\n");
+  lca = DFS(root, 4);
+  printf("\nDFS node with value 4 %s\n", lca?"FOUND":"NOT FOUND");
+  preOrderTraversalCleanup(root);
 
   lca = LCA(root,2,4);
   if(lca)
-    printf("Lowest Common Ancestor of nodes with value 2,4 is with value %d\n", lca->value);
+    printf("\nLowest Common Ancestor of nodes with value 2,4 is with value %d\n", lca->value);
 
   lca = LCA(root,6,8);
   if(lca)
-    printf("Lowest Common Ancestor of nodes with value 6,8 is with value %d\n", lca->value);
+    printf("\nLowest Common Ancestor of nodes with value 6,8 is with value %d\n", lca->value);
 
   lca = findMaxValNode(root);
   if(lca)
-    printf("MaxValue in the Tree %d\n",lca->value);
+    printf("\nMaxValue in the Tree %d\n",lca->value);
+  printf("\nChecking is this tree balanced( heigt of l-subtree and r-subtree can differ at most by 1\n");
+  height = maxDepth(root,1);
+  if(height >= 0) {
+    printf("Its a balanced TREE %d\n",height);
+    
+  } else {
+
+    printf("Not a balanced tree, %d\n",height);
+}
 }
 
 
@@ -384,10 +418,10 @@ int main(int argc, char *argv[]) {
    */
   int A[] = { 9,7,6,5, 1,2,3,4,5,6,7,7,7,7,7,7,7,7 };
   int B[] = { 5,7,3,8,2,4,6};
-  int C[] = { 2,3,4,8,5,6,7};
-	//int b = findMaxElem (A, 13);
-	int b = findMaxElem2 (B, 7);
+  int C[] = { 9,12,15,2,3,4,8,5,6,7,1};
+  int b = findMaxElem (A, sizeof(A)/sizeof(int));
+	//int b = findMaxElem2 (C, 13);
 	printf("MaxElem index %d val %d\n", b, b?B[b]:b);
 
-	testVariousTreeAPI(B,7);
+  testVariousTreeAPI(C,sizeof(C)/sizeof(int));
 }

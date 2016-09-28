@@ -6,10 +6,9 @@
 */
 
 unsigned int copynbits(unsigned int src, unsigned int dst,unsigned int n, unsigned int x){
-   //Generate src, with only those bits that needs copying
+   //Generate mask 
    int mask = (src & ((0x1 << n)-1)) << (x+n-1);
-   //Clear n bits starting x from Right ub dst
-   int clearMask = dst & (~((0x1 << n) - 1) << (x+n-1));
+   int clearMask = dst & ~((0x1 << n) - 1) << (x+n-1);
    return (mask | clearMask);
 }
 

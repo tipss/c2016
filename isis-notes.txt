@@ -1,4 +1,6 @@
 
+
+
 ISIS needs 20byte NSAP address per node.
 This consists of three field( Area-Address, System-Address(6byte), 1byte nsap sel).
 Area-Address value is used to bring up Level-1 adjacencies,(areas should match or overlap if multiple NSAP's are configured) to bring up Level-1 Adjacency. Area-Address are not looked at to bring up Level-2 Adjacency.
@@ -132,8 +134,25 @@ Instance Identifier TLV
 
    The IID-TLV MAY include one or more ITIDs.  An ITID is a 16-bit
    identifier where all values (0 - 65535) are valid.
+   
+   Note that there will be seperate ADJ and LSP/HELLO packet per instance.,so database and SPF also.
+   
+
+RFC 5120 : ISIS Multi Topology. ( Multi instance creates different database, different adj, leading to in efficiency).   In Multi-Topology, MTID can help keep single ADJ and database across multiple topologies, efficient, but still it needs seperate SPF per topology.
+
+   MTID 1 is for IPv4,
+   MTID 2 is for IPv6
+   Note that there will not be seperate LSP/HELLO etc packet per MTID, (Very important to remember).
+
+TLV 235 is equivalent to TLV135, but it has MTID as another field to identify prefix MTID
+TLV236 is equivalent to TLV136 for IPv6 prefix, but it has MTID
+You can create multiple IS-IS topologies without the MT extensions by enabling a sep- arate routing protocol instance on each router, if your protocol implementation supports multiple instances, for each desired topology. Authentication is then used to create adjacencies within each instance that follow the desired topology. 
+The problem with this approach is inefficiency. 
+
+Each pro- tocol instance on a router maintains its own database, its own adjacencies, and sends its own Hellos. 
 
 
+The MT extensions use a single database and maintain single adjacencies across a given link, no matter how many topologies actually use the link. Only the SPF calculations and the RIBs are maintained separately for each topology. This means, bi-directional connectivity check is necessary during each SPF, which ensures that both neighbors understand IPv6.
 
 
 Greedy Algorithm:

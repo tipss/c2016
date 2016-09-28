@@ -5,11 +5,14 @@
 //Replace repated chars with number , 
 //representing number of time the char repeated, including spaces
 //This works well, users responsibility to send string longer than needed
+//Limitation : It does not add count, if its only one char.
+//             Thus , size will not increase more than input str.
 void compressWithCount(char *str) {
   char *dest = str;
   int j=0;
   int count =0;
   char num[10];
+  int len = 0;
   
   while (*str) {
     //Skip Repeated Chars
@@ -17,17 +20,16 @@ void compressWithCount(char *str) {
       count++;
       str++;
     }
+    dest[j++]= *str;
     if (count) {
-      sprintf(num, "%d",count+1);
+      len = sprintf(num, "%d",count+1);
       //Copy count
       printf("Copying number %d of len %ld\n",count, strlen(num));
-      for (int i=0 ; i < strlen(num);i++) {
-	dest[j++]= num[i];
+      for (int i = 0; i < len; i++) {
+	dest[j++] = num[i];
       }
       count = 0;
     } 
-
-    dest[j++]= *str;
     str++;
   }
   dest[j] = '\0';
@@ -156,9 +158,10 @@ int main (int argc, char *argv[]) {
   printf("you entered : %s, len %ld\n", str1, strlen(str1));
   //removespace(str1);
   //printf("Space removed version: %s len \n",str1,strlen(str1));
-  //compressWithCount(str1);
-  replaceSpaceWithSpecialStr(str1,"%20");
-  printf("Compressed version with counts: %s len %ld\n",str1, strlen(str1));
-  printf("In: %s\n Num New Len: %d \nNew Str %s", a, ReplaceSpaces(a, strlen(a)), a);
+  compressWithCount(str1);
+  printf("Compressed string with count : str2 = %s\n",str1);
+  //replaceSpaceWithSpecialStr(str1,"%20");
+  //printf("Compressed version with counts: %s len %ld\n",str1, strlen(str1));
+  //printf("In: %s\n Num New Len: %d \nNew Str %s", a, ReplaceSpaces(a, strlen(a)), a);
 
 } 

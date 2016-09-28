@@ -3,6 +3,8 @@
 // Remember it starts at index Zero
 // Its a series
 // f0= 0, f1=1, f2=1,f3=2,f4=3,f5=5...
+// Generates nth FIBonacci sequence number
+// fn = f(n-1) + f(n-2);
 int fib (int n) { 
 
   if(n <=1 )
@@ -15,10 +17,9 @@ int fib (int n) {
 // 2^n complexity
 int sumOfFib(n) {
   int sum=1;
-  if(n == 0)
+
+  if(n <=1 )
     return n;
-  if(n<=1)
-    return sum;
   for(int i=2; i<=n; i++) {
     sum +=fib(i);
     
@@ -31,10 +32,8 @@ int sumOfFib(n) {
 
 int sumOfFib2(n){
   int sum = 0;
-  if(n==0)
-    return 0;
-  if(n==1)
-    return 1;
+  if(n <=1 )
+    return n;
   
   return (fib(n+2)-1);
 }
@@ -42,14 +41,14 @@ int sumOfFib2(n){
 int f[100] = { 0 };
 int sumOfFib3 (n) {
   //fSUM = f(n+2)-1
-  if(n==0)
-    return 0;
-  if(n==1)
-    return 1;
+  if(n <=1 )
+    return n;
+  
   if(f[n+2]) {
     return (f[n+2]-1);
   } else {
     printf("Computing\n");
+    //Remember, do not store with -1, as this value is used for future computation
     f[n+2]= fib(n+2);
     return (f[n+2]-1);
 

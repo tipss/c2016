@@ -1,0 +1,64 @@
+
+GDB:
+S/W breakpoints:
+Running program will be stopped at this address location when PC(Program Counter) hits this address. GDB will change instruction around this aread to 'trap', or 'exception' or 'illegal inst',so
+when PC runs over this, GDB will receive this signal and GDB hands over the control to USER who
+is debugging. It also restores the BREAK POINT.
+Program area must be 'writable' for GDB to work, so it will not work on ROM areas.
+
+H/W Breakpoints:
+Designed within the Chipset to store Break-Point address in special register.
+These registers are monitored by the chip for running PC . if they hit, a control is given
+back to user of GDB.
+
+Watchpoints:
+Special kind of breakpoints, triggered when data is accessed, rather than some instructions
+are executed.
+When to use watchpoints?,
+When some data changes its value, without your knowledge, its better to set watchpoint to find
+who is actually changing the data.
+
+In case of debugger: parent process is gdb, child process is the debuggee.
+Parent process have additional powers over child process, one of they is to run 'ptrace' on them.
+ptrace allows a parent process to access low-level info about child process.
+
+ptrace is part of linux kernel.
+
+
+
+Multithreading Terms
+There are many terms used when writing multithreaded applications. I'll try to describe a few of there here.
+
+Deadlock — A state where two or more threads each hold a lock that the others need to finish. For example, if one thread has locked mutex A and needs to lock mutex B to finish, while another thread is holding mutex B and is waiting for mutex A to be released, they are in a state of deadlock. The threads are stuck, and cannot finish. One way to avoid deadlock is to acquire necessary mutexes in the same order (always get mutex A then B). Another is to see if a mutex is available via pthread_mutex_trylock, and release any held locks if one isn't available.
+
+Race Condition — A program that depends on threads working in a certain sequence to complete normally. Race Conditions happen when mutexes are used improperly, or not at all.
+
+Thread-Safe — A library that is designed to be used in multithreaded applications is said to be thread-safe. If a library is not thread-safe, then one and only one thread should make calls to that library's functions.
+
+
+
+ultithreaded applications often require synchronization objects. These objects are used to protect memory from being modified by multiple threads at the same time, which might make the data incorrect.
+
+The first, and simplest, is an object called a mutex. A mutex is like a lock. A thread can lock it, and then any subsequent attempt to lock it, by the same thread or any other, will cause the attempting thread to block until the mutex is unlocked. These are very handy for keeping data structures correct from all the threads' points of view. For example, imagine a very large linked list. If one thread deletes a node at the same time that another thread is trying to walk the list, it is possible for the walking thread to fall off the list, so to speak, if the node is deleted or changed. Using a mutex to "lock" the list keeps this from happening.
+
+Computer Scientist people will tell you that Mutex stands for Mutual Exclusion.
+In Java, Mutex-like behaviour is accomplished using the synchronized keyword.
+
+Technically speaking, only the thread that locks a mutex can unlock it, but sometimes operating systems will allow any thread to unlock it. Doing this is, of course, a Bad Idea. If you need this kind of functionality, read on about the semaphore in the next paragraph.
+
+Similar to the mutex is the semaphore. A semaphore is like a mutex that counts instead of locks. If it reaches zero, the next attempt to access the semaphore will block until someone else increases it. This is useful for resource management when there is more than one resource, or if two separate threads are using the same resource in coordination. Common terminology for using semaphores is "uping" and "downing", where upping increases the count and downing decreases and blocks on zero.
+Java provides a Class called Semaphore which does the same thing, but uses acquire() and release() methods instead of uping and downing.
+
+With a name as cool-sounding as semaphore, even Computer Scientists couldn't think up what this is short for. (Yes, I know that a semaphore is a signal or flag ;)
+
+Unlike mutexes, semaphores are designed to allow multiple threads to up and down them all at once. If you create a semaphore with a count of 1, it will act just like a mutex, with the ability to allow other threads to unlock it.
+
+
+Mutexes:
+Mutexes are used to prevent data inconsistencies due to operations by multiple threads upon the same memory area performed at the same time or to prevent race conditions where an order of operation upon the memory is expected. A contention or race condition often occurs when two or more threads need to perform operations on the same memory area, but the results of computations depends on the order in which these operations are performed. Mutexes are used for serializing shared resources such as memory. Anytime a global resource is accessed by more than one thread the resource should have a Mutex associated with it. One can apply a mutex to protect a segment of memory ("critical region") from other threads. Mutexes can be applied only to threads in a single process and do not work between processes as do semaphores. 
+
+
+The pthread_cond_wait() and pthread_cond_timedwait() functions are used to block on a condition variable. They are called with mutex locked by the calling thread or undefined behaviour will result.
+These functions atomically release mutex and cause the calling thread to block on the condition variable cond; atomically here means "atomically with respect to access by another thread to the mutex and then the condition variable". That is, if another thread is able to acquire the mutex after the about-to-block thread has released it, then a subsequent call to pthread_cond_signal() or pthread_cond_broadcast() in that thread behaves as if it were issued after the about-to-block thread has blocked.
+
+Upon successful return, the mutex has been locked and is owned by the calling thread.

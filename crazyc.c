@@ -14,6 +14,12 @@ int main (int argc, char *argv[]) {
   char t[40];
   unsigned int *p[10];
 
+  int var;  
+  void *ptr; // = &var;
+  ptr = &var;
+  *(int *)ptr = 5; //value assignment to void pointer should have type cast
+  printf("var=%d and *ptr=%d",var,*(int *)ptr); //while dereference of void ptr also , use type cast
+
   fun( t, p[0] );
   printf("sizeof(int):%ld\n",sizeof(int));
   printf("sizeof t, as in t[40] is :%ld\n",sizeof(t));

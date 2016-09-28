@@ -264,6 +264,7 @@ lln_t * findMiddleNode(lln_t *head) {
 }
 
 /*
+ * Given TWO LL, create THIRD LL by adding first two list.
  Each list represent a number, with head carrying LSB.
  e.g 566 is represented as   HEAD 2->1->5->NULL
     +566    
