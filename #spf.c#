@@ -72,6 +72,7 @@ void dijkstra(int G[V][V], int source_index) {
       if((sptSet[v] == 1 || G[u][v] == 0 || dist[u] == INT_MAX) {
 	  continue;
       }
+	//Update distance of vertex in v, if its more than what is already computed.
       if(dist[v] > (dist[u]+ G[u][v])) {
 	dist[v] = dist[u] + G[u][v];
       }

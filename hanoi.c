@@ -1,5 +1,5 @@
 #include <stdio.h>
-
+//Remember
 void TH(int p, char F, char T, char A) {
 	
   if (p==1) {

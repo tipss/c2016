@@ -1,7 +1,7 @@
 #include <stdio.h>
 /* Given a number finds its factorial */
 // Remember Factorial of zero and one are 1
-// n = n * n-1
+// !n = n * n-1
 
 int fact(int val) {
 	if(val == 0 || val == 1)

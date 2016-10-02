@@ -51,51 +51,6 @@ int dequeue(Q *q, int *val){
 
 }
 
-typedef struct elem_t {
-	int     value;
-	int     count;
-	struct elem_t *left;
-	struct elem_t *right;
-
-} elem_t;
-
-
-/* Breadth First Search */
-elem_t *BFS(elem_t *r, int value) {
-  elem_t *temp, *ret = NULL;
-  int val = 0;
-  Q *q= initQ(100);
-  /*
-   * BFS :  1. Visit r
-   2. Enqueue r
-   3. Dequeue Until queue is empty
-   4  For every dequeued node, visit it , and enqueue their ADJ nodes
-  */
-
-  if (r == NULL)
-    return ret;
-  printf("%d ", r->value);
-  r->count = 1;
-  enqueue(q, (unsigned int)&r);
-
-  while (!isEmpty(q)) {
-    dequeue(q,&val);
-    temp = (elem_t *)val;
-    if(temp->left && temp->left->count == 0) {
-      printf("%d ", temp->left->value);
-      temp->left->count = 1;
-      enqueue(q, (unsigned int)&(temp->left));
-    }
-
-    if (temp->right && temp->right->count == 0) {
-      printf("%d ", temp->right->value);
-      temp->right->count = 1;
-      enqueue(q, (unsigned int)&(temp->right));
-    }
-  }
-  free(q);
-  return ret;
-}
 
 int main (int argc, char *argv[]) {
 

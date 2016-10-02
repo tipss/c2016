@@ -19,42 +19,19 @@ int bitSwapRequired(int a, int b) {
   return count;
 }
 
-void printBinary(int num){
-
-  /* Prints in reverse direction
-  while (num) {
-    if (num & 1)
-      printf("1");
-    else
-      printf("0");
-
-    num >>= 1;
-  }
-  printf("\n");
-
-  */
-
-  // Use recursion to fix this
-  if(num == 0) {
-    printf("0");
-    return;
-  } else if(num == 1) {
-    printf("1");
-    return;
-  }
-  printBinary(num>>=1);
-  if((num & 0x01) == 0) {
-    printf("0");
-  } else {
-    printf("1");
-  }
+//Remember, its works
+// Also n%2 prints 1 for odd number and zero for even number
+void bin(unsigned n)
+{
+  /* step 1 */
+  if (n > 1)
+    bin(n/2);
+ 
+  /* step 2 */
+  printf("%d", n % 2);
 }
 
 /*
- *   copy value of odd to even, eg. 0th bit value to 1st bit, 1stbit value to 2ndbit
- *   use a mask 0x1010 get odd bits
- *                3210  (1 and 3 bits)
- *      (x & 0x1010) >> 1 will make 1 move to 0, 3 move to 2(even).
  *  Similarl mask 0x0101  get even bits
  *                  3210  (0 and 2) bits
  *     (x & 0101) <<1 will make 0 move to 1, 2 move to 3
@@ -85,18 +62,15 @@ int main (int argc, char *argv[]) {
     printf("its not a power of two\n");
                     
   }
-  printBinary(num);
-  printf("\n");
   printf("swapped Odd Even bits : %d\n",swapOddEvenBits(num));
   printf("Find number bit flip required to make two numbers equal: Enter two number:");
   scanf("%d",&a);
   printf("\n");
  scanf("%d",&b);
- printf("\n");
- printf("\n");
- printBinary(a);
- printf("\n");
- printBinary(b);
- printf("\nNum of bit flips needed to make them equal %d\n",bitSwapRequired(a,b));
 
+ printf("\nNum of bit flips needed to make them equal %d\n",bitSwapRequired(a,b));
+ for (int i=0;i< 32;i++){
+   bin(i);
+   printf("\n");
+ }
 }

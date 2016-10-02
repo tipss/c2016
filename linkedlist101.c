@@ -1,9 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+/* Array's have advantage over LL, because accessing array element can be CPU assisted(caching), which is
+ * not easy for LL.
+ * If an array is accessed sequentially, many processors will not only fetch the block containing the element, 
+ * but will also prefetch subsequent blocks to minimize cycles spent waiting on cache misses. 
+ * If you are using an Intel x86 processor, you can find details about this in the Intel x86 optimization manual. * Also, if the array elements are small enough, loading a block containing an element means the next 
+* element is likely in the same block.
+* Unfortunately, for linked lists the pattern of loads is unpredictable from the processor's point of view. 
+* It doesn't know that when loading an element at address X that the next address is the contents of (X + 8).
+ */
 typedef struct lln {
     int val;
     struct lln *next;
+  struct lln *prev; // Used only if your API is for DLL,
 } lln_t; 
 
 lln_t *head;
@@ -135,6 +144,17 @@ void delete_all(lln_t **head) {
   *head = NULL;
 }
 
+
+//Print recursively in reverse order.
+void print_ll_reverse(lln_t *head)
+{
+  if(head == NULL)
+    return;
+   
+  print_ll_reverse(head->next);
+  printf("%d  ", head->val);
+}
+
 void print_ll(lln_t *node) {
     lln_t *tmp = node;
 
@@ -240,9 +260,28 @@ void reverse (lln_t **head) {
     prev = current;
     current = next;
   }
-  *head = prev;
-  printf("List reversed\n");
+  if(prev != NULL)
+    *head = prev;
+}
 
+/*
+ * This reverses Doublly linked list
+ */
+void reverse_dll(lln_t **head_ref)
+{
+  lln_t *prev = NULL;
+  lln_t *current = *head_ref;
+ 
+  while (current !=  NULL)
+    {
+               prev = current->prev;
+      current->prev = current->next;
+      current->next = prev;
+      current       = current->prev;
+    }
+ 
+  if(temp != NULL )
+    *head_ref = prev->prev;
 }
 
 lln_t * findMiddleNode(lln_t *head) {
@@ -358,12 +397,12 @@ lln_t * reverse2(lln_t *head, lln_t *prev) {
 /*
 1. Delete
 2. Insert
-3. Print 
+3. Print print_reverse
 4. Delete All
 5. Delete Duplicate
 6. FindMid
 7. Find Loop + Find loop length + Find starting point of loop
-8. Reverse
+8. Reverse, Reverse Double LL
 9. Find Kth Last
 10. Partition list by value
 11. Add two number(given in two linked list into a third list).
@@ -371,6 +410,7 @@ lln_t * reverse2(lln_t *head, lln_t *prev) {
     Create duplidate list, and reverse it. Compre first half of original and duplicate, if they
     are equal , they its a palindrome.
     Or,  Push half elements into stack, and compare by popping, if they are equal ,its a palindrome.
+
 */
 
 int main (int argc, char *argv[]) {
@@ -406,6 +446,8 @@ int main (int argc, char *argv[]) {
   //head = reverse2(head, NULL);
 
   print_ll(head);
+  printf("\nPrinting Reverse Order:");
+  print_ll_reverse(head);
   node=  findMiddleNode(head);
   printf("Middle Node Val %d\n",node->val);
   reverse(&head);

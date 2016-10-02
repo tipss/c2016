@@ -25,7 +25,9 @@ typedef struct elem_t {
                  going to the next adjacent node of r.
 * This can also be used to find if there exits a route between two nodes.
 * first node you pass as start and use it as root,  second node as usual.
-	   
+*
+*  Note: DFS uses 'stack' as datastructure, but due to recursion(function call stack) its sort of hidden	   
+*        BFS uses 'queue'
 */
 elem_t * DFS(elem_t *r,int value){
   elem_t *ret = NULL;
@@ -62,10 +64,9 @@ int findMax(elem_t *root) {
   if(root->value > max)
     max = root->value;
   return max;
-
 }
 
-
+//Works only for BST ( Max value is the one which is rightmost element whose right node is NULL)
 int findMax2(elem_t *root){
   if (root == NULL)
     return (INT_MIN);
@@ -95,7 +96,7 @@ int findMin(elem_t *root) {
 
 }
 /*
- findMin2 : Left most node which does not have left child
+ findMin2 : Left most node whose left child is NULL
  * This only works in 'Binary Search Tree 
 */
 int findMin2(elem_t *root){
@@ -141,7 +142,8 @@ void preOrderTraversalCleanup(elem_t *root) {
   preOrderTraversalCleanup(root->right);
 }
 
-//LRD
+//LRD  Usefull to delete tree
+// Prints tree in 'Bottom Up' 
 void postOrderTraversal(elem_t *root) { 
   if(!root)
     return;
@@ -150,7 +152,7 @@ void postOrderTraversal(elem_t *root) {
   printf("%d ",root->value);
 }
 
-
+// LDR    Results into non-decreasing order of nodes in case of binary search tree
 void inOrderTraversal(elem_t *root) {
   if(!root)
     return;
@@ -159,8 +161,37 @@ void inOrderTraversal(elem_t *root) {
   inOrderTraversal(root->right);
 }
 
+/*
+ * Is this a Binary Search Tree.
+ * Note  : InOrder Traversal leads to sorted array.
+ *         Just keep track of previous element, and compare every time you walk.
+ *         It should be in asending order
+ * return 1 : its a binary search tree 
+ * Remember this
+*/
+
+int isValid(elem_t *root, int MIN, int MAX) {
+  
+  if (root == NULL)
+    return 1;
+  if( root->value > MIN && root->value < MAX && 
+      isValid(root->left, MIN,root->value) &&
+      isValid(root->right, root->value, MAX))
+    return 1;
+  else
+    return (0);
+}
+
+int isBST (elem_t **root){
+  //OR, insert elements in an array,
+  //Walk array to see if elements are in ascending order.
+  return isValid((*root), INT_MIN, INT_MAX);
+
+}
+
 /* Unbalanced Insert, Count is kept to find if there are elements
  * that repeated
+ * A balanced tree has height of log(n), so it worst case search for an element is of order log(n).
  */
 void bstInsert(int key, struct elem_t **root) {
 
@@ -364,7 +395,7 @@ void testVariousTreeAPI(int A[], int n)
   for (int i = 0; i < n; i++) {	
     bstInsert(A[i], &root);
   }
-
+  printf("Is this Binary Search Tree ?:%s\n",(isBST(&root) == 1)?"YES":"NO");
   printf("Max value in the tree :%d\n", findMax(root));
   printf("Min value in the tree :%d\n", findMin(root));
 
