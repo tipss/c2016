@@ -189,6 +189,7 @@ int isBST (elem_t **root){
 
 }
 
+
 /* Unbalanced Insert, Count is kept to find if there are elements
  * that repeated
  * A balanced tree has height of log(n), so it worst case search for an element is of order log(n).
@@ -379,8 +380,48 @@ elem_t *findMaxValNode(elem_t *root) {
   return max;
 }
 
+/*
+ * Delete node from tree,
+ * a: only leaf node: easy, return NULL to root
+ * b: one child: return child to root 
+ * c: both child Replace this node with largest element of left sub tree, 
+ * and recursively delete that node
+*/
+void delete(elem_t **root, int key) {
+  elem_t *temp;
+  if ((*root) == NULL)
+    return;
+ 
+  if ((*root)->value < key) {
+    delete(&(*root)->right,key);
+
+  } else if ((*root)->value > key) {
+    delete(&(*root)->left,key);
+  } else { //Found node
+    if((*root)->left && (*root)->right) { // Two child case
+      printf("Two Child case delete\n");
+      temp = findMaxValNode((*root)->left);
+      (*root)->value = temp->value;
+      delete(&(*root)->left,(*root)->value);
+    } else { //One Child case, free root, and replace root with child
+      temp = *root;
+      if((*root)->left)
+	{
+	  (*root) = (*root)->left;
+	} else {
+	(*root) = (*root)->right;
+      }
+      printf("Freeing %d\n",temp->value);
+      free(temp);
+      
+    }
+
+  }
+}
+
 void testVariousTreeAPI(int A[], int n) 
 {
+  elem_t *temp;
   elem_t *lca = NULL; 
   elem_t *root = NULL;
   int count  = 0;
@@ -401,9 +442,18 @@ void testVariousTreeAPI(int A[], int n)
 
   printf("Max value in the bin-search-tree :%d\n", findMax2(root));
   printf("Min value in the bin-search-tree :%d\n", findMin2(root));
- 
+  temp =findMaxValNode(root);
+  printf("Max value node using findMaxValNode %d\n",temp->value);
+  delete(&root,temp->value);
+  temp =findMaxValNode(root);
+  printf("Max value node using findMaxValNode(after delete prev) %d\n",temp->value);
  printf("Print LevelOrder:\n");
   printLevelOrder(root);
+  delete(&root, 9);
+ printf("Print LevelOrder(after root 9 is removed):\n");
+  printLevelOrder(root);
+
+
   printf("\nPrint PreOrder:\n");
   preOrderTraversal(root);
 
@@ -446,6 +496,13 @@ int main(int argc, char *argv[]) {
    * This is normal behavior, thats why you need RedBlack tree or AVL tree
    * where in L and R sub trees are balanced to at most 1 different in height.
    * Put different Array, and watch the output.
+   * AVL trees maintain a more rigid balance than red-black trees. The path from the root to the 
+   * deepest leaf in an AVL tree is at most ~1.44 lg(n+2), while in red black trees 
+   * it's at most ~2 lg (n+1).
+   *
+   * As a result, lookup in an AVL tree is typically faster, but this comes at the cost of slower 
+   * insertion and deletion due to more rotation operations. So use an AVL tree if you 
+   * expect the number of *lookups to dominate the number of updates to the tree.
    */
   int A[] = { 9,7,6,5, 1,2,3,4,5,6,7,7,7,7,7,7,7,7 };
   int B[] = { 5,7,3,8,2,4,6};

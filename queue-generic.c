@@ -13,6 +13,7 @@ typedef struct q_s {
 
 q_t * initq (int capacity) {
   q_t *q = malloc(sizeof(q_t));
+  printf("sizeof(void *)=%ld,sizeof(void**)=%ld\n",sizeof(void *),sizeof(void**));
   q->container = malloc(sizeof(void**) * capacity);
   q->capacity  = capacity;
   q->size  = 0;
@@ -51,7 +52,7 @@ int enqueue(q_t * q, void *item){
   q->rear = (q->rear+1) % q->capacity;
   q->container[q->rear] = item;
   q->size++;
-  printf("enqueued now size is %d\n", q->size);
+  printf("enqueued now size is %d rear %d\n", q->size,q->rear);
   return 0;
 }
 
@@ -64,7 +65,7 @@ void * dequeue(q_t *q) {
   front    = q->front;
   q->front = (q->front + 1) % q->capacity;
   q->size--;
-  printf("dequeued now size is %d\n", q->size);
+  printf("dequeued now size is %d front %d\n", q->size, q->front);
   return q->container[front];
 }
 
