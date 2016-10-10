@@ -6,6 +6,14 @@ ACI: Application Centric Infra by Cisco
 
 
 
+NF and YANG are not SDN but they can be used in a SDN environment.  They came about because someone realised that no-one
+was using the ‘SET’ element of SNMP.  NETCONF is a management protocol and YANG is a device model, a SDN or an
+Orchestration platform can sit on top and use these but does not have to.
+
+YANG models are supposed to be human readable and NetCONF/YANG interactions are supposed to meet a range of criteria to
+provide safe provisioning, with lock, unlock, commit and rollback functionality.  SNMP MIBs can be deployed as part of
+the YANG build, tail-f offer all sorts of useful tools to integrate YANG, SNMP and CLI.
+
 How EVPN is different from VPLS ?.
 In EVPN PE's learn and advertise MAC addresses using MP-BGP in control plane using BGP updates with newly defined NLRI, like VPN IPV4 routes. no pseudo-wire full mesh required.(because broadcast/flood domains are not needed, this is done in control plane of MP-BGP), L2 Traffic is sent over a specific PE tunnel after learning is done.
  
@@ -93,3 +101,29 @@ VPLS PEs SHOULD have an aging mechanism to remove a MAC address
    time T on a per-VPLS basis.  In addition, an implementation MAY
    accelerate aging of all MAC addresses in a VPLS if it detects certain
    situations, such as a Spanning Tree topology change in that VPLS.
+
+
+
+
+OpenFlow Messages:
+
+Controller-To-Switch( Barrier, FeatureRequest, Pkt-Out, Flow-Mod(Modify-State),ReadState(collect config, stats etc from switch)
+Role-Request(request role of the open-flow-channel)
+
+Asynchronous Message:(from switch to controller)
+Pkt-In (swith sends to controller)
+Flow-Removed
+Port Status
+Error
+
+Symetric:
+Hello, Echo
+
+
+
+Content of Openflow Table,
+
+MPC-ATC
+MatchField, Priority, Counters, Actions Timeouts Cookies(Opaque data)
+More details on open flow processing:
+http://searchsdn.techtarget.com/feature/OpenFlow-protocol-primer-Looking-under-the-hood

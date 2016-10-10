@@ -394,6 +394,19 @@ elem_t *findMaxValNode(elem_t *root) {
   return max;
 }
 
+
+/*
+ *inorder successor
+ * Given 'node' find its in-order successor.
+ * Given node, first we try traverse to 'right' sub tree.
+ *             In right subtree, find the smallest(left most node).
+ * i01
+*/
+
+elem_t *inorder_successor(elem_t *node){
+
+
+}
 /*
  * Delete node from tree,
  * a: only leaf node: easy, return NULL to root

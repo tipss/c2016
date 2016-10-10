@@ -44,6 +44,49 @@ void  ClearBit( int A[],  int k )
   A[k/32] &= ~(1 << (k%32));
 }
 
+
+
+void printTwoSetBitNums(int n)
+{
+  // Initialize higher of two sets bits
+  int x = 1;
+  int num;
+ 
+  // Keep reducing n for every number
+  // with two set bits.
+  while (n > 0)
+    {
+      // Consider all lower set bits for
+      // current higher set bit
+      int y = 0;
+      while (y < x)
+        {
+	  // Print current number
+	  num = (1 << x) + (1 << y);
+	  printBin(1<< x);
+	  printf(" %d \n",1<<x);
+
+	  printBin(1<<y);
+	  printf(" %d \n---\n",1<<y);
+
+	  printBin(num);
+	  printf( " %d \n\n",num);
+ 
+	  // If we have found n numbers
+	  n--;
+	  if (n == 0)
+	    return;
+ 
+	  // Consider next lower bit for current
+	  // higher bit.
+	  y++;
+        }
+ 
+      // Increment higher set bit
+      x++;
+    }
+}
+ 
 /* Find Bit pattern in an array of int bytes */
 //Look for solution here
 //http://stackoverflow.com/questions/1284581/finding-a-bit-pattern-in-a-32bit-unsigned-integer
@@ -64,4 +107,9 @@ int main (int argc, char *argv[]) {
     printBin(i);
     
   }
+
+  printf("\nPrinting first 4 number whose 2 bits are set:\n");
+  //Print 4 number whose 2 bits are set,starting from number zero
+ printTwoSetBitNums(4);
+ 
 } 

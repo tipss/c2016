@@ -156,15 +156,10 @@ void print_ll_reverse(lln_t *head)
 }
 
 void print_ll(lln_t *node) {
-    lln_t *tmp = node;
-
-printf("\n");
- while(tmp) {
-    printf("%d ", tmp->val);
-    tmp = tmp->next;
+ while(node) {
+   printf("%d ", (node)->val);
+   node = (node)->next;
  }
- printf("\n");
-
 }
 
 /* Find kth element from the last */
@@ -280,7 +275,7 @@ void reverse_dll(lln_t **head_ref)
       current       = current->prev;
     }
  
-  if(temp != NULL )
+  if(prev != NULL )
     *head_ref = prev->prev;
 }
 
@@ -305,20 +300,20 @@ lln_t * findMiddleNode(lln_t *head) {
 /*
  * Given TWO LL, create THIRD LL by adding first two list.
  Each list represent a number, with head carrying LSB.
- e.g 566 is represented as   HEAD 2->1->5->NULL
+ e.g 566 is represented as   HEAD 6->6->5->NULL
     +566    
 ---------
-    1132      HEAD 1->1->3->2->NULL
+    1132      HEAD 2->3->1->1->NULL
 
     * watch for carry over, and include new node to represent.
     * watch for shorter number(MSB node (at the TAIL ) will be missing,(substitute with zero)    
 */
-
 lln_t *addTwoList (lln_t *first, lln_t *second) {
   lln_t *prev, *temp, *res = NULL;
   int carry = 0;
   int sum;
   while (first || second){
+
     sum = carry + (first?first->val:0) + (second?second->val:0);
     carry = sum >= 10 ? 1:0;
     sum = sum%10;
@@ -330,8 +325,10 @@ lln_t *addTwoList (lln_t *first, lln_t *second) {
     else 
       prev->next = temp;
     prev = temp;
+
     if(first) 
       first = first->next;
+
     if(second )
       second = second->next;
   }
