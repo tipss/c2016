@@ -1,0 +1,71 @@
+
+What is MPLS? Multi Protocol Label Switching.
+
+Drawback of Distance Vector Protocol(RIP) :
+1. Send routeing updates at a regular scheduled time.
+2. They contain full routing table,which takes up valuable BW on the N/W.
+
+
+OSPF: is a link state 
+Admin Dist is 110.
+Cost based metric, across multiple hops. Cost is derived from PortType.
+Router-ID Indentifies the router.(loopback interface is picked if not configured).
+LSA use Router-ID as source .
+
+ADJ is established when both Hellos have there own ID plus NBR's ID in them.
+
+Area 0 must be configured, and other areas must connect to area zero.
+Everybusiness must start with Area 0 config.
+
+AreaBorder Router(will have one interface in area zero, and other interface in other area).
+
+Router Summarization:
+Non backbone areas send route summarization to backbone, instead  of sending everything 
+they know.
+
+Similarly any route redistributed into 'backbone' may not be sent to an area(called STUB AREA).,
+as they are not interested to receive these routes (externals).
+
+
+LSA(Link State Advertisements):
+Type1(Router LSA): Its about the router
+Type2(DR router)
+Type3(Summary LSA, ABR summary) : advertised say from area 10 into area 0.
+Routes do not have to summarized.
+Type4(Summary LSA ASBR location) : Tells where is ASBR.
+Type5(External LSA): Here are the routes from external AS(blocked by STUB area)
+Type7(External LSA passing through STUB aread).
+
+Same like in IS-IS(Designated-IS)
+DR(Designated Router):  Only DR advertise route changes to other. 
+Has association with every one. Everyother router associates with DR.
+
+BDR(Back Designated Router):
+
+
+There is an election process to select DR/BDR.
+Whic is not true in case of IS-IS, in ISIS its the priority which determines.
+
+
+
+
+OSPF vs ISIS
+============
+OSPF ADJ has to reach FULL state before Route exchange happen.
+Intention is to avoid transient routing problem.s
+VirtualLink: are used to make link is connected to backbone.
+Because of LSA'types, SPF may not be triggered for Leaf changes, so its better.
+Router-ID(32bit number)
+Link Metric can be set to 0xfff to indicate Overload bit similar to IS-IS
+
+ISIS, just need two-way connectivity. there are no multiple state.
+Transient routes are exchanged during this, but its fast.
+OverloadBIT(if set other routers do not use this router for SPF calculation).
+Spooping is difficult in L2, so ISIS is more secure.
+A spoofing attack is when a malicious party impersonates another device or 
+user on a network in order to launch attacks against network hosts, steal data, spread malware or bypass access controls.
+There is no ASBR in ISIS, but functionality is there.
+SystemID(based on MAC address).
+Fast Convergence, Overload Feature, Modular, IPv6 builtin, TLV based,
+
+

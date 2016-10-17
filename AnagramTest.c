@@ -2,7 +2,9 @@
 #include <stdbool.h>
 #include <string.h>
 
-/* Must have matching character counts , position may not match */
+/* Must have matching character counts , position may not match 
+*  This is same as str2 is one of the permutation of 
+   str1, e.g str1= cat, str2=act, or tac or tca, or cta */
 bool anagram (char *str1, char *str2) {
     int A[256];
     int i = 256;

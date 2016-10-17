@@ -56,6 +56,41 @@ int fact(int n) {
 
 }
 
+
+/* This works also, its simple to read ad remember
+void swap(char *str, int i, int j) {
+  char t;
+       t = str[i];
+  str[i] = str[j];
+  str[j] = t;
+}
+
+void per(char *str,int l,int r) {
+
+  if (l == r) {
+    printf("%s\n",str);
+    return;
+
+  } else {
+
+    for (int i=l; i<r; i++) {
+      swap(str, l,   i);
+       per(str, l+1, r);
+      swap(str, l,   i);
+    }
+
+  }
+  return;
+}
+
+
+int main(int argc, char *argv[]){
+  printf("Permutation of %s len %ld:\n", argv[1], strlen(argv[1]));
+  per(argv[1],0,strlen(argv[1]));
+
+}
+*/
+
 int main(int argc, char *argv[]) {
   char str[100];
   int len;
@@ -66,7 +101,7 @@ int main(int argc, char *argv[]) {
   scanf("%d",&takenatatime);
   printf("Permutation:\n");
   len = strlen(str);
-  printf("expect %d! * (%d - %d)! = %d results\n", len, len, itemstakenatatime, 
-	 fact(len) * fact(len-itemstakenatatime));
+  printf("expect %d! / (%d - %d)! = %d results\n", len, len, takenatatime, 
+	 fact(len) / fact(len-takenatatime));
   permute(str,0,len - 1);
 }

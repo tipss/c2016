@@ -1,0 +1,223 @@
+VXLAN: 
+VTEP Virtual Tunnel End Point.(Adds 50byte overhead in L3 network) for every packet.
+Original 'L2' frame(e.g ARP request, or unknown MAC's are) are embedded into UDP packet with
+8byte VXLAN header and sent to multicast group on the IP transport. This enables learning
+of SMAC by each VTEP, including innder 'SMAC'. (HOSTMAC,VTEPIP,VTEPMAC,SEGMENTID) 
+=======================================================================================
+HOST-MAC1---VETP1---Shared Transport Network(IP and Multicast)----VTEP2---HOST-MAC2.
+          ->ENCAP-> +50bytes                                      DECAP ->-50bytes
+      ----->MAC1 Entry(ARP-Request)                               MAC1 Entry
+            MAC2 Entry                                            MAC2 Entry(ARP-Reply) <----
+=======================================================================================           
+Note: After discovery of destination mac address(using ARP), VTEP's forwarding table
+is used to forward HOST packets(still embeded in UDP/VXLANHDR) to destination VTEP, and then to destination HOST.
+
+============================================
+MC-LAG: Multi Chassis LAG,
+
+https://supportforums.cisco.com/document/9868751/asr9000xr-multichassis-lag-or-mc-lag-mclag-guide
+Multichassis LAG is a tricky concept. In general the members of a bundle (also called LAG, Link Aggregation Group, Etherchannel, Portchannel) are between 2 distinct devices. The advantage of using a bundle is that there is a single routing peering, no worries about spanning tree and things like that. However the redundancy is compromised when either one of the peers fail. Using ECMP (Equal Cost Multipath) in L3 scenarios allows me to dual home to 2 different devices so I have a back up also when one of the peers fail for me, but that negates the benefit of using bundle having a single routing peering.
+
+MC-LAG attempts to provide a means to allow me to dual home a device (DHD, the dual homed device) to two different peer devices (the POA, or Point of Attachment), so basically allowing me to have the benefits of node redundancy, while maintaining single peerings which makes my L2 (Spanning Tree/ STP) or L3 (no dual peerings) life a lot easier.
+
+
+DHD : Dual Homed Device,Operates as-if its connected to single virtual device using LACP.
+ICC : Inter chassis Communication Protocol, to sync state and form a Redundancy Group. 
+      This link also helps redirect traffic to appropriate(backup PE) to meet SPF requirement.
+      Watch the video link to get more details.
+POA :Point of Attachment, they same System MAC address and System Priority when communicating
+    with DHD.
+DHD-------Active POA-------+
+ |                        ICC
+ +--------Standby POA DB---+
+
+Best Video(Explains Traffic Flow)
+https://www.youtube.com/watch?v=1byapa89L9w    
+=========================================
+VXLAN bridging with MC-LAG
+=========================================
+
+
+VRRP:
+Virtual Router Redundancy Protocol:
+VRRP instance is limited to single subnet, it does not advertise subnets beyond that subnet or affect the routing table in anyway.
+
+VRRP creates a 'virtual router' with unique IP address(Gateway address) that hosts(users) will know as. 'Virtual Router' is made of an 'active' and 'slave' physical router. 
+These routers must use unique MAC address, 00.00.5E.00.01.xx.
+xx is the VRRP ID.  This mac is used for ARP reply , and only one router will use at a time(Master).
+
+Physical routers within the 'virtual router' group must communicate with each other on a well known multicast IP address 224.0.0.18, Using the 'priority' a router with highest priority will become master.
+Failure to receive multi-cast IP packet from master, triggers switch, and slave will become master.
+Only Master sends IP multicast packets periodically. All of these routers must be in the same LAN segment.
+
+===========================================================================================================
+SNORT: is an open source network intrusion prevention and detection system (IDS/IPS) developed by Sourcefire. 
+Combining the benefits of signature, protocol, and anomaly-based inspection, 
+Snort is the most widely deployed IDS/IPS technology worldwide.
+Main Components:
+Packet Decoder : Takes pkts from different types of network interfaces(Eth,PPP, etc) for preprocessing
+Preprocessor: 
+1. Prepare data for detection engine
+2. detect anomalies in packet headers
+3. packet defragmentation
+4. decode HTTP URI
+5. Reassemble TCP streams.
+
+Detection Engine: Applies Rules to packet.
+Reads 'rules' if matched an alert is generated.
+string matching algorithm 'Boyer-Moore' is used.
+Logging and Alerting System:
+Output Module:
+Rules:
+'Rule Header' + 'Rule Options'
+e.g 'Action log,
+     protocol tcp
+     sip      10.10.10.1
+     direction :
+     sport, dip,dport
+     'msg detected' < --Rule Options
+==========================================================================================================
+ARP(Address Resolution Protocol): 
+L2HDR+L2Payload(SMAC,SIP,TARGETMAC,TARGETIP)
+IP packets are always encapsulated in Ethernet Header(with DMAC and SMAC) on the wire.
+Meaning, to send and IP packet to say a destination D, you must know D's (Router)MAC address also.
+What ARP protocls does it send 'ARP Request(broadcast messsage)' asking for MAC-address, given an IP address. 
+ARP Reply(unicast to sender of ARP Request) with a MAC address. Results are store in 'ARP Cache'
+This is done dynamically on a need basis(say e.g ping to D, firt ARP query is sent).
+ARP Cache is queried first, to find D's mac address.
+
+Proxy ARP: Its a feature on 'Routers', wherein they respond to an 'ARP Reuest' for an 'Target IP' address
+for which they are not the owners. They do this, because there routinging table knows how to route IP packets with that
+destination D to the next hop if its received by this router with DMAC equal to its own MAC.
+
+Gratuitous ARP?.
+When Sending-IP and Target-Ip in a 'ARP Request' is same it s called a Gratuitous ARP.
+This is done for : a. Host Registration, b. Duplicate IP deletion.
+If there is an 'ARP Reply' for this message, it means, there is a duplicate address exist in the network.
+
+
+MAC Address Basic:
+A multicast MAC address will have LSBit set of the MSByte.
+Sizeof MAC address is 8bytes, or 48bits, 3MSByte's form OUI
+
+etype:  Value of less than or equal 1500 represents the length of the frame.
+        These are 802.3 type of frames.(e.g STP/RSTP frames)
+
+        Value of greater than 1500, represents 'Ether Type' and these are Ethernet II frames.
+	etype seperates 'data link layer' with 'network layer'.
+etype=0x8100 :indicates a presense of 802.1q header(2byte, 12bit vlan,3bit priority) after etype.
+              Its called VLAN tag.
+etype=0x8847 : indicates a presense of MPLS LABLE after etype.
+               MPLS header is 4byte label stack, each label has 20bit label,(TTL, S< EXP bit etc)
+etype=0x0800 : (IPv4) packet.
+
+              'Protocol == 47' represents 'GRE'(Meaning after IP header, we see 8byte GRE header
+               GRE= Generic Routing Encapsulation, is a tunneling protocol.
+=======================================================================================
+LLDP: Link Layer Discovery Protocol (similar to Cisco Discovery Protocol)
+Device advertise about there identity using LLDP PDU tx at set interval.
+Its not two way,or ACK based.
+DMAC is wellknown multicast address
+ChassisID,PortID,Time-To-Live
+This is advertisement only protocol.
+These packets are never forwarded, meaning, that only directly connected devices are known to NBRS.
+
+In case of OpenFlow Switch, they break this rule, and forward these LLDP packets.
+(in this case it uses a different Multicast MAC addressto not interfere with regular LLDP message). 
+This is called OLDP proto(not official).
+========================================================================================
+
+IPv6:
+16byte address, 128bits.
+4MSBytes form 'network prefix'
+4LSByte identifies IntfID/MAC of the device if choosen.
+Represented as 8 chunks seperated by colon.
+Each chunk represent 2byte, represented in 4char hex.
+When a chunk has zero value it can be skipped.
+2001:db8:49:0:ab00:0:0:102 => 2001:db8:49:0:ab00::102
+Note the zeros between 49 and ab are not compresses.
+Only leading zeros are compressed.
+IPSec: IPv6 mandates use of IPsec, which is not the case of IPv4.
+Because of increased addres space, NAT is not needed.
+So its easier to troubleshoot IPv6 networks.
+etype 0x86DD is used to distinguish at link-layer,
+      0x800 for IPv4.
+TTL is renamed as HOPLIMIT.
+Header Checksum field is not there.
+FlowLabel field is added.
+
+
+IP Fragmentation:
+When you join multile networks, MTU can vary. to address this issue, packet can be fragmented to fit the size.
+
+
+=============================================
+IPSec:
+IPSec tunnel mode is used to protect site-to-site (gateway-to-gateway) traffic between networks, such as site-to-site networking through the Internet. The sending gateway encapsulates the entire IP datagram by adding a new IP header and then protects the new packet using one of the IPSec protocols.
+
+AH : Authenticaion Header: 
+The AH protocol provides data origin authentication, data integrity, and anti-replay protection for the entire packet (both the IP header and the data payload carried in the packet), except for the fields in the IP header that are allowed to change in transit. AH does not provide data confidentiality, which means that it does not encrypt the data. The data is readable, but protected from modification and spoofing.
+ESP: Encapsulating Security Payload:
+The ESP protocol provides data origin authentication, data integrity, anti-replay protection, and the option of confidentiality for the IP payload only. ESP in transport mode does not protect the entire packet with a cryptographic checksum nor does it protect the IP header.
+=============================================
+DNS:
+
+DHCPv4:Dynamic Host Configuration Protocol:
+1. Clients configured as DHCP clients during boot time request an IP address using
+broadcast message DHCPDISCOVER(computer name, MACaddress).
+2. DHCP Server sends DHCPOFFER(it has not IP address),
+3. Client responds with DHCPREQUEST.
+4. Server sends DHCPACK(has IP address) completing the process.
+DHCPv6:
+
+=======================================================================================
+ICMP:Internet Control Message Protocol.
+Its header starts after IPv4 header, with proto id 1.
+with 8byte header and variable size data section.
+Type 0 : is used for 'Echo Reply' for Ping
+Type 8 : is used for 'Echo Request' for Ping.
+Type 5 : 'Redirect Message'
+Type 3 :  Destination Unreachable (say TCP/UDP/ICMP port/transaction not reachable)
+Type 11: Time Exceeded.(by Traceroute for TTL exceed)
+
+=======================================================================================
+
+NAT/CGNAT:
+Its a way of replacing a source-ip/portx with wellknow(public-ip)/porty before forwarding it to Internet.
+NAT forwarding Table
+Note that 12.13.14.15 is public address given by Service Provider for your DSL or Modem.
+
+Device        PrivateSide(SIP)  / PublicSide(SIP)
+===============================================
+iphone        192.168.1.1:42301  12.13.14.15/24601
+macbook       192.168.1.2:42302  12.13.14.15/24602
+AppleTV       192.168.1.3:42303  12.13.14.15/24603
+
+Essentially a network of many IP address(private) can be hidden behind , using
+NAT forwarding table before sending, and when the reply is received, 'DIP/Port' are replaced from
+this table.
+
+This saves lots of IP addresses.
+
+
+Device Behind      NAT Router 
+NAT Router
+Due to shortage of IPv4 addresses(4.5billion max IPv4),
+===========================================================================================
+Carrier-grade NAT (CGN), also known as large-scale NAT (LSN), is an approach to IPv4 network design in which end sites, in particular residential networks, are configured with private network addresses that are translated to public IPv4 addresses by middlebox network address translator devices embedded in the network operator's network, permitting the sharing of small pools of public addresses among many end sites. This shifts the NAT function and configuration thereof from the customer premises to the Internet service provider network.
+DisAdvantage: Difficult host services, Makes it difficult for LawEnforcement to trace back, unless NAT tables are logged.
+PortForwarding by end-user is difficult to implement.
+Significant security, scalability and reliability issues.
+===================================================================
+
+DOS Attack: (Denial of Service):
+Generally one a unique source attacks a system by sending unwanted junk packets.
+Traffic Attack: Send huge volume of TCP/UDP and ICMP packet, during this
+legitimate packets gets lost, so actual user will loose service.
+Bandwidth Attacks: Overload with massive amount of junk data, resulting
+into loss of bandwidth , can lead to complete denial of service.
+Application Attacks: Application-layer data messages are sent.
+DDOS Attack: Incoming bad traffic to the victim originates from
+many different sources(often infected with Trojan) makeit it
+hard for Victim to stop the attack.
+

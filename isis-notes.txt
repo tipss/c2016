@@ -5,14 +5,19 @@ ISIS needs 20byte NSAP address per node.
 This consists of three field( Area-Address, System-Address(6byte), 1byte nsap sel).
 Area-Address value is used to bring up Level-1 adjacencies,(areas should match or overlap if multiple NSAP's are configured) to bring up Level-1 Adjacency. Area-Address are not looked at to bring up Level-2 Adjacency.
 
-Why protocol type is IP and OSI between two system, ADJ is not established.
+Why protocol type is IP and OSI between two system, ADJ is not established ?
+
 It has to be either IP and IP , or OSI and OSI.
 User can change area-address on the fly in Level-1, witout bringing down the adjacency, by
 first adding a new overlapping address, then removing older areas.
 
 When calculating route a given destination, if it can't route, it will route to a neareast level-2 router.
 
-Pseudonode: On a broadcast (LAN) network, Desginated IS(DIS) is elected which acts as a pseudonode,acting as the center of the network. This avoids n^2 full mesh adjacency. Only Pseudonode advertise link to all other nodes in the network. Each route in that Broadcast network reports that it has link to the Pseudonode. DIS sends LSP on behalf of Pseudonode.
+Pseudonode: On a broadcast (LAN) network, Desginated IS(DIS) is elected which acts as a pseudonode,
+acting as the center of the network. This avoids n^2 full mesh adjacency. 
+Only Pseudonode advertise link to all other nodes in the network. 
+Each route in that Broadcast network reports that it has link to the Pseudonode. 
+DIS sends LSP on behalf of Pseudonode.
 
 OSI : Open Systems Interconnection.
 NLPID: Network Layer Proto ID
@@ -21,7 +26,7 @@ NSAP: Network Service Access Point
 RFC1195 Basic ISIS over IP RFC.
 RFC5305:
 Defined Sub TLV concept. Added
-Extended IS Reach(22 replaces 2) : 1 octet default metric is made 3octet
+Extended IS Reach(added TLV 22 replacing TLV 2) : 1 octet default metric is changed to  3 octet
 Max link mertic is 2^24-1, if advertised, that link is not used for SPF.
 It also has 7octet system ID
 
@@ -29,15 +34,22 @@ Max length of SUB TLV is 255
 This TLV carries all TE related info of the link in sub-tlv form,like
 BW from adv-node to NBR, available, reservable BW etc.
 
-Extended IP Reach(135(235 for Ipv6) replaces 128):
+Extended IP Reach(added TLV 135(235 for Ipv6) replacing 128):
 Up/Down BIT is introduced : When set, indicates that route is leaked from L2 to L1.
 So L1 should not leak back these routes into L2(possible cause of Loop in older way)
 
 Router ID TLV(134): Unique stable address for TE purpose
+
 TLV149 : BindingSID TLV: Used to advertise SID/Prefix binding Range , used in Mapping Server application.
 Users of this TLV must only use, if they can reach a particular prefix by IP.
-TLV242: Capability TLV is amended to include SRGB range, and capability bit.
+
+TLV 242: Capability TLV is amended to include SRGB range, and capability bit.
 Note, multiple ranges are allowed, but its an ordered list, users should not interpreet in the same order, should not sort the SRGB ranges.
+
+
+Summary of Packet Types(Total 9 different types) :
+8:per level (LAN Hello, LSP, CSNP, PSNP) 
+1:P2P Hello(for both L1 and L2).
 
 CSNP in ISIS: Complete Sequence Number Packet : this packet allow consistency check of LSDB in all the routers.
 PTP links its sent only once at the beginning.

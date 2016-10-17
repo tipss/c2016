@@ -18,12 +18,12 @@ void bubbleSort(int *a,int n) {
     return;
   }
 
-  for (int i=0;i<n-1;i++){
-    for(int j=0;j<n-1-i;j++){
-
-   if(a[j]>a[j+1]) {
+  for (int i=0; i < n-1; i++){ //Feeds value of i to the next loop
+    for(int j=0; j < n-1-i; j++){ //Every loop move highest value to the 'right most' location.
+                                  //Loop shrink every time by one element at right , which is sorted now.
+   if (a[j] > a[j+1]) {
 	t = a[j];
-	a[j]=a[j+1];
+	a[j] = a[j+1];
 	a[j+1] = t;
       }
     }

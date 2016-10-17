@@ -88,7 +88,7 @@ int ReplaceSpaces (char *str,int size) {
     j = newsize;
     str[j]    = '\0';
     //str[size] = ' ';
-   for (i = size -1; i >= 0; i--) {
+    for (i = size -1; i >= 0; i--) { //Remember, we need to walk reverse, as target str can be larger than src.
     //Replace space
        printf("char at s index %c\n",str[i]);
     if (str[i] == ' ') {

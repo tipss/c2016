@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-typedef enum { DOWN   = 1, UP, INIT } STATES;
-typedef enum { E_DOWN = 1, E_UP, E_INIT ,E_TMR} EVENTS;
+typedef enum { DOWN   = 1, UP,   INIT           } STATES;
+typedef enum { E_DOWN = 1, E_UP, E_INIT ,E_TMR  } EVENTS;
 
 int bfd_DOWN();
 int bfd_UP();

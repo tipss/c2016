@@ -1,10 +1,10 @@
 #include <stdio.h>
 
 int main(int argc, char *argv[]) {
-int x;
+ int x;
 char c;
 float farn = 70, cel;
-int upper = 120;
+ int upper = 120;
 c='A';
 
 printf("c = %d %c \n",c,c);

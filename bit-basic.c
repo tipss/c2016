@@ -16,6 +16,7 @@ int clearBit (int in, int index) {
   return (in & mask);
 }
 
+//Remember
 int bitCount(unsigned int n) {
   int count =0;
   while (n){
@@ -24,7 +25,7 @@ int bitCount(unsigned int n) {
   }
   return count;
 }
-
+//Remember
 void printBin(int n) {
   if(n > 1)
     printBin(n/2);
@@ -32,12 +33,14 @@ void printBin(int n) {
 
 }
 
-
+//Remember
 //SetBit , where the bit is inside an array or integer
 void  SetBit( int A[],  int k )
 {
   A[k/32] |= 1 << (k%32);  // Set the bit at the k-th position in A[i]
 }
+
+//Remember
 //ClearBit : where the bit is inside an array of integer
 void  ClearBit( int A[],  int k )                
 {

@@ -1,4 +1,51 @@
 
+
+What does 'select() do' ?.
+Why to use 'select() before read(on socket)?.
+
+What are Dockers?(also called Docker Container Virtulization).
+
+Solves this problem for ever, by making an image of an entire application, with all its dependencies and ship it to your required target environment / server. So in short, if the app worked in your local system, it should work anywhere in the world(because you are shipping the entire thing).
+The above problem can be solved using VM. But Dockers are very light weight, size, time etc.
+=============================
+Linux Namespace and CGroups
+Its a isolated networking environments running on a single physical host or VM.
+It has its own interface,routing table and forwarding table, 
+process id lists, network devices, file system, user lists etc
+Process can be dedicated to one network namespace.
+Used in Linux Containers, OpenStack, Mininet, Docker etc
+
+Root Namespace: Its the default network Namespace, all other namespaces are launched form this.
+E.g add new namespace:  ip netns add red, ip netns add green, ip netns, ip netns
+ls /var/run/netns/
+======================================================
+Cgroups:
+By default on a Linux system, all processes are children of the INIT process. Which means all processes are part of a single tree structure. Now in Cgroup method, different process groups, can exist on a single system. So instead of a single process tree of default linux method, cgroup method can have different trees of process structure(with different parents, and childs will inherit stuff from their parents), all isolated from each other. Now you might have got an idea of how cgroups and namespace are leveraged by container based virtualization. 
+
+ 
+=============================
+VM Migration:
+============================
+Virtulization(Hypervisor based)
+Its a way to run an OS(Guest) on top of another OS(Host).
+Mostly acheived using 'Hypervisor software'.
+Job of Hypervisor is to 'emulate' underlying physical hardware and show it to Guest-OS.
+
+Hosted Virtualization: Hypervisor is installed as software app in Host-OS(which is 
+running on Bare metal).e.g VirtualBox, VMware Workstation Microsofts Virtual PC
+Performance of these are not very good, due to the fact that there are multiple Memory and CPU managers running for each VM(1 is added from HOST, 1 is added from Hypervisor, 1 is added from Guest OS). Device Drivers are not part of this Hypervisor.
+
+Baremetal Virtulization: Hypervisor runs directly on Baremetal like(OS).
+Device Drivers are part of this software. There will be only one CPU and Memory manager for the 
+entire physical hardware. so performance will be at its best.
+
+Virtualization(Container Based):
+Container space is part of the linux Kernel feature cgroups and namespaces. 
+So each container share the same kernel.
+So much lightweight than Hypervisor based virtulization, but isolation is limited?.
+But there can be man containers hosted per OS. VM's have limits.
+As the container is sharing the kernel with the base system, you can see the processes that are running inside the container from the base system. However when you are inside the container, you will only be able to see its own processes. 
+===========================
 GDB:
 S/W breakpoints:
 Running program will be stopped at this address location when PC(Program Counter) hits this address. GDB will change instruction around this aread to 'trap', or 'exception' or 'illegal inst',so

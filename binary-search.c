@@ -16,26 +16,11 @@ int binSearch2 (int a[], int l, int r, int x) {
       return (mid);
     if (a[mid] > x)  //Meaning x lies at the right half section
       return   binSearch2(a, l, (mid - 1), x);
-    return binSearch2(a, (mid + 1), r, x);
-    
+    return binSearch2(a, (mid + 1), r, x);    
   }
   return (-1); // Not found
 }
 
-// Simple binary search algorithm
-int binSearch(int arr[], int l, int r, int x)
-{
-  if (r >= l)
-    {
-      int mid = l + (r - l)/2;
-      if (arr[mid] == x)
-	return mid;
-      if (arr[mid] > x)
-	return binSearch(arr, l, mid-1, x);
-      return binSearch(arr, mid+1, r, x);
-    }
-  return -1;
-}
 /*
  * Given an array of infinite length, how to do binary search ?.
  * Step1. Since there is not upper bound, we have to come up with some number,
@@ -57,7 +42,7 @@ int findInInfiniteArray(int *a, int key){
   return binSearch(a,l,r,key);
 }
 
-int main ( int argc, char *argv[]) {
+Dint main ( int argc, char *argv[]) {
     
     int a[] = {1,2,3,4,5,6,7,8};
     int len = sizeof(a)/sizeof(a[0]);

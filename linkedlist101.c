@@ -12,7 +12,7 @@
 typedef struct lln {
     int val;
     struct lln *next;
-  struct lln *prev; // Used only if your API is for DLL,
+    struct lln *prev; // Used only if your API is for DLL,
 } lln_t; 
 
 lln_t *head;
@@ -190,7 +190,15 @@ int findKthLast (lln_t *node, int k) {
  * 1 = has loop, 
  *  0 = no loop
  * -1 = invalid input.
- */
+ *   e.g   1->2->3->4
+ *            +-----+ 
+ *   slow walk will be
+ *   1,2,3,4
+ *   fast walk will be
+ *   1,3,2,4
+ *   Now you see that at 4th step both slow and fast meet.
+ *
+*/
 int findLoop (lln_t *head) {
 
   lln_t *fastp = head; 
@@ -287,10 +295,8 @@ lln_t * findMiddleNode(lln_t *head) {
     return NULL;
   }
 
-  while (fast->next) {
+  while (fast && fast->next) {
     slow = slow->next;
-    if(!fast->next->next)
-      break;
     fast = fast->next->next;
   }
   return slow;
@@ -423,10 +429,10 @@ int main (int argc, char *argv[]) {
   lln_t *sum;
 
   int    d = 0;
-  for (int i=1; i <= 6; i++) {
+  for (int i=1; i <= 7; i++) {
     node       = (lln_t *)malloc( sizeof(lln_t) );
     node->next = NULL;
-    node->val  = 7-i;
+    node->val  = 8-i;
     Insert(&head, node, 1);
   }
 

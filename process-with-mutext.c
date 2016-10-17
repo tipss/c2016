@@ -7,7 +7,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <pthread.h>
+#include <sys/types.h>
 
 pthread_mutex_t count_mutex     = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t  condition_var   = PTHREAD_COND_INITIALIZER;
@@ -22,10 +24,11 @@ int  count = 0;
 int main(int argc, char *argv[])
 {
    pthread_t thread1, thread2;
-
+   int i;
    pthread_create( &thread1, NULL, &threadCount1, NULL);
    pthread_create( &thread2, NULL, &threadCount2, NULL);
-
+   printf("%s getpid = %u pthread_self = %u\n",
+	  __FUNCTION__, (unsigned int)getpid(), (unsigned int)pthread_self());
    pthread_join( thread1, NULL);
    pthread_join( thread2, NULL);
 
@@ -38,6 +41,8 @@ int main(int argc, char *argv[])
 
 void *threadCount1()
 {
+   printf("%s getpid = %u pthread_self = %u\n",
+	  __FUNCTION__, (unsigned int)getpid(), (unsigned int)pthread_self());
    for(;;)
    {
       // Lock mutex and then wait for signal to relase mutex
@@ -59,6 +64,8 @@ void *threadCount1()
 
 void *threadCount2()
 {
+   printf("%s getpid = %u pthread_self = %u\n",
+	  __FUNCTION__, (unsigned int)getpid(), (unsigned int)pthread_self());
     for(;;)
     {
        pthread_mutex_lock( &count_mutex );
