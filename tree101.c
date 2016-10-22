@@ -4,7 +4,10 @@
 /*http://www.geeksforgeeks.org/majority-element/ */
 /*
  * Trie vs Tree:
- *Trie is an ordered tree structure, which is used mostly for storing strings (like words in dictionary) in a compact way. In a trie, every node (except the root node) stores one character. By traversing up the trie from a leaf node to the root node, a string can be constructed.
+ * Trie is an ordered tree structure, which is used mostly for storing strings 
+ * (like words in dictionary) in a compact way. In a trie, every node (except the root node) 
+ * stores one character. By traversing up the trie from a leaf node to the root 
+ * node, a string can be constructed.
  */
 typedef struct elem_t {
 	int     value;

@@ -43,7 +43,9 @@ void *threadCount1()
 {
    printf("%s getpid = %u pthread_self = %u\n",
 	  __FUNCTION__, (unsigned int)getpid(), (unsigned int)pthread_self());
-   for(;;)
+   for(;;) //Needed if thread wants to work , and wait for condition again.
+           //In general implemtation(restart cases) this for is not recessary,
+           //as it will start working only after some conditions are met(which are signaled by other threads)
    {
       // Lock mutex and then wait for signal to relase mutex
       pthread_mutex_lock( &count_mutex );

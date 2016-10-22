@@ -1,4 +1,7 @@
-
+Difference between sleep() vs pthread_yield() ?
+slepp: makes the calling process sleep for the duration given, no other thread is scheduled
+pthread_yield: calling thread politely give a way for other waiting threads to run if there are waiting. This is done by
+relinquishing use of procesor, and moving itself to run-queue for its turn to come.
 
 What does 'select() do' ?.
 Why to use 'select() before read(on socket)?.
@@ -22,6 +25,32 @@ ls /var/run/netns/
 Cgroups:
 By default on a Linux system, all processes are children of the INIT process. Which means all processes are part of a single tree structure. Now in Cgroup method, different process groups, can exist on a single system. So instead of a single process tree of default linux method, cgroup method can have different trees of process structure(with different parents, and childs will inherit stuff from their parents), all isolated from each other. Now you might have got an idea of how cgroups and namespace are leveraged by container based virtualization. 
 
+What is Virtual Memory?
+Simply put, virtual memory is a combination of RAM and disk space that running processes can use.
+Swap space is the portion of virtual memory that is on the hard disk, used when RAM is full.
+
+As for why 32bit CPU is limited to 4gb virtual memory ?.
+By definition, a 32-bit processor uses 32 bits to refer to the location of each byte of memory. 
+2^32 = 4.2 billion, which means a memory address that's 32 bits long can only refer to 
+4.2 billion unique locations (i.e. 4 GB).
+
+Very good read here for windows OS :
+https://support.microsoft.com/en-us/kb/294418
+==============================================================
+What is a shared memory ?.
+
+One way to communicate between two process is by using shared memory.
+One process writes, other process reads.
+
+Also shared memory is used during restarts, as its non-volatile(exist after process dies).
+
+
+
+You cannot share data structures containing pointers. This is because each process has its own virtual address space, and a pointer from one process doesn't have any meaning in another process.
+
+If you still want to share linked data structures (e.g trees, lists) you must define
+a serialization protocol, usually instead of pointers use indexes relative to the
+start of the shared memory area.
  
 =============================
 VM Migration:
@@ -33,7 +62,10 @@ Job of Hypervisor is to 'emulate' underlying physical hardware and show it to Gu
 
 Hosted Virtualization: Hypervisor is installed as software app in Host-OS(which is 
 running on Bare metal).e.g VirtualBox, VMware Workstation Microsofts Virtual PC
-Performance of these are not very good, due to the fact that there are multiple Memory and CPU managers running for each VM(1 is added from HOST, 1 is added from Hypervisor, 1 is added from Guest OS). Device Drivers are not part of this Hypervisor.
+Performance of these are not very good, due to the fact that there are 
+1. multiple Memory and CPU managers running for each 
+VM(1 is added from HOST, 1 is added from Hypervisor, 1 is added from Guest OS). 
+2. Device Drivers are not part of this Hypervisor.
 
 Baremetal Virtulization: Hypervisor runs directly on Baremetal like(OS).
 Device Drivers are part of this software. There will be only one CPU and Memory manager for the 
@@ -43,14 +75,18 @@ Virtualization(Container Based):
 Container space is part of the linux Kernel feature cgroups and namespaces. 
 So each container share the same kernel.
 So much lightweight than Hypervisor based virtulization, but isolation is limited?.
-But there can be man containers hosted per OS. VM's have limits.
+But there can be many containers hosted per OS. VM's have limits.
 As the container is sharing the kernel with the base system, you can see the processes that are running inside the container from the base system. However when you are inside the container, you will only be able to see its own processes. 
 ===========================
-GDB:
+GDB: Tool used to debug a running or core of a program.
+
 S/W breakpoints:
-Running program will be stopped at this address location when PC(Program Counter) hits this address. GDB will change instruction around this aread to 'trap', or 'exception' or 'illegal inst',so
+Running program will be stopped at this address location 
+when PC(Program Counter) hits this address. GDB will change instruction around this 
+area to generate 'trap', or 'exception' or 'illegal inst',so
 when PC runs over this, GDB will receive this signal and GDB hands over the control to USER who
-is debugging. It also restores the BREAK POINT.
+is debugging. 
+It also restores the BREAK POINT, if you remove the breakpoint.
 Program area must be 'writable' for GDB to work, so it will not work on ROM areas.
 
 H/W Breakpoints:
@@ -66,7 +102,7 @@ When some data changes its value, without your knowledge, its better to set watc
 who is actually changing the data.
 
 In case of debugger: parent process is gdb, child process is the debuggee.
-Parent process have additional powers over child process, one of they is to run 'ptrace' on them.
+Parent process have additional powers over child process, one of the power is to run 'ptrace' on them.
 ptrace allows a parent process to access low-level info about child process.
 
 ptrace is part of linux kernel.
@@ -76,36 +112,95 @@ ptrace is part of linux kernel.
 Multithreading Terms
 There are many terms used when writing multithreaded applications. I'll try to describe a few of there here.
 
-Deadlock — A state where two or more threads each hold a lock that the others need to finish. For example, if one thread has locked mutex A and needs to lock mutex B to finish, while another thread is holding mutex B and is waiting for mutex A to be released, they are in a state of deadlock. The threads are stuck, and cannot finish. One way to avoid deadlock is to acquire necessary mutexes in the same order (always get mutex A then B). Another is to see if a mutex is available via pthread_mutex_trylock, and release any held locks if one isn't available.
+Deadlock — A state where two or more threads each hold a lock that the others need to finish. 
+For example, if one thread has locked mutex A and needs to lock mutex B to finish, 
+while another thread is holding mutex B and is waiting for mutex A to be released, 
+they are in a state of deadlock. 
+The threads are stuck, and cannot finish. 
+How to avoid deadlock ?.
+1. One way to avoid deadlock is to acquire necessary mutexes in the same order (always get mutex A then B). 
+2. Another is to see if a mutex is available via pthread_mutex_trylock, 
+and release any held locks if one isn't available.
 
-Race Condition — A program that depends on threads working in a certain sequence to complete normally. Race Conditions happen when mutexes are used improperly, or not at all.
+Race Condition — A program that depends on threads working in a certain sequence to complete normally. 
+Race Conditions happen when mutexes are used improperly, or not at all.
 
-Thread-Safe — A library that is designed to be used in multithreaded applications is said to be thread-safe. If a library is not thread-safe, then one and only one thread should make calls to that library's functions.
+Thread-Safe — A library that is designed to be used in multithreaded applications is said to be thread-safe. 
+If a library is not thread-safe, then one and only one thread should make calls to that library's functions.
 
+Multithreaded applications often require synchronization objects. 
+These objects are used to protect memory(or critical region) from being modified by multiple 
+threads at the same time, which might make the data incorrect.
+e.g : Mutex, semaphore
+The first, and simplest, is an object called a mutex. A mutex is like a lock. A thread can lock it, and then 
+any subsequent attempt to lock it, by the same thread or any other, will cause the attempting thread to block 
+until the mutex is unlocked. 
 
+These are very handy for keeping data structures correct from all the threads' 
+points of view. For example, imagine a very large linked list. 
+If one thread deletes a node at the same time that another thread is trying to walk the list, 
+it is possible for the walking thread to fall off the list, so to speak, 
+if the node is deleted or changed. Using a mutex to "lock" the list keeps this from happening.
 
-ultithreaded applications often require synchronization objects. These objects are used to protect memory from being modified by multiple threads at the same time, which might make the data incorrect.
-
-The first, and simplest, is an object called a mutex. A mutex is like a lock. A thread can lock it, and then any subsequent attempt to lock it, by the same thread or any other, will cause the attempting thread to block until the mutex is unlocked. These are very handy for keeping data structures correct from all the threads' points of view. For example, imagine a very large linked list. If one thread deletes a node at the same time that another thread is trying to walk the list, it is possible for the walking thread to fall off the list, so to speak, if the node is deleted or changed. Using a mutex to "lock" the list keeps this from happening.
-
-Computer Scientist people will tell you that Mutex stands for Mutual Exclusion.
+Mutex =  Mutual Exclusion.
 In Java, Mutex-like behaviour is accomplished using the synchronized keyword.
 
-Technically speaking, only the thread that locks a mutex can unlock it, but sometimes operating systems will allow any thread to unlock it. Doing this is, of course, a Bad Idea. If you need this kind of functionality, read on about the semaphore in the next paragraph.
+Technically speaking, only the thread that locks a mutex can unlock it, but sometimes operating 
+systems will allow any thread to unlock it. Doing this is, of course, a Bad Idea. 
+If you need this kind of functionality, read on about the semaphore in the next paragraph.
 
-Similar to the mutex is the semaphore. A semaphore is like a mutex that counts instead of locks. If it reaches zero, the next attempt to access the semaphore will block until someone else increases it. This is useful for resource management when there is more than one resource, or if two separate threads are using the same resource in coordination. Common terminology for using semaphores is "uping" and "downing", where upping increases the count and downing decreases and blocks on zero.
-Java provides a Class called Semaphore which does the same thing, but uses acquire() and release() methods instead of uping and downing.
+Similar to the mutex is the semaphore. A semaphore is like a mutex that counts instead of locks. 
+If it reaches zero, the next attempt to access the semaphore will block until someone 
+else increases it. This is useful for resource management when there is more than one resource, 
+or if two separate threads are using the same resource in coordination. 
+Common terminology for using semaphores is "uping" and "downing", where upping increases the count 
+and downing decreases and blocks on zero. Java provides a Class called Semaphore which does 
+the same thing, but uses acquire() and release() methods instead of uping and downing.
 
-With a name as cool-sounding as semaphore, even Computer Scientists couldn't think up what this is short for. (Yes, I know that a semaphore is a signal or flag ;)
+Unlike mutexes, semaphores are designed to allow multiple threads to up and down them all at once. 
+If you create a semaphore with a count of 1, it will act just like a mutex, 
+with the ability to allow other threads to unlock it.
 
-Unlike mutexes, semaphores are designed to allow multiple threads to up and down them all at once. If you create a semaphore with a count of 1, it will act just like a mutex, with the ability to allow other threads to unlock it.
-
-
-Mutexes:
-Mutexes are used to prevent data inconsistencies due to operations by multiple threads upon the same memory area performed at the same time or to prevent race conditions where an order of operation upon the memory is expected. A contention or race condition often occurs when two or more threads need to perform operations on the same memory area, but the results of computations depends on the order in which these operations are performed. Mutexes are used for serializing shared resources such as memory. Anytime a global resource is accessed by more than one thread the resource should have a Mutex associated with it. One can apply a mutex to protect a segment of memory ("critical region") from other threads. Mutexes can be applied only to threads in a single process and do not work between processes as do semaphores. 
+Mutexes can be applied only to threads in a single process and do not work between processes as do semaphores. 
 
 
-The pthread_cond_wait() and pthread_cond_timedwait() functions are used to block on a condition variable. They are called with mutex locked by the calling thread or undefined behaviour will result.
-These functions atomically release mutex and cause the calling thread to block on the condition variable cond; atomically here means "atomically with respect to access by another thread to the mutex and then the condition variable". That is, if another thread is able to acquire the mutex after the about-to-block thread has released it, then a subsequent call to pthread_cond_signal() or pthread_cond_broadcast() in that thread behaves as if it were issued after the about-to-block thread has blocked.
+How to commmunicate between two 'process' in linux in a syncronouse way ?.
+
+One way is to use pthread condition variable.
+
+The pthread_cond_wait()  function can be used to block on a condition variable. 
+They are called with mutex locked by the calling thread or undefined behaviour will result.
+These functions "atomically" release mutex and cause the calling thread to block on the 
+condition variable cond; atomically here means "atomically with respect to access by 
+another thread to the mutex and then the condition variable". That is, if another thread is 
+able to acquire the mutex after the about-to-block thread has released it, 
+then a subsequent call to pthread_cond_signal() or pthread_cond_broadcast() 
+in that thread behaves as if it were issued after the about-to-block thread has blocked.
 
 Upon successful return, the mutex has been locked and is owned by the calling thread.
+
+Typical Implementation of IPC library in a Router running on Linux with restartable 
+process for each protocol: Each process can implement an IPC library,which when 
+initialized will creates a tread and waits on select. When socket finds a FD-SET due to 
+'ipcWrite' by remote end, it will do ipcReceive() on that socket, then goes back to loop.
+
+The select waits on a port, which is advertised by ipcRegister(END_POINT) by this IPC library.
+ipcRegisters registers this END_POINT with Process Monitor, whic is a process keeps track of all end points by name.
+
+IPC thread also sends priodic hellos to PM, otherwise PM will kill this process.
+
+END_POINT is typically made up of : IP-Address+Ip_port+index+instance
+Where in, index represents thread ID, Ip_port identifies process in the domain.
+
+AF_IPC type of sockets are used to interconnect between two process within same card.
+UDP sockets are typically used to communicate between standby Cards.
+
+
+Also, of a process wants to create one more ENDPOINT so it can establish another port, it should do this
+using another thread. Register this endpoint with another name using ipcRegister, 
+This helps keep everything seperated and clean for multi-thread applications.
+
+for every ipcSend, a copy is sent to kernel space.
+ipcSend is ACK based, and ACK's are kept track in IPC library, which watch for 32 unacked buffers.
+If no-ack , it will re-transmit, so a re-transmit queue needs be maintained.
+

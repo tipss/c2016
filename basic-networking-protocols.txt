@@ -1,3 +1,14 @@
+
+TCP vs UDP.
+Both are Transport Layer protocols
+TCP : 20byte header, stream based/reliable/connection-based .
+Connection is established using 3way hand shake( TX SYN,receive SYN-ACK, TX ACK).
+In-order delivery, acks every packets received, expects ack. Segments are numbered. Delays
+Tx when network is congested. Splits data into smaller chunks if N/S is congested, and re-assembles.
+
+UDP: 8byte packet header, connection less,message based, order not guaranteed, no-handshakes, 
+no congestion control, good for SNMP, HD-Video etc.
+
 VXLAN: 
 VTEP Virtual Tunnel End Point.(Adds 50byte overhead in L3 network) for every packet.
 Original 'L2' frame(e.g ARP request, or unknown MAC's are) are embedded into UDP packet with

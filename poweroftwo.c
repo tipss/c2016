@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
-
 /*
  * Given two numbers find, how many bit flips are needed to make them equal
  * Note: doing an     XOR , like A XOR B will give you number of 1's in location where

@@ -1,6 +1,15 @@
 
 
 
+
+SPF:
+ISIS/OSPF rely on Dijkstra's SPF algorithm.
+BGP/RIP relies on Bellman-Ford's distance vector algorithm.
+
+A basic difference between the Bellman-Ford algorithm and the SPF al- gorithm is that in the former, each node bases it path calculation on knowledge of the cost to all directly connected neighbors plus the advertised costs for routes heard from these neighbors. In contrast, the SPF algorithm requires each node to have complete information about the entire top- ology. All nodes inside an area, therefore, obtain an identical Link-State database for the area.
+
+Disadvantage of Distance Vector protocols is they are susceptible to Loops, when there NBRs give incorrect values, or the value is stale. Link-state protocls converge faster, but they are resource intensive.
+
 ISIS needs 20byte NSAP address per node.
 This consists of three field( Area-Address, System-Address(6byte), 1byte nsap sel).
 Area-Address value is used to bring up Level-1 adjacencies,(areas should match or overlap if multiple NSAP's are configured) to bring up Level-1 Adjacency. Area-Address are not looked at to bring up Level-2 Adjacency.
@@ -22,6 +31,10 @@ DIS sends LSP on behalf of Pseudonode.
 OSI : Open Systems Interconnection.
 NLPID: Network Layer Proto ID
 NSAP: Network Service Access Point
+
+Max number of routes in 256 fragments is 30kroutes, MTU max is 1496. 
+Only way to increase routes is increase MTU size.
+
 
 RFC1195 Basic ISIS over IP RFC.
 RFC5305:
@@ -56,13 +69,13 @@ PTP links its sent only once at the beginning.
 LAN linksk : DIS broadcasted periodically
 
 
-PSNP : on P2P link, its used to ACK receipt of an LSP(if not sent LSP is retransmitted), so its reliable flooding.
-       on both LAN and P2P its used to request an missing LSP.
+PSNP : On P2P link, its used to ACK receipt of an LSP(if not sent LSP is retransmitted), so its reliable flooding.
+       On both LAN and P2P its used to request an missing LSP.
 
 SRM(Send Routing Message) and SSN(Send Sequence Number) Flag plays importatn role in flooding of ISIS LSP's
 Mostly kept per ISIS interface.
 SSN:  to ack recept of LSP on P2P Link, and to reuqest a specific missing LSP during sync on Broadcast N/W.
-SRM: Marks pending LSP;s to be flooded.
+SRM: Marks pending LSP;s to be flooded on an interface.
 
 If both flags are zero, meaning no pending work on interface.
 
@@ -124,7 +137,8 @@ LSP-ID : 6byte SystemID.PNodeID.LSP-ID
 
 Checksum: Checksum is calculated starting from field LSP_ID(Which is after Remaining LifeTime in LSP) till the end of LSP. 
 
-LSP Corruption Storm: LSP's continuously being corrupted during transmission, so continuous purge happen.  Cisco has command to ignore corrupted LSP's just logs error , instead of purging.
+LSP Corruption Storm: LSP's continuously being corrupted during transmission, so continuous purge happen.  
+Cisco has command to ignore corrupted LSP's just logs error , instead of purging.
 
 
 RFC6822 : ISIS Multi Instance:
@@ -150,7 +164,9 @@ Instance Identifier TLV
    Note that there will be seperate ADJ and LSP/HELLO packet per instance.,so database and SPF also.
    
 
-RFC 5120 : ISIS Multi Topology. ( Multi instance creates different database, different adj, leading to in efficiency).   In Multi-Topology, MTID can help keep single ADJ and database across multiple topologies, efficient, but still it needs seperate SPF per topology.
+RFC 5120 : ISIS Multi Topology. ( Multi instance creates different database, different adj, leading to in efficiency).   
+In Multi-Topology, MTID can help keep single ADJ and database across multiple topologies, efficient, 
+but still it needs seperate SPF per topology.
 
    MTID 1 is for IPv4,
    MTID 2 is for IPv6
