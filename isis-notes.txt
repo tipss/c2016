@@ -1,28 +1,44 @@
 
-
-
-
 SPF:
 ISIS/OSPF rely on Dijkstra's SPF algorithm.
 BGP/RIP relies on Bellman-Ford's distance vector algorithm.
 
-A basic difference between the Bellman-Ford algorithm and the SPF al- gorithm is that in the former, each node bases it path calculation on knowledge of the cost to all directly connected neighbors plus the advertised costs for routes heard from these neighbors. In contrast, the SPF algorithm requires each node to have complete information about the entire top- ology. All nodes inside an area, therefore, obtain an identical Link-State database for the area.
+A basic difference between the Bellman-Ford algorithm and the SPF algorithm is that in the former, 
+each node bases it path calculation on knowledge of the cost to all directly connected neighbors 
+plus the advertised costs for routes heard from these neighbors. 
+	In contrast, the SPF algorithm requires each node to have complete 
+information about the entire topology. 
+All nodes inside an area, therefore, obtain an identical Link-State database for the area.
 
-Disadvantage of Distance Vector protocols is they are susceptible to Loops, when there NBRs give incorrect values, or the value is stale. Link-state protocls converge faster, but they are resource intensive.
+Disadvantage of Distance Vector protocols is they are susceptible to Loops, 
+when there NBRs give incorrect values, or the value is stale. 
+Link-state protocls converge faster, but they are resource intensive.
 
 ISIS needs 20byte NSAP address per node.
 This consists of three field( Area-Address, System-Address(6byte), 1byte nsap sel).
-Area-Address value is used to bring up Level-1 adjacencies,(areas should match or overlap if multiple NSAP's are configured) to bring up Level-1 Adjacency. Area-Address are not looked at to bring up Level-2 Adjacency.
 
-Why protocol type is IP and OSI between two system, ADJ is not established ?
+Area-Address value is used to bring up Level-1 adjacencies,
+(areas should match or overlap if multiple NSAP's are configured) to bring up Level-1 Adjacency. 
+Area-Address are not looked at to bring up Level-2 Adjacency.
 
+In otherwords, L1 NBR's who form adjacency  must have same area address.
+               L2 NBR's who form adjacency  can belong to different areas,
+L1L2 Router: Has two saperate LSDB, L1 LSDP and L2 LSDB.
+
+Backbone area: OSPF has  area zero, as its backbone area.
+               Contiguous collection of L2 capable routers will logically become Backbone area.
+When protocol type is IP and OSI between two system, ISIS ADJ is not established:  
 It has to be either IP and IP , or OSI and OSI.
+
 User can change area-address on the fly in Level-1, witout bringing down the adjacency, by
 first adding a new overlapping address, then removing older areas.
 
-When calculating route a given destination, if it can't route, it will route to a neareast level-2 router.
+When calculating route to a given destination, if it can't route, it will route to a neareast level-2 router.
 
-Pseudonode: On a broadcast (LAN) network, Desginated IS(DIS) is elected which acts as a pseudonode,
+LAN or P2P type of peering is possible.
+
+Concept of Pseudonode is due to this: 
+On a broadcast (LAN) network, Desginated IS(DIS) is elected which acts as a pseudonode,
 acting as the center of the network. This avoids n^2 full mesh adjacency. 
 Only Pseudonode advertise link to all other nodes in the network. 
 Each route in that Broadcast network reports that it has link to the Pseudonode. 
@@ -32,8 +48,9 @@ OSI : Open Systems Interconnection.
 NLPID: Network Layer Proto ID
 NSAP: Network Service Access Point
 
-Max number of routes in 256 fragments is 30kroutes, MTU max is 1496. 
-Only way to increase routes is increase MTU size.
+Each level LSP can have upto 256 fragments(as size to identify fragment-id is 1byte).
+Max number of routes in 256 fragments is 30kroutes, when MTU used is 1496. 
+Only way to increase routes is increase MTU size can goupto 5k or 9k(jumbo).
 
 
 RFC1195 Basic ISIS over IP RFC.
@@ -47,6 +64,7 @@ Max length of SUB TLV is 255
 This TLV carries all TE related info of the link in sub-tlv form,like
 BW from adv-node to NBR, available, reservable BW etc.
 
+If there exist an L2 ADJ, L1 routes are leaked into L2 by default without any configuration.
 Extended IP Reach(added TLV 135(235 for Ipv6) replacing 128):
 Up/Down BIT is introduced : When set, indicates that route is leaked from L2 to L1.
 So L1 should not leak back these routes into L2(possible cause of Loop in older way)
@@ -59,14 +77,16 @@ Users of this TLV must only use, if they can reach a particular prefix by IP.
 TLV 242: Capability TLV is amended to include SRGB range, and capability bit.
 Note, multiple ranges are allowed, but its an ordered list, users should not interpreet in the same order, should not sort the SRGB ranges.
 
-
+1. Hello packets are used to 'initialize' and 'maintain' ADJ between NBRing routers.
+2. LSP's are used to exchance Link-State-Info.
+3. Sequence number packets servce two purpose: 1. Consistency Check and/or 2. ACK( indirectly  Request for Info)
 Summary of Packet Types(Total 9 different types) :
 8:per level (LAN Hello, LSP, CSNP, PSNP) 
 1:P2P Hello(for both L1 and L2).
 
 CSNP in ISIS: Complete Sequence Number Packet : this packet allow consistency check of LSDB in all the routers.
 PTP links its sent only once at the beginning.
-LAN linksk : DIS broadcasted periodically
+LAN links : DIS broadcasted periodically
 
 
 PSNP : On P2P link, its used to ACK receipt of an LSP(if not sent LSP is retransmitted), so its reliable flooding.
@@ -122,12 +142,20 @@ and
 In such a case an IS SHOULD generate a CorruptRemainingLifetime event.
 
 LSP's are advertised by originating routers with 'RemainingLifeTime' field set.
-So that, recepient router can automatically expire these LSP's if not refreshed by originating router. In cisco, this field is set to 1200sec(20min) and refreshes at every 15min.
+So that, recepient router can automatically expire these LSP's if not refreshed by originating router. 
+
+In cisco, this field is set to 1200sec(20min) and refreshes at every 15min.
 Note, expired LSP's are kept for additional 60second(ZeroAgeLifeTime) before gets deleted from DB.
 
-When received LSP's checksum does not match, then routers will cause purge of this LSP's by flooding this LSP with Remaining Lifetime set to zero and higher seq-number. This forces the originating router to send a new copy of this LSP's may be with correct checksum. In ospf only originating router can purge this LSP', so its different in OSPF.
+When received LSP's checksum does not match, then routers will cause purge of this LSP's by flooding this LSP 
+with "Remaining Lifetime set to zero" and "higher seq-number". 
+This forces the originating router to send a new copy of this LSP's 
+may be with correct checksum. 
 
-A level1/2 routers set Attached Bit in its level-1, indicating other level-1 routers where to forward unknown addresses.
+In ospf only originating router can purge this LSP', so its different in OSPF.
+
+A level1/2 routers sets Attached Bit in its level-1 LSP, 
+indicating other level-1 routers where to forward unknown addresses.
 
 LSP-ID : 6byte SystemID.PNodeID.LSP-ID
          e.g 00c0.0040.abcd.00-00 First Fragment of Regular LSP
@@ -144,7 +172,7 @@ Cisco has command to ignore corrupted LSP's just logs error , instead of purging
 RFC6822 : ISIS Multi Instance:
 Instance Identifier TLV
 
-   A new TLV is defined in order to convey the IID and ITIDs supported.
+   A new TLV is defined in order to convey the instance ID IID and ITIDs supported.
    The IID-TLV associates a PDU with an IS-IS instance using a unique
    16-bit number.  The IID-TLV is carried in all IS-IS PDUs that are
    associated with a non-zero instance; this includes IIHs, Sequence
@@ -161,12 +189,11 @@ Instance Identifier TLV
    The IID-TLV MAY include one or more ITIDs.  An ITID is a 16-bit
    identifier where all values (0 - 65535) are valid.
    
-   Note that there will be seperate ADJ and LSP/HELLO packet per instance.,so database and SPF also.
-   
+   Note that there will be seperate ADJ ,LSP and HELLO packet per instance.,so saperate LSPDB database and SPF also.
 
-RFC 5120 : ISIS Multi Topology. ( Multi instance creates different database, different adj, leading to in efficiency).   
-In Multi-Topology, MTID can help keep single ADJ and database across multiple topologies, efficient, 
-but still it needs seperate SPF per topology.
+RFC 5120 : ISIS Multi Topology. 
+(Multi instance creates different database, different adj, leading to inefficiency).   
+In Multi-Topology, MTID can help keep single ADJ and database across multiple topologies, efficient, but still it needs seperate SPF per topology.
 
    MTID 1 is for IPv4,
    MTID 2 is for IPv6
@@ -174,13 +201,21 @@ but still it needs seperate SPF per topology.
 
 TLV 235 is equivalent to TLV135, but it has MTID as another field to identify prefix MTID
 TLV236 is equivalent to TLV136 for IPv6 prefix, but it has MTID
-You can create multiple IS-IS topologies without the MT extensions by enabling a sep- arate routing protocol instance on each router, if your protocol implementation supports multiple instances, for each desired topology. Authentication is then used to create adjacencies within each instance that follow the desired topology. 
+You can create multiple IS-IS topologies without the MT extensions by enabling a saperate 
+routing protocol instance on each router, if your protocol implementation supports multiple instances, 
+for each desired topology. Using RFC6822 
+
+Authentication is then used to create adjacencies within each instance that follow the desired topology. 
 The problem with this approach is inefficiency. 
 
-Each pro- tocol instance on a router maintains its own database, its own adjacencies, and sends its own Hellos. 
+Each protocol instance on a router maintains its own database, its own adjacencies, and sends its own Hellos. 
 
 
-The MT extensions use a single database and maintain single adjacencies across a given link, no matter how many topologies actually use the link. Only the SPF calculations and the RIBs are maintained separately for each topology. This means, bi-directional connectivity check is necessary during each SPF, which ensures that both neighbors understand IPv6.
+The MT extensions use a single database and maintain single adjacencies across a given link, 
+no matter how many topologies actually use the link. 
+Only the SPF calculations and the RIBs are maintained separately for each topology. 
+This means, bi-directional connectivity check is necessary during each SPF, 
+which ensures that both neighbors understand IPv6.
 
 
 Greedy Algorithm:

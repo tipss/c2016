@@ -1,16 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+void compress(char *str) {
+  int j = 0;
+  char *dest = str;
 
-
-
-void compress(char *str){
-
-  int j=0;
-  char *dest=str;
-
-  while(*str){
-
+  while(*str) {
     printf("Copied %c\n",*str);
     dest[j++]=*str;
     while(*str && *str == *(str +1)){
@@ -21,8 +16,6 @@ void compress(char *str){
   }
   dest[j++]='\0';
 }
-
-
 
 int main(int argc, char *argv[]){
   char str[1000];

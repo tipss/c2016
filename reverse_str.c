@@ -41,7 +41,6 @@ void Reversed (char *in) {
     return;
   }
 
-
   end = in;
   while (*end) {
    end++;
@@ -49,11 +48,8 @@ void Reversed (char *in) {
   --end; 
 
   while (end > in) {
-    //Copy top char in temp
     temp  = *in;
-    //Replace top char from end
     *in   = *end;
-    //Replace end with temp
     *end =  temp;
     in++;
     end--;

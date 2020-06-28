@@ -1,5 +1,69 @@
-Difference between sleep() vs pthread_yield() ?
-slepp: makes the calling process sleep for the duration given, no other thread is scheduled
+
+When to use threads, vs when to use process?.
+
+http://www.cafeaulait.org/course/week11/02.html
+    Both threads and processes are methods of parallelizing an application. However, processes are independent execution units that contain their own state information, use their own address spaces, and only interact with each other via interprocess communication mechanisms (generally managed by the operating system). Applications are typically divided into processes during the design phase, and a master process explicitly spawns sub-processes when it makes sense to logically separate significant application functionality. Processes, in other words, are an architectural construct.
+
+    By contrast, a thread is a coding construct that doesn't affect the architecture of an application. A single process might contains multiple threads; all threads within a process share the same state and same memory space, and can communicate with each other directly, because they share the same variables.
+
+    Threads typically are spawned for a short-term benefit that is usually visualized as a serial task, but which doesn't have to be performed in a linear manner (such as performing a complex mathematical computation using parallelism, or initializing a large matrix), and then are absorbed when no longer required. The scope of a thread is within a specific code module—which is why we can bolt-on threading without affecting the broader application.
+
+
+
+Signal Handler?, Why we need them, and when we need them.
+What is a Linux Socket?.
+Socket in linux is an end point  for communication, 
+sock_id= socket(domain, type,protocol)
+e.g domain=(AF_NETLINK,PF_ROUTE, PF_UNIX/PF_LOCAL etc)
+e.g type SOCK_STREAM: reliable connection based,
+         SOCK_DGRAM: connectionless, unreliable messages.
+         SOCK_RAW: 
+What is a Linux bind(sockfd, sockaddr, len) mean?
+When socket is created using 'socket()', it exists in a name space,
+but has no address assigned to it. bind() assigns the address specified b addr to the socket to the sockfd. its also called assigning
+a name to a socket.
+After socket is bound, a buffer size is set.
+
+What is listen() ?. when to use.
+After socket is bound, we have to listen() on that socket via 
+blocking calls.
+When there is a an incoming connection, we can accept() peers
+connection via that socket.
+ listen() marks the socket referred to by sockfd as a passive socket,
+that is as a socket that will be used to accept incoming connection request using accept()
+
+When to use read() ?.
+
+After accept() by a passive socket 
+
+
+:q
+:, we start read() on that
+socket. When read is done, or nothing to read, we wait in 'accept()
+while loop.
+
+Clients act as producer, 
+Server act as consumer, both running in different processes.
+
+Server socket sequence is like below:
+socket(),
+bind(),
+listen(),<----make it a passive , so ready to accept connection
+while(1) {
+ accept()
+ read()
+}
+close()
+
+Client socket sequence is like below:
+socket()
+bind()
+connect() to the PORT?addres used in server.
+write();
+
+
+What is the difference between sleep() vs pthread_yield() ?
+sleep: makes the calling process sleep for the duration given, no other thread is scheduled
 pthread_yield: calling thread politely give a way for other waiting threads to run if there are waiting. This is done by
 relinquishing use of procesor, and moving itself to run-queue for its turn to come.
 

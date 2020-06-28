@@ -20,6 +20,7 @@ using namespace std;
 */
 
 class Person {
+public:
     int age;
     string name;
     public:
@@ -34,7 +35,7 @@ class Person {
 class Student: public Person {
    public:
    void aboutMe( ) {
-        cout << "I am a Person, aged " << this.age << "name="<< this.name << endl;
+        cout << "I am a Person, aged " << this->age << "name="<< this->name << endl;
    }
    void addCourse(string s){
     cout << "Added Course " << s << endl;

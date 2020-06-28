@@ -112,7 +112,8 @@ int ReplaceSpaces (char *str,int size) {
 void replaceSpaceWithSpecialStr (char *str, char *replace){
   int new_len,len, count = 0;
   //Because dest string length is greater than original string, 
-  //a reverse walk is the best approach after securing dest string lenght
+  //a reverse walk is the best approach after securing dest string lenght:1
+
   // 1. Could spaces, estimate length
   // 2. Copy in reverse order.
   new_len = strlen(str);
