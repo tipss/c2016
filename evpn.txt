@@ -1,0 +1,238 @@
+
+
+Why Overlay network is becoming important?.
+With server virtualization, a server can host more than 100k VM's.
+Meaning, these VM's do need to communicate other VM's if need be hosted on the other Server.
+These VM's need a broadcast domain. 
+VLAN with 4k limits, number of broadcast domain is limted. 
+Also b/w is limited by how loop prevention protocols in the 
+ntwork like STP's work, by blocking a redundant path.
+
+One way to overcome this limitation is to find alternative to VLAN which should have big range of broadcast domain.
+Should be able to work loop-free, so we do have to depend on STP like protocols, meaning if they are loopfree, as in layer 3 based
+dynamic protocol (OSPF,IS-IS, BGP) derived paths via L3 interfaces can help avoid this limitation.
+
+To the rescue came VXLAN packet encapsulation technology(outer header is an L3, UDP), or its L2-in-L3 overlay(MAC over IP/UDP).
+TRILL, SPB are frame encapsulation technology(if the outer header if Layer2)
+
+VXLAN in its simplest use-case establishes a tunnel, so that two or more set of end points can
+establish a common broadcast domain. Since these tunnels are established via L3 underlay network,
+they do not create any loops. A split-horizon way of not sending BUM traffic on the receiving tunnel prevents
+any kind of loops here.
+
+This also puts some basic requirements for broadcast domain over a virtual overlay network to work.
+
+1. Discovery of edge device(In VXLAN terminology , its called VTEP, VxLAN tunnel end point)  
+   where the tunnel starts and tunnel ends need be established, or distributed by some means.
+   In a simplest use case, a static-config of tunnel end points is used, without a need to discover these.
+
+   IGP/BGP protocol is typically used to distribute Edge Device info.
+   Typically one VTEP is hosted per Edge Device.
+2. Location/Identify mapping data distribution( to avoid BUM traffic, or to avoid typical L2 way of source MAC learning).
+   Eventhough this is not mandatory, it improves the efficiancy of the distributed single broadcast network greatly.
+   Typically edge device maintain that databases, so they can forward traffic over right tunnel.
+   
+   One protcol that is used is BGP-EVPN.
+   BGP-EVPN defines a new AFI/SAFI L2-VPN. 
+   This new AFI/SAFI is used to derive many types of EVPN routes, with above two steps 
+
+TOR : Top Of the Rack switch where network virtualization can be initiated.
+
+When TOR is connected to n number of Physical bare metal server, its called a network overlay.
+When TOR is connected to a Virtual Server, where many VM's originate, its called Host overlays.
+Mix of this is Hybrid overlays.
+
+In both all the above cases, TOR does push/pof of over lay header.
+An overlay-service is identified by VNI(Virtual Network Identifier).
+This significantly expands the ability to accomodate a much larger scale of broadcast domains within the network.
+Overlay Network
+Underlay Network
+
+
+Basics of VXLAN:
+
+VXLAN connects two or more networks over Layer 3, while allowing workloads/servers o n these different networks to continue 
+sharing same Layer 2 broadcast domain. Meaning , VLAN broadcast domain always works in Ethernet data link layer, but VXLAN broadcast
+domain operates acros Layer 3. Because it uses L3, all possible paths to remote VTEP's can be used same time via ECMP, without creating loops.
+VXLAN path to remote VTEP does not directly show ECMP multiple path, but the underlying reachability to the remote VTEP IP uses ECMP path(IP core),
+so utilizes the full bandwidth.
+
+Original frame including its Eth Header is encapsulated.
+
+From top to bottom(Top part in the packet is Underlay headers)
+14 Outer MAC Header(DMAC6,SMAC6, (VLAN Type2, VLAN ID2), Ether Type2) 14 or 14+4 bytes
+20 Outer IP Header(20byte)
+8  Udp header(8byte)
+8  VXLAN header(8byte)
+<Original Payload>(This is now part of Overlay )
+
+Note that Original Payload's 802.1q 4byte tag is removed, and VXLAN 8byte header has to represent this info 
+via local mapping.
+
+So its 50(54 with dot1q header over L3 interface, nothing to do with inner vlan).
+Destination UDP port is 4789, Source UDP port is has of 5Touple input(SIP,DIP, L4 Proto, source L4Port, Dest L4Port).
+This allows ECMP to work well.
+
+host-to-host unicast traffic is acheived only after  both ends learn each other.
+Typically its done via flood and learn in L2 broadcast domain.
+Broadcast: e.g ARP used broadcast-mac,
+Unknow unicast: e.g  an unknown unicast destination MAC is flooded all over the L2 broacast domain.
+Multicast: e.g ?.
+
+All of the above three type of traffic is sent over VXLAN overlay , via one of the below method.
+
+How a multidestination traffic is flooded in VXLAN based overlay network?.
+E.g multidestination traffic is ARP request, where in DMAC is FFFF FFFF FFFF.
+
+
+1 [multicast-less]]One way is to use 'ingress-replication' to all the remote VTEP.
+  It has its limitation of scalability to replicate packet in H/W.
+  This is also termed as head-end-replication.
+
+  One issues with this method is , every VTEP must be aware of every other VTEP in the network.
+  So there must be a dynamic way to build list of VTEP's that participate in a particular VNI.
+  Benefit is no need to run multicast tree.
+  Ingress replication is a H/W capability. If its absent, then IP Multicast is the only way to acheived F& L
+  source-mac learning is done in all the stages here.
+  multiple-streams are used to replicate.
+   
+2. Otherway is to build a Multicast Group based domain. An VNI is asked to join this group.
+   This is still an underlay and its done during configuration of VNI.
+   VTEP's on detecting a multidestination traffic(e.g ARP req) coming from connected host's
+   is encapsulated as usual, but DIP is set to configured multicast IP .
+   Once this packet is received by the root of this multicast IP group, it broad cast's this VXLAN packet
+   to all the clients who are subscribed to this multicast group(typically all the VNI's who want tobe 
+   part of this broadcast domain do subscribe to this multcast group. Thus a broadcast of ARP is
+   acheived .
+
+   Multicat tree is typically established using multicast protocol PIM(protocol independant multicast).
+   VNI to multicast-group must be mapped consistently on all the VTEP's to make it work.
+
+   Popular PIM options:
+   PIM-ASM(any source multicast)
+   PIM-SSM(single source multicast).
+   PIM-BIDIR(BiDirectional )
+
+
+   ARP reply is unicast, so its sent as-usual via VXLAN tunnel.
+   This is referred to as F&L mechanism, over L3 network.
+
+   Typically multicast groups a shared across multiple VNI, as its hard to create and maintain  16mil multicast group/tree.
+
+   source-mac learning is done in all the stages here.
+ 
+BGP-EVPN:
+BGP-EVPN differest from F&L in several ways.
+Both peer discovery and remote end host learning are handled by distributing this info via control plane, rather
+than using data-plane.
+
+
+draft-ietf-bess-evpn-overlay:(Type 1,2,3,4) Cisco does not implement type 1 and 4,
+draft-ietf-bess-evpn-prefix-advertisements (Type 5 route)
+Both of these define how Integrated routeing and bridging  and L3 routing operation in EVPN is handled.
+
+Type-1 : Ethernet auto-discovery(AD) route: 
+Type-2 : MAC/IP advertisement route: End host reachability info.   RD + ESI(Zero) + Ethernet TagID(Zero) + MAC Len + MAC addr _ IP Addr Len + IP Addr + MPLS Label1(l2vni) + MPLS Label2(l3vni)
+Communities supported: Router MAC for nexthop, Mac mobility sequence, Route Target, as well as l3vni. Note l2vni is mandatory.
+Type-3 : Inclusive multicast Ethernet tag route: Typically used to create distribution list for ingress replication : RD + ESI(Zero) + Ethernet TagID(Zero) + IP Addr Len + Originating Router's IP address
+Typical implementation (Cisco and FRR) generate Type-3 route with as soon as VNI is configured at the VTEP and is operationaly
+Type-4 : Ethernet segment route
+Type-5 : IP Prefix route: RD + ESI(Zero) +Ethernet TagID(Zero) + IP prefix len + IP Prefix + GW IP + MPLS Label(l3vni)
+Transports IPv4 and IPv6 prefix, no MAC info is there,hence it only has l2vni.
+Communites supported: Router MAC of the next-hop VTEP in the overlay, Route Target
+
+With distribution of MAC and/or IP via Type 2 routes Host Bridging and routing is acheived.
+This also means, if there present an L3vni associated to VRF, a Type-2 route generated by this VRF should add l3vni as second
+label. This completes the path for even multi-tenant host bridging and routing.
+
+RT vs Mpls Label1
+=================
+Received RT extended community value (of the format AS:VNI)  in the Route type 2, must have a mtching Mpls Label1 (L2VNI) in the VNI field of RT received.
+This type of route will be only imported, if there is config with import RT matching AS: VNI number.
+If a Route type 2 has two labels, still Mac label1(L2VNI) must match to the received RT's VNI.
+The second label (L3VNI) is used only to match which VRF to import this to, after the fact that this route is imported.
+
+For route type 5, MPLS label 1 (L3VNI) must match to received RT(AS:VNI). Note that MPLS Label 2 is not utilized in Route Type 2. Meaning
+it does not belong to any specific L2VNI. 
+
+Every VTEP does an anycast gateway service for a configured prefix at that VRF. This is nothing but anycast gateway.
+As long as this IP gateway is configured, the IP  subnet prefix is advertised via  route type 5. This helps in the discovery of undiscovered
+or 'silent' end hosts because the subnet prefix attracts routed traffic to the edge device below which the undiscoverd host resides. This egde device generates an ARP request to discover the silent host. which in turn sends otu an ARP  response.
+Second use case of Type 5 route (which is more common use case ) is for injection of IP prefix routes into the
+BGP EVPN fabric involves external routeing . Router are learned via peering established using eBGP(or other unicast routing protocls), and redistributed into the BGP EVPN address family using appropriate route map policies.
+
+Host deletion  and move events:
+Typically ARP ages out(at every 1500 sec),leading to new ARP request.
+If no reply is heard, host entry(IP+MAC) is deleted. leading to  Route type 2 deletion  event informing other edge devices
+
+Even when the ARP is deleted, the MAC-only Route type2 still resides in the BGP EVPN control plane until the MAC aging timer(1800sec) expires, then the Type-2 route for MAC to delete is generated.
+
+ARP aging is always lower than MAC aging, to avoid unnecessary flooding of unknown unicast in the networks.
+
+Moving workload: when VM (with MAC + IP) moves to a different TOR, this is typically detected as it generates a Grtitual ARP after the move, so other
+nodes now know where the new location.  There is also a Reverse ARP sentout by the device which lost that MAC+IP to another VTEP.
+
+But with BGP EVPN, the new edge device generated this MAC+ IP with incremented mac-mobility-sequence number. Upon receive by rmote VTEP's they
+see if they have stale value, based on mac-mobilty-seq number value and remove stale and update with new values.
+
+
+
+Chapter 3: VXLAN /EVPN forwarding characterstics
+Single multicast group for all VNI's:
+
+Ingress Replication:
+Uses Type-3 route, VNIS determined by the extended community (Route Target AS:L2VNI)
+PMSI Tunnel Attribute is also sent along with this route-type. : Flags+ Tunnel-Type(e.g Ingress Replication) + L2VNI+Tunnel-ID(e.g VTEP-IP)
+Using this a ingress replication list per VNI is built at each edge device.
+
+
+ARP supression: It implemented per VNI, where in it looks up it ARP table and does unicast ARP response to the host
+with the correct data if its available. Thus suppressing an ARP request going ont in VXLAN flood domain of that VNI.
+
+ARP proxy is generally used by Routers, where in the response a router MAC is used, saying use my router-mac as DMAC to reach a specific IP address.
+Its proxying, not suppresing.
+
+Suppress is a new feature.
+ARP snooping : it intercepts the ARP broadcat request to t the locally attached edge device. Unicast ARP response to the ARP request  z
+is also subjected to ARP snooping behavior, so that it is sent to the remote edge device to which the destination is directly attached.
+
+=======================nvOSd story=========================================
+vrf-create name xx gw1 
+vrf-route-add  ip/subnet gw1
+subnet-add ip/subnet anycast-gateway
+
+subnet-add: says it has directly connected interface with this ip/subnet , with gw1 which are understood by the host machines .
+This also act like a leg into host machines, or VM's with this network. This subnet needs be advertised via Type-5 , so 
+other Fabric node can send T2 routes falling into one of these subnets for ARP resolution with correct l3vni.
+Each of this subnet-add creates an nvOSd software interface. There is a seperate list of g_anycast
+nvOS_create_router_subnet_if(). 
+Without the T5 route support, both the fabric should add this subnet into there VRF. e.g config below
+is not using T5, so its adding an subnet named sub1-remote also into its subnet by hand.
+
+vrf-route-add: This is command adds static route, with gateway.
+It will activate this route only if gatway has an equivalent interface configured.
+Which is done when subnet-add is done with ip/subnet command.
+Eventually gw parameter under vrf-create needs be removed, as vrf-route-add does the same thing,
+with additional paramter ip/subnet. Without this vrf-create was adding this like '0.0.0.0/0 gw'.
+Note that 'gw' in this is the gateway that should be reachable via vRouter, or some l3-interface. 
+This basically helps send the traffic north-south.
+If your traffic is east-west, this gw is not needed. 
+
+
+cli --quiet trunk-modify name vxlan-loopback-trunk ports 33,
+
+cli --quiet vlan-create id 530 scope fabric  vxlan 10530 ports 30,33
+#host resides on port 30 vlan 530 , trying to reach host in 531
+cli --quiet vlan-create id 531 scope fabric  vxlan 10531 ports 31,33
+
+cli --quiet vrf-create name vrf1
+cli --quiet subnet-create name sub1-remote vxlan 10531 network 10.31.1.0/28 vrf vrf1 anycast-gw-ip 10.31.1.1
+cli --quiet subnet-create name sub2-local  vxlan 10530 network 10.30.1.0/28 vrf vrf1 anycast-gw-ip 10.30.1.1
+
+cli --quiet vrouter-bgp-network-add vrouter-name f2border network 10.20.120.0/24
+cli --quiet vtep-create vrouter-name f2leaf1 name f2leaf1-vtep ip 10.20.120.2
+
+#Primary host active on 10530
+cli --quiet vtep-vxlan-add name f2leaf1-vtep vxlan 10530
+cli --quiet vtep-vxlan-add name f2leaf1-vtep vxlan 10531
+
