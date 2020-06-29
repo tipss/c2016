@@ -1,0 +1,113 @@
+Complexity analysis is based on the worst case scenario.
+Constant loops, or constatnts do not count .
+
+
+O(n):Liner time expansion as the number of input grows.
+O(n2): Quarratic time expansion as the number input grows
+O(lon(n)): Logaratimic time expansion as the number of input grows.
+
+e.g O(n) complexity
+int fun(int n) {
+    if (n ==10) {
+    	printf("printing n value %d\n", i);
+    } else {
+    for (int i=0; i<n; i++) {
+    	printf("printing n value %d\n", i);
+    }
+    }
+}
+
+Above programs complexity is O(n).
+As the worst case seen in else case.
+How to fix this ?.
+Limit the number of prints in the loop, by conditionally only print few times.,
+THen it will become O(0).
+e.g O(n2) complexity
+
+int fun(int n) {
+
+    if (n ==10) {
+    	printf("printing n value %d\n", i);
+    } else {
+    for (int i=0; i < n; i++) {
+        for (int j=0; j < n; j++) {
+    		printf("printing n value %d\n", i);
+   	}
+    }
+    }
+}
+
+In this nested loop case For every value n,we iterate ntimes.
+Making it nxn iteration which is O(n2).
+
+
+e.g O(n+m) complexity
+int fun(int n) {
+
+    if (n ==10) {
+    	printf("printing n value %d\n", i);
+    } else {
+    for (int i=0; i < n; i++) {
+         printf("printing n value %d\n", i);
+    }
+    for (int i=0; i < m; i++) {
+         printf("printing m value %d\n", i);
+    }
+    }
+}
+
+
+Two loops,  add max numbers, n+m for complexity of O(n+m)
+
+
+e.g O(n2):
+int fun(int n) {
+
+    if (n ==10) {
+    	printf("printing n value %d\n", i);
+    } else {
+    for (int i=0; i < n; i++) {
+        for (int j=0; j < n; j++) {
+    		printf("printing n value %d\n", i);
+   	}
+    }
+    for (int i=0; i < n; i++) {
+         printf("printing n value %d\n", i);
+    }
+    }
+}
+
+
+
+O(n2 + n) is equal to O(n2) as, lower order terms are ignored.
+
+
+e.g O(log(n)):
+Halving loop variable.
+int fun(int n) {
+    for (int i=0; i < n; i++) {
+    	        i = i*2;
+    		printf("printing n value %d\n", i);
+    }
+}
+
+We break out of the loop faster here, as every iteraation i is doubled.
+Total number iteration is not n, instead its 2powerK.
+
+Simple Rule:
+If the length of the input space is halved at every iteration , then it boils down to logarithmic complexity,
+as we do not iterate N number of times.
+
+Number of times it loops  in this case is 
+2powerK = N
+
+log( 2powerK) = log (N)
+K log(2)= log(N)
+K = log(N); which is the order
+
+n  actual-loop
+1   1
+2   1
+3   1
+4   1
+5
