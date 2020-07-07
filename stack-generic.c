@@ -30,8 +30,7 @@ S * initS(int capacity) {
 
 void push(S *s, void *item) {
 
-  if (s->index < s->capacity)
-    {
+  if (s->index < s->capacity) {
       printf("push at %d\n",s->index);
       s->container[s->index] = item;
       s->index += 1;
@@ -43,7 +42,7 @@ void push(S *s, void *item) {
 
 void *pop(S *s) {
 
-  if(s->index == 0) {
+  if (s->index == 0) {
     printf("Stack Empty\n");
     return NULL;
   }

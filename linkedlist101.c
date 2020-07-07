@@ -21,7 +21,7 @@ void Insert (lln_t **head, lln_t *node, int position) {
   lln_t *aux_node, *p_node = NULL;
   int cur = 0;
 
-  if (*head == NULL){
+  if (*head == NULL) {
     (*head) = node;
     (*head)->next = NULL;
     return;
@@ -121,8 +121,9 @@ void delete_duplicate(lln_t **head) {
     while (inner) {
       j++;
       if (inner->next && inner->next->val == outer->val) {
-	//Found duplicate
-	printf("Found Duplicate nodes with index %d and index %d value %d\n",i, j, outer->val);
+	printf("Found Duplicate nodes "
+	       "with index %d and index %d value %d\n",
+	       i, j, outer->val);
 	inner->next = inner->next->next;
       } else {
 	inner = inner->next;
@@ -232,10 +233,11 @@ int findLoop (lln_t *head) {
   while (fastp != slowp) {
     fastp = fastp->next;
     slowp = slowp->next;
-    
   }
-  if(fastp && slowp)
+  
+  if (fastp && slowp)
     printf("Loop starts at node %d\n",fastp->val);
+  
   return (loop+1); //No Loop
 }
 

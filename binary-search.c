@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
+//Remember recursive
 /*
 * Given an asending sorted array of numbers in a, with start index 0, 
 * end index length of array, find index of x in a, with
@@ -39,10 +39,10 @@ int findInInfiniteArray(int *a, int key){
     val = a[r];
     printf("high %d\n",r);
   }
-  return binSearch(a,l,r,key);
+  return binSearch2(a,l,r,key);
 }
 
-Dint main ( int argc, char *argv[]) {
+int main ( int argc, char *argv[]) {
     
     int a[] = {1,2,3,4,5,6,7,8};
     int len = sizeof(a)/sizeof(a[0]);

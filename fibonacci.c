@@ -5,6 +5,8 @@
 // f0= 0, f1=1, f2=1,f3=2,f4=3,f5=5...
 // Generates nth FIBonacci sequence number
 // fn = f(n-1) + f(n-2);
+// n is the index of element in the series.
+// return : value at the index n, after computing it.
 int fib (int n) { 
 
   if(n <=1 )

@@ -9,13 +9,14 @@
  * stores one character. By traversing up the trie from a leaf node to the root 
  * node, a string can be constructed.
  */
+
 typedef struct elem_t {
 	int     value;
 	int     count;
 	struct elem_t *left;
 	struct elem_t *right;
-
 } elem_t;
+
 /*
  * We completely traverse one sub-tree before we explore sibling sub-tree. 
  * DFS : Depth First Search: Used to traverse a Graph(not tree),
@@ -24,7 +25,8 @@ typedef struct elem_t {
  *	pre-order tree traversal is a form of DFS.
  *      Start with some key value to find,, start from some node r.
  *      Steps 1. Visit node r
- *            2. Iterate through all adjacent nodes of r.(in case of tree, it will be left and right)            3. For every adjacent node found(n), visit it, but iterate all its adj-nodes, before
+ *            2. Iterate through all adjacent nodes of r.(in case of tree, it will be left and right)            
+ *            3. For every adjacent node found(n), visit it, but iterate all its adj-nodes, before
                  going to the next adjacent node of r.
 * This can also be used to find if there exits a route between two nodes.
 * first node you pass as start and use it as root,  second node as usual.
@@ -32,7 +34,7 @@ typedef struct elem_t {
 *  Note: DFS uses 'stack' as datastructure, but due to recursion(function call stack) its sort of hidden	   
 *        BFS uses 'queue'
 */
-elem_t * DFS(elem_t *r,int value){
+elem_t * DFS(elem_t *r,int value) {
   elem_t *ret = NULL;
   if(r == NULL)
     return NULL;
@@ -508,6 +510,7 @@ void testVariousTreeAPI(int A[], int n)
 
 
 int main(int argc, char *argv[]) {
+
   /* Note: If you pass an sorted list to BST Insert,
    * Tree HEIGHT will increase at same rate, like linked list,
    * This is normal behavior, thats why you need RedBlack tree or AVL tree
@@ -524,6 +527,7 @@ int main(int argc, char *argv[]) {
   int A[] = { 9,7,6,5, 1,2,3,4,5,6,7,7,7,7,7,7,7,7 };
   int B[] = { 5,7,3,8,2,4,6};
   int C[] = { 9,12,15,2,3,4,8,5,6,7,1};
+
   int b = findMaxElem (A, sizeof(A)/sizeof(int));
 	//int b = findMaxElem2 (C, 13);
 	printf("MaxElem index %d val %d\n", b, b?B[b]:b);

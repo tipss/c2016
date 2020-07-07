@@ -70,9 +70,12 @@ relinquishing use of procesor, and moving itself to run-queue for its turn to co
 What does 'select() do' ?.
 Why to use 'select() before read(on socket)?.
 
+Kubernetics:
+Container orchestration tools are : kubernetics, docker swarm, mesos
+
 What are Dockers?(also called Docker Container Virtulization).
 
-Solves this problem for ever, by making an image of an entire application, with all its dependencies and ship it to your required target environment / server. So in short, if the app worked in your local system, it should work anywhere in the world(because you are shipping the entire thing).
+Solves this problem for everone, by making an image of an entire application, with all its dependencies and ship it to your required target environment / server. So in short, if the app worked in your local system, it should work anywhere in the world(because you are shipping the entire thing).
 The above problem can be solved using VM. But Dockers are very light weight, size, time etc.
 =============================
 Linux Namespace and CGroups
@@ -87,7 +90,15 @@ E.g add new namespace:  ip netns add red, ip netns add green, ip netns, ip netns
 ls /var/run/netns/
 ======================================================
 Cgroups:
-By default on a Linux system, all processes are children of the INIT process. Which means all processes are part of a single tree structure. Now in Cgroup method, different process groups, can exist on a single system. So instead of a single process tree of default linux method, cgroup method can have different trees of process structure(with different parents, and childs will inherit stuff from their parents), all isolated from each other. Now you might have got an idea of how cgroups and namespace are leveraged by container based virtualization. 
+By default on a Linux system,
+1. all processes are children of the INIT process.
+   Which means all processes are part of a single tree structure.
+   Now in Cgroup method, different process groups, can exist on a single system.
+   So instead of a single process tree of default linux method,
+   cgroup method can have different trees of process structure
+   (with different parents, and childs will inherit stuff from their parents),
+   all isolated from each other.
+   Now you might have got an idea of how cgroups and namespace are leveraged by container based virtualization. 
 
 What is Virtual Memory?
 Simply put, virtual memory is a combination of RAM and disk space that running processes can use.
@@ -115,7 +126,18 @@ You cannot share data structures containing pointers. This is because each proce
 If you still want to share linked data structures (e.g trees, lists) you must define
 a serialization protocol, usually instead of pointers use indexes relative to the
 start of the shared memory area.
- 
+
+
+How to create and use shared memory?.
+Important functions:
+ftok   get a numeric key for a file
+shmemget use key associated with a file name, and returns a shared memory block.
+shmat: attach to the block reteruned above,
+      map the block id into a pointer , so it can be used.
+shmdt: detach
+
+What is mmap?.
+
 =============================
 VM Migration:
 ============================
@@ -207,6 +229,12 @@ it is possible for the walking thread to fall off the list, so to speak,
 if the node is deleted or changed. Using a mutex to "lock" the list keeps this from happening.
 
 Mutex =  Mutual Exclusion.
+One thread holds this lock(winner thread) excluding other threads(loosers).
+Why we need mutex?.
+Linux has critical sections which are shared writable address space.
+without the use of mutex multiple threads can write to the same critical section at the same time,
+which is not ok.
+
 In Java, Mutex-like behaviour is accomplished using the synchronized keyword.
 
 Technically speaking, only the thread that locks a mutex can unlock it, but sometimes operating 
@@ -225,14 +253,75 @@ Unlike mutexes, semaphores are designed to allow multiple threads to up and down
 If you create a semaphore with a count of 1, it will act just like a mutex, 
 with the ability to allow other threads to unlock it.
 
-Mutexes can be applied only to threads in a single process and do not work between processes as do semaphores. 
+Mutex always has owner(for e.g thread). So no other owner can operate on them.
+This helps issues arising out of priority inversion etc.
+Ch15.
+What kernel version we support in nvOSd?.
+4.18 linux kernel,
+What ubuntu version we support
+18.04.
 
+
+reader-writer mutex lock?.
+pthread_wrlock_t,
+A thread request for read-lock, which is always granted.
+A thred  request for write, at this time normal lock contention etc can happen, as it involves usual checks.
+recursive mutex?.
+Yes its possible to take mutex lock recursively, if mutex is created with attribute set PTHREAD_MUTEX_RECURSIVE,
+while creating mutex.
+
+Mutexes can be applied only to threads in a single process and do not work between processes as do semaphores. 
+semaphores are preimarily used for process syncronization.
+mutex are for thread syncronication.
+
+What is self deadlock?.
+A thread taking same lock agin while holding already lock for it.
+Its not allowed(recursive) in linux by default unless a variable is set
+to allow such locks. But an attempt by code creates deadlock.
 
 How to commmunicate between two 'process' in linux in a syncronouse way ?.
 
+Why we need condition variable ?.
+If a thread want wait until certain work is done, it can wait on a condition variable.
+The other thread can touch this condition variable and signal the waiting thread to continue to work.
+
+Basically a thread can be put in a wait queue, by making it wait on a condition variable.
+It gets scehuled only after that condition variable is ready to be used.
+
+/usr/local/
 One way is to use pthread condition variable.
 
-The pthread_cond_wait()  function can be used to block on a condition variable. 
+pthread_cond_t c = PTHREAD_CONDITION_INITIALIZER;
+pthread_mutex  m = PTHREAD_MUTEX_INITIALIZER();
+int done = 0;
+
+void *child (void *){
+       pthread_mutex_lock(&m);
+       done = 1;
+       pthread_cond_signal(&c);
+       pthread_mutex_unlock(&m);
+}
+void *parent () {
+       pthread_mutex_lock(&m);
+      if (done != 1) {
+	  pthread_cond_wait(&c, m)<-----releases lock as-soon as it starts wait, so other threads can work on 'done'.
+	  			        when the wait ends due to receive of signal, it will continue to hold the mutex.
+	                                This will help to make this an atomic operation before wait.
+       }
+       pthread_mutex_unlock(&m);
+       return NULL;
+
+}
+
+int main (int argc, char *argv[]) {
+pthread_t p;
+	  pthread_create(&p, NULL, child, NULL);
+	  parent();
+		
+}
+
+
+The pthread_cond_wait(&cond_var, &mutex)  function can be used to block on a condition variable. 
 They are called with mutex locked by the calling thread or undefined behaviour will result.
 These functions "atomically" release mutex and cause the calling thread to block on the 
 condition variable cond; atomically here means "atomically with respect to access by 
@@ -245,7 +334,7 @@ Upon successful return, the mutex has been locked and is owned by the calling th
 
 Typical Implementation of IPC library in a Router running on Linux with restartable 
 process for each protocol: Each process can implement an IPC library,which when 
-initialized will creates a tread and waits on select. When socket finds a FD-SET due to 
+initialized will creates a thread and waits on select. When socket finds a FD-SET due to 
 'ipcWrite' by remote end, it will do ipcReceive() on that socket, then goes back to loop.
 
 The select waits on a port, which is advertised by ipcRegister(END_POINT) by this IPC library.
@@ -268,3 +357,24 @@ for every ipcSend, a copy is sent to kernel space.
 ipcSend is ACK based, and ACK's are kept track in IPC library, which watch for 32 unacked buffers.
 If no-ack , it will re-transmit, so a re-transmit queue needs be maintained.
 
+
+Simple pthread example:
+#include <pthread.h>
+void *myturn(void *) {
+      while(1) {
+      	       sleep(2);
+               printf("%s\n",__FUNC__);
+      }
+}
+
+void *yourturn(void *) {
+      while(1) {
+      	       sleep(2);
+               printf("%s\n",__FUNC__);
+      }
+}
+int main(int argc, char *argv[]) {
+pthread_t t;
+	  pthread_create(&t, NULL, &myturn, NULL);
+	  yourturn();
+}

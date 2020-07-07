@@ -11,20 +11,23 @@ int bitSwapRequired(int a, int b) {
   int c = a ^ b;
   int count =0;
   while(c != 0) {
-    count += c&0x01;
+    count += c & 0x01;
     c = c >> 1;
   }
   return count;
 }
 
-//Remember, its works
-// Also n%2 prints 1 for odd number and zero for even number
-void bin(unsigned n)
+/*
+ * Given a number n, print its binary value
+ * Remember, it works
+ * Also n%2 prints 1 for odd number and zero for even number
+*/
+void print_binary_of(unsigned n)
 {
   /* step 1 */
-  if (n > 1)
-    bin(n/2);
- 
+  if (n > 1) {
+    print_binary_of(n/2);
+  }
   /* step 2 */
   printf("%d", n % 2);
 }
@@ -35,7 +38,7 @@ void bin(unsigned n)
  *     (x & 0101) <<1 will make 0 move to 1, 2 move to 3
  * OR the above result  
  */
-int swapOddEvenBits (int x){
+int swapOddEvenBits (int x) {
 
   return (  ((x & 0xaaaaaaaa)>>1) | ((x&55555555)<<1));
 }
@@ -67,8 +70,11 @@ int main (int argc, char *argv[]) {
  scanf("%d",&b);
 
  printf("\nNum of bit flips needed to make them equal %d\n",bitSwapRequired(a,b));
- for (int i=0;i< 32;i++){
-   bin(i);
+
+
+ for (int i=0;i< 56;i++){
+   printf("Binary value of %d is : ",i);
+   print_binary_of(i);
    printf("\n");
  }
 }

@@ -95,8 +95,8 @@ void printTwoSetBitNums(int n)
 //http://stackoverflow.com/questions/1284581/finding-a-bit-pattern-in-a-32bit-unsigned-integer
 int main (int argc, char *argv[]) {
   int i = 0xff;
-  printf("i= 0x%x RightMost Bit %s\n",i,getBit(i,0)?"SET":"UNSET");
-  printf("i= 0x%x LeftMost Bit %s\n",i,getBit(i,sizeof(i)*8)?"SET":"UNSET");
+  printf("i= 0x%x RightMost Bit %s\n", i, getBit(i,0)?"SET":"UNSET");
+  printf("i= 0x%x LeftMost Bit %s\n", i, getBit(i,sizeof(i)*8)?"SET":"UNSET");
   i = 0;
 
   printf("i= 0x%x RightMost Bit %s\n",i,getBit(i,0)?"SET":"UNSET");
@@ -113,6 +113,6 @@ int main (int argc, char *argv[]) {
 
   printf("\nPrinting first 4 number whose 2 bits are set:\n");
   //Print 4 number whose 2 bits are set,starting from number zero
- printTwoSetBitNums(4);
+  printTwoSetBitNums(4);
  
 } 
