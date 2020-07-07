@@ -1,0 +1,9 @@
+
+openstack what is it made out of?.
+60projects together, 60kcommits in a year, and 60m line of code, a very 
+complex project in general
+
+Horizon is OpenStack CLI, it first step is to authenticaste agains the Identify service(keystone) via REST API.
+e.g source openrc
+e.g openstack server create
+Nova: 
