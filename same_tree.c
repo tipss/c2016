@@ -81,38 +81,21 @@ int main(int argc, char *argv[]) {
   node_t *n1 = NULL;
   node_t *n2 = NULL;
   node_t *tmp = NULL;
-  bool first = true;
   int a1[] = {1,2,3,4,5,6,7};
   int a2[] = {1,2,3,4,5,6,7};
   
   for (int i = 0; i< sizeof(a1)/sizeof(int); i++) {
-    if (first) {
       tree_insert(&n1, a1[i]);
-      tmp = n1;
-      printf("Done insert val %d at %p first\n", a1[i], n1);
-      first = false;
-    } else {
-      tmp = n1;
-      tree_insert(&tmp, a1[i]);
       printf("Done insert val %d at %p\n", a1[i], n1);
-    }
   }
   
-  first =true;
   for (int i = 0; i< sizeof(a2)/sizeof(int); i++) {
-    if (first) {
       tree_insert(&n2, a2[i]);
       printf("Done insert val %d at %p\n", a2[i], n2);
-      tmp = n2;
-    } else {
-      tmp = n2;
-      tree_insert(&tmp, a2[i]);
-      printf("Done insert val %d at %p\n", a2[i], n2);
-    }
   }
-  printf("\n n1 printed:%p", n1);
+  printf("\n n1 printed:%p\n", n1);
   tree_print(n1);
-  printf("\n n2 printed:%p", n2);
+  printf("\n n2 printed:%p\n", n2);
   tree_print(n2);
   printf("Comparing trees:\n");
   printf("n1 and n2 are same tree:%s\n",

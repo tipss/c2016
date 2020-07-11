@@ -53,7 +53,7 @@ elem_t * DFS(elem_t *r,int value) {
 
 #define INT_MIN 0
 #define INT_MAX 0xffff
-
+//Remember  it needs post order traversal (means traverse left, right and compute value)
 int findMax(elem_t *root) {
   int max=0;
   int l,r;
@@ -170,7 +170,7 @@ void inOrderTraversal(elem_t *root) {
 
 /*
  * Is this a Binary Search Tree.
- * Note  : InOrder Traversal leads to sorted array.
+ * Note  : pre-order Traversal leads to sorted array.
  *         Just keep track of previous element, and compare every time you walk.
  *         It should be in asending order
  * return 1 : its a binary search tree 
@@ -198,10 +198,26 @@ int isBST (elem_t **root){
 
 
 /* Unbalanced Insert, Count is kept to find if there are elements
- * that repeated
+ * that repeated O(n).
+ * un-balanced tree(insert, find is order n)
+    1
+     2
+      3
+       4
+        5
+	 6
+
+ * e.g balanced tree: (insert, find is order log(n).
+ *     4   
+ *  2     6
+ * 1 3   5 7
+
+ * Think before drawing 
+ * 1,2,3    4   5,6,7
+
  * A balanced tree has height of log(n), so it worst case search for an element is of order log(n).
  */
-void bstInsert(int key, struct elem_t **root) {
+void bstInsert(int key, struct elem_t **root, int *count) {
 
   if ( NULL == *root )
     {
@@ -209,21 +225,22 @@ void bstInsert(int key, struct elem_t **root) {
       (*root)->value = key;
       (*root)->left = NULL;    
       (*root)->right = NULL;
-      (*root)->count = 0;
+      (*root)->count = 1;
       printf("Inserting key %d\n",key);
     }
   else if(key < (*root)->value)
     {
-      bstInsert( key, &(*root)->left );
+      bstInsert( key, &(*root)->left, count);
     }
   else if(key > (*root)->value)
     {
-      bstInsert( key, &(*root)->right );
+      bstInsert( key, &(*root)->right, count);
     } 
   else 
     {
       printf("Duplicate key %d\n",key);
       (*root)->count++;
+      *count = (*root)->count; //Reflect this to caller
     }
 }
 
@@ -340,7 +357,7 @@ int findMaxElem(int A[], int n) {
     for (int j = 0; j < n; j++) {
       if (A[j] == A[i]) {
 	count++;
-	if (count > n/2) {
+	if (count >= n/2) {
 	  return j;
 	}
       }
@@ -357,7 +374,6 @@ int findMaxElem(int A[], int n) {
 *         index: Valid index of number which repeats more than n/2 times
 */
 int findMaxElem2(int A[], int n) {
-
 	
   elem_t *lca, *root=NULL;
   int count = 0;
@@ -371,9 +387,9 @@ int findMaxElem2(int A[], int n) {
    */
   for (int i = 0; i < n; i++) {
 	
-    bstInsert(A[i], &root);
-    printf("Insert i=%d, count %d n/2 = %d root 0x%p\n",i, root->count,n/2,root);
-    if (root->count > n/2) {
+    bstInsert(A[i], &root, &count);
+    printf("Insert i=%d, count %d n/2 = %d root 0x%p\n",i, count, n/2, root);
+    if (count >= n/2) {
       return i;
     }
   }
@@ -453,7 +469,8 @@ void testVariousTreeAPI(int A[], int n)
    * just increment count.
    */
   for (int i = 0; i < n; i++) {	
-    bstInsert(A[i], &root);
+    bstInsert(A[i], &root, &count);
+    printf("%p bstInsert val %d duplicate cound %d\n", root, A[i], count);
   }
   printf("Is this Binary Search Tree ?:%s\n",(isBST(&root) == 1)?"YES":"NO");
   printf("Max value in the tree :%d\n", findMax(root));
@@ -529,8 +546,9 @@ int main(int argc, char *argv[]) {
   int C[] = { 9,12,15,2,3,4,8,5,6,7,1};
 
   int b = findMaxElem (A, sizeof(A)/sizeof(int));
-	//int b = findMaxElem2 (C, 13);
-	printf("MaxElem index %d val %d\n", b, b?B[b]:b);
+	printf("MaxElem index %d val %d\n", b, b?A[b]:b);
+	b = findMaxElem2 (A, sizeof(A)/sizeof(int));
+	printf("MaxElem index %d val %d(via binary insert method\n", b, b?A[b]:b);
 
   testVariousTreeAPI(C,sizeof(C)/sizeof(int));
 }

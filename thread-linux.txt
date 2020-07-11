@@ -11,7 +11,7 @@ Thread remains lightweight
 Cost of communication between threads is low.
 3) What are the states associated with the thread?
 
-Ready
+nt Ready
 Running
 Waiting
 Dead state
