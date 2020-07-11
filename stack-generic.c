@@ -8,6 +8,12 @@
  * a single counter is maintained
  * its a LIFO(Last In First Out) data struct
  * like stack of plates in hotel
+ * One good example is , back button of web browser, 
+ * Recursive calls store function params in stack before they go and work next call
+
+ * infix notiation: a  + b
+ * postfix notation  ab+  <---- Use operater (+) on last two operands a,b
+ * We push o
 */
 
 

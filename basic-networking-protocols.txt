@@ -6,6 +6,17 @@ Connection is established using 3way hand shake( TX SYN,receive SYN-ACK, TX ACK)
 In-order delivery, acks every packets received, expects ack. Segments are numbered. Delays
 Tx when network is congested. Splits data into smaller chunks if N/S is congested, and re-assembles.
 
+3way hand shake shown in the picture with 3 steps:
+
+Client A---------------------------------Server B
+1. (Seq#100, Ack#0, Syn#1  SYN requiest)-------->
+2.         <--------------------(Seq#200, Ack#101, Syn#1  SYN reply)
+3. (Seq#101 Ack#201, Syn#0  ACK)------->
+
+Note Ack field is used to fill sequeunce number of sender,
+Note Seq# is always filled by originator to indicate his current running seq number.
+Note Syn# field is used to request synchronization
+
 UDP: 8byte packet header, connection less,message based, order not guaranteed, no-handshakes, 
 no congestion control, good for SNMP, HD-Video etc.
 
