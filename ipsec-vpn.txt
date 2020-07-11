@@ -1,0 +1,139 @@
+
+Overlay Model
+point-to-point secure tunnels is what Service Provide gives to end customer when
+end customer connects to Service provider network. Means Service provides does not
+participates in routing across customer site to customer site.
+Its up to customer how he want to build his overlay network.
+
+e.g L2: Frame Relay, ATM, X.25
+    L3: IPSec, GRE, DMVPN, L2TPV3, SSL VPN etc.
+
+Generally , an extra packet overhead is added to customer packet (e.g gre header, or ipsec header).
+
+Disadvantages: Manual Provision, Packet Overhead, Fixed bandwidth provision
+
+Peer-to-Peer model:
+e.g BGP VPN, MPLS etc, where Service Provide is part of the peer-to-peer network build up.
+
+Advantage:  Dynamic provisioning, No seperate VPN configuration ,
+Adding a new VPN is easy.
+Adding a PE to CE link is enough in most cases to add a new Client Site.
+
+Disadvantag: Service provider involoved here, and uses route-filter to keep clients seperated.
+             Ensuring no traffic from other customer entrer other customer, is what service provider
+	     has to ensure.
+
+If we use MPLS, it has both advantages in both model.
+
+
+
+Overlay Models Explained
+=======================
+
+                 site 1                               site 2
+Private-IP 10.1.1.1/24 Public-IP A----Internet-----Public IP B---Private-IP 10.1.1.2/24
+                                   (Transit N/W)
+Securing your data from site to site(A to B)  while your specific data on a selected subnet
+traverses from site to site over internet.
+IPsec VPN encrypts payload and decrypts at the other end where the tunnel ends.
+
+Types of VPN technology:
+Below two protocols are also establish VPN tunnels, but no security/encryption buit in.
+1. GRE tunnel is a point to point only
+   Tunneling protocol developed by Cicso
+   
+   e.g site 1
+       interface tunnel 12.
+       ip address 10.1.1.1/24<-----------private IP
+       tunnel src-ip A dst-ip B<-------- public IP
+
+   e.g site 2
+       interface tunnel 12.
+       ip address 10.1.1.2/24
+       tunnel src-ip B dst-ip A
+   At the end of this config, site 1 can ping with IP 10.1.1.2 and reach.
+   Also note that user can establish OSPF/BGP over GRE tunnel, as if like
+   normal routing between C and D.
+
+ 
+   Routing between A and B should already be available via OSPF/BGP etc.
+
+   Note that IPv6 over IPv4 Transit Network is also supported.
+   Your IPv6 packet will be appended with GRE IPv4 header, thus its transported.
+   Note that its a clear text header, so anyone can see it.
+   
+2. DMVPN supports point to multipoint connection
+   Dynamic Multipoint VPN (by Cisco in 2000).
+   Underneath uses NHRP(FRR supports);
+   
+   NHRP is like ARP
+   This build dynamic tunnels in full mesh form.
+   No static tunnel src/dst IP need be configured between each site.
+   Clients private subnet IP's are allocated dynamically.
+   This is pure Hub-Spoke topology, each site has to go through
+   spoke to reach other branch.
+   
+   DMVPN is acheived via using multiple protocols.
+   1. mGRE: Multipoint GRE
+      tunnel src-ip B mode mGRE
+      No destination is configured.
+      Src and Dst public IP's can be in different subnets.
+   2. NHRP
+      NBMA addres is a Public IP(static or dynamic).
+      NBMA keeps track of binding 'tunnel-ip' with NBMA address all the time,
+                                   private<------->public mapping
+      similar like IP-MAC mapping maintained in ARP.
+      NHS :Nexthop Server(hub) : Mapping agent
+      NSC: Nethop Client(spoke)
+    3.BGP/OSPF
+      'redistribute nhrp' command needs be used to redistribute
+       tunnel-ip addresses, so other BGP NBR(spokes) can send
+       traffic to these tunnel-ip as destination.
+       Likely this command is used on both NHS, NHC,
+    4. NHC1 can reach  NHC2, but reachability(public-ip) of
+       NHC2 is known only to NHS. Meaning, NHC1 will send
+       query(NHRP Resoloution) to NHS asking for mapping info(public-IP) of NHC2.
+       Only after reciving this reply, NHC1 establish a GRE tunnel
+       directly to NHC2 wihtout involving NHS.
+       NHRP Register: tell NHS what tunnel-ip/public-ip using to NHS,
+                      NHS receive these messages and stores like a book keeper.
+       NHRP Resolotion: Ask 
+.
+       
+3. IPSec tunnel is also a point to point only, but it secures IP layer
+Data Integrity
+Authentication via password
+
+IPSec Tunnel Mode: is default and used most ly.
+      Entire original IP packet is protected by IPSec, adds
+      a new IP header with public IP, and transports., commonly used
+      between gateways (Cisco Routers or ASA firewalls)
+      L2 + New-IP+ IP+ ESP/AH + L4 Payload
+      
+IPSec Transport mode:
+      Used for encrypted telnet or Remote Desktop session. not used commonly
+      L2 + IP + ESP/AH + L4 Payload
+      
+IPSec uses following protocols
+IKE: Internet Key Exchange : Provides framework for negotiation of security parameters,
+     Establishment of authenticated keys,
+     Build a a secure channel between two router.
+     IKE Phase 1: establish secure channel
+     IKE Phase 2: negotiate ipsec security parameter are negotiated
+     After this it terminate tunnel.
+
+ESP: Encapsulating Security Payload:
+     Provides framework for encrypting, authenticating and securing of data,
+AH: Authentication Header Provides framework for authenicating and securing of data
+
+
+
+
+4. DMVPN(IPSec implemented over it)  ( most commnly used)
+
+
+VPN use models:
+Remote VPN access.
+Get access to Office via VPN server managed by Company, where Office LAN access is enabled.
+Site to Site VPN
+Corportate connect multipe of theere site to headquarter.
