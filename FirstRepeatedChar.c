@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-/* Same logic works for display repeated char in a string 
+/*
+ *  Same logic works for display repeated char in a string 
  * At the end of walk, walk the hash , and print repeated chars.
  */
 

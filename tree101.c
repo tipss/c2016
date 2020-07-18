@@ -31,7 +31,7 @@ typedef struct elem_t {
 * This can also be used to find if there exits a route between two nodes.
 * first node you pass as start and use it as root,  second node as usual.
 *
-*  Note: DFS uses 'stack' as datastructure, but due to recursion(function call stack) its sort of hidden	   
+*  Note: DFS uses 'stack' as datastructure, vis function-call-stack	   
 *        BFS uses 'queue'
 */
 elem_t * DFS(elem_t *r,int value) {
@@ -133,6 +133,31 @@ void preOrderTraversal(elem_t *root) {
   printf("%d ", root->value);
   preOrderTraversal(root->left);
   preOrderTraversal(root->right);
+}
+
+/* 
+When mirrored, child node is swpped along with its childrens to 
+opposite side.
+
+
+1 2 3 4 5 6 7   with become 7 6 5 4 3 2 1
+*/
+void mirror(elem_t *root) {
+  /*
+    1. Remember its a post order travel
+       recurse to left, 
+       recurse to right
+       process current nodes (swap its childrens, even if one of them null they get swapped positions)
+   */
+  if(!root) {
+    return;
+  }
+  mirror(root->left);
+  mirror(root->right);
+  elem_t *tmp = root->left;
+  root->left = root->right;
+  root->right = tmp;
+  
 }
 
 /* Print TREE contents by using pre-order traversal method( DLR)
@@ -483,12 +508,15 @@ void testVariousTreeAPI(int A[], int n)
   delete(&root,temp->value);
   temp =findMaxValNode(root);
   printf("Max value node using findMaxValNode(after delete prev) %d\n",temp->value);
- printf("Print LevelOrder:\n");
+  printf("Print LevelOrder:\n");
   printLevelOrder(root);
+  mirror(root);
+  printf("Print LevelOrder:(after mirror)\n");
+  printLevelOrder(root);
+  
   delete(&root, 9);
  printf("Print LevelOrder(after root 9 is removed):\n");
-  printLevelOrder(root);
-
+ printLevelOrder(root);
 
   printf("\nPrint PreOrder:\n");
   preOrderTraversal(root);
@@ -550,5 +578,5 @@ int main(int argc, char *argv[]) {
 	b = findMaxElem2 (A, sizeof(A)/sizeof(int));
 	printf("MaxElem index %d val %d(via binary insert method\n", b, b?A[b]:b);
 
-  testVariousTreeAPI(C,sizeof(C)/sizeof(int));
+  testVariousTreeAPI(B,sizeof(B)/sizeof(int));
 }

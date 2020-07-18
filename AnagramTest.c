@@ -1,7 +1,13 @@
 #include<stdio.h>
 #include <stdbool.h>
 #include <string.h>
-
+/*
+ panagram:  must have all the characters fro a to z in a string.
+ * then its called a panagram.
+ * Like you have to walk the string with a dictionary , and find missing chars and print them
+ * what ever you print those are che chars it should be added to  the input string to make it a 
+ * panagram
+ */
 /* Must have matching character counts , position may not match 
 *  This is same as str2 is one of the permutation of 
    str1, e.g str1= cat, str2=act, or tac or tca, or cta */

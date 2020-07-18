@@ -33,7 +33,7 @@ int min_vertex_index(int sptSet[], int dist[]) {
  * 1. PATH : sptSet[] : Hold vertices that are already part of Shortest Path Tree
  * 2. TENT : distance[]: Minimum distance from a single source Vertix to this node found
  * 3. Initialize distance[] to INFINITI for all vertices, except for the source vertice(Val Zero)
- * 4. Find index of verterx,whose distance is minimum from the 'distance[] using min_key API,
+ * 4. Find index of vertex, whose distance is minimum from the 'distance[] using min_key API,
  * 5. Add this vertex to sptSet[] by setting it to 1/TRUE.
  * 6. Find all its adjacent vertices using supplied Graph[current-vertex][i]
  * 7. Update the distance of those adjacent vertices into distance[],if vertex is not in sptSet[].
@@ -43,7 +43,11 @@ int min_vertex_index(int sptSet[], int dist[]) {
 /* Given adjacency graph in two dimensional array, find shortest path tree from given source */
 /* 
  * Add parent list , next hops can be tracked TBD 
- * Note: It is similar to BFS( Breadth First Search), where a Queue is used 
+ * Note: It is similar to greedy BFS(Breadth First Search), where a Queue is used
+ * In Other words:
+ * It mainly uses priority-queue(min-heap), where in a list is used as underlying struct
+ * to store different vertices ordered by distance, root node representing min-distance at all time.
+ *  
  * This is used in Link State protocols like IS-IS and OSPF to compute shortest distrance
  * from root(self) to all other vertices(nodes) in the network.
  */
@@ -58,7 +62,7 @@ void dijkstra(int G[V][V], int source_index) {
 
   dist[source_index] = 0;
 
-  for(int count=0; count<V; count++){
+  for(int count = 0; count < V; count++) {
     //Get a index for vertex with min-distance from source
     //which is not already in the PATH list(sptSet).
     u = min_vertex_index(sptSet, dist);

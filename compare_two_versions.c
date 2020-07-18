@@ -2,6 +2,7 @@
 
 /*
  * Logic here is compare each octet(seperated by .) at a time.
+ * This logic can be applied in many cases where you convert a string to a number 
  */
 char *compareVer(char *v1,char *v2) {
   char *gr = ">";
@@ -25,13 +26,13 @@ char *compareVer(char *v1,char *v2) {
 
 
     if (num1 > num2) {
-    printf("%d > %d\n",num1, num2);
+      printf("%d > %d\n",num1, num2);
       return gr;
     } else if (num1 < num2){
-    printf("%d < %d\n",num1, num2);
+      printf("%d < %d\n",num1, num2);
       return le;
     } else {
-    printf("%d == %d\n",num1, num2);
+      printf("%d == %d\n",num1, num2);
       num1 = 0;
       num2 = 0;
       v1++;

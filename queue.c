@@ -41,7 +41,7 @@ int enqueue(Q *q,  int val) {
 }
 
 int dequeue(Q *q, int *val){
-  if(!q || val == NULL || isEmpty(q)) {
+  if (!q || val == NULL || isEmpty(q)) {
     return (-1);
   }
   *val = q->a[q->front];

@@ -1,5 +1,28 @@
 #include <stdio.h>
 
+
+
+/*
+ * What is dynamic programming ?.
+ * In fib calculation, if we put  tree picture of how we compute it  it looks like this.
+ *
+ 
+                          f(6)
+              f(5)                    f(4)
+         f(4)       f(3)         f(3)         f(2)
+        f(3) f(2) f(2) f(1)   f(2) f(1)     f(1) f(0)
+
+	At each level  we have been repeating comptations 
+       (e.g  f(3) is computed twice, f(4) is cimputed twice, so on based on the higher the fibonacci.
+
+In dynamic programming,we add another component to this recursion, by remembering the previous result
+at a cost of additional storage space. Thus out lenght(call stack) can dramatically decreease while we
+keep remembering some frequently used results.
+This is the basic foundation to dynamic programming.
+
+ */
+
+
 // Remember it starts at index Zero
 // Its a series
 // f0= 0, f1=1, f2=1,f3=2,f4=3,f5=5...

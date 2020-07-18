@@ -10,6 +10,7 @@ void swap(int *a, int i, int j) {
  * Swap each element with available elements in each iteration.
  * When swapped, recurese with permute for the rest of the array
  * Running time is n factorial
+ * recursion
  */
 void permute(int *a, int l, int r) { 
 
@@ -17,16 +18,16 @@ void permute(int *a, int l, int r) {
     return;
   }
 
-  if ( l == r-1) {
+  if ( l == r) {
     for(int i = 0; i < r; i++){
       printf("%d ", a[i]);
     }
     printf("\n");
   } else {
-    for (int i=l; i < r; i++) {
-      swap(a, l+1, i);
-      permute(a, l+1, r);
-      swap(a, l+1, i);
+    for (int i= l; i < r; i++) {
+         swap(a,  l,   i);
+      permute(a,  l+1, r);
+         swap(a,  l,   i);
     }
   }
 }

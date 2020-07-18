@@ -3,7 +3,9 @@
 
 //Kesavan T
 //kethiruv@cisco.com
-
+/*
+ * 
+ */
 #define DR 0x1;
 //Element of Linked list.
 typedef struct elem_s {
@@ -31,10 +33,16 @@ elem_t *new_elem(void) {
 }
 
 /*
+ * Similar like Run Length Encoding, but its not
  * return valid elem_t pointer
  * return NULL : Failed to process or invalid input.
- * a pointer to array of sorted number in increasing order 
+ * a pointer to array of sorted number in increasing order
+ * Its must to have sorted number 
  * Range of number : range, must be greater than 0.
+ * Compress repeating numbers in a sequence of asending number series
+ * Builds a linked list , each elemet  is designed to store
+ * start-end-diff info chained to next start-end-diff, Thus repeating number are compresses
+ * via linked list.
  */
 elem_t *compress (int *a, int range) {
   int     begin  = 0;
@@ -42,17 +50,16 @@ elem_t *compress (int *a, int range) {
   elem_t *prev   = NULL;
   elem_t *head;
 
-  if (range <= 0){
+  if (range <= 0) {
     return NULL;
   }
  
   for (int i = 0; i < range; i++) {
-
     elem_p        = new_elem();
     elem_p->start = a[i];
-    if(i+1 >= range) {
-      elem_p->diff =0;
-      elem_p->end = a[i];
+    if (i+1 >= range) {
+      elem_p->diff = 0;
+      elem_p->end  = a[i];
       if(prev) {
 	prev->next  = elem_p;
       } else {

@@ -378,3 +378,28 @@ pthread_t t;
 	  pthread_create(&t, NULL, &myturn, NULL);
 	  yourturn();
 }
+
+
+
+What is a network name space vs VRF ?.
+Has logical representation of network, has its own
+routing table, iptable etc.
+
+How to look in network namespace,
+
+>ip netns exec <blue-ns> ip a
+>ip netns exec <blue-ns> ping xxx
+>ip netns exec <blue-ns> iptable -L
+
+
+
+Floatig IP in openstack?.
+Are createad when a new instanace(vm) is added in a network,
+
+How to share Host OS vs Container OS files?
+e.g container name p1
+
+Well, let’s say we want to have our host’s /var/cache/lxc
+shared with “p1”, we can edit /var/lib/lxc/p1/fstab and append:
+
+/var/cache/lxc var/cache/lxc none bind,create=dir
