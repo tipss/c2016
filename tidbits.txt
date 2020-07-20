@@ -238,7 +238,8 @@ http://www.cprogramming.com/tutorial.html
      Presentation,
 Session[DNS,LDAP,]
 Transport[TCP/UDP,MobileIP,],
-Network[L3 I	P(4,6), RSVP, PIM, RIP2, VRRP,ICMP],
+Network[L3 IP(4,6), RSVP, PIM, RIP2, VRRP,ICMP],
 Data Link,[L2 protocols, ARP]
 Physical
    APS-T-NDP
+

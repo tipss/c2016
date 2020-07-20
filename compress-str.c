@@ -2,15 +2,15 @@
 #include <stdlib.h>
 
 void compress(char *str) {
-  int j = 0;
   char *dest = str;
+  int j = 0;
 
-  while(*str) {
-    printf("Copied %c\n",*str);
-    dest[j++]=*str;
-    while(*str && *str == *(str +1)){
+  while (*str) {
+    printf("Copied %c\n", *str);
+    dest[j++] = *str;
+    while (*str && *str == *(str +1)) {
       str++;
-      printf("Skipping %c\n",*str);
+      printf("Skipping %c\n", *str);
     }
     str++;
   }

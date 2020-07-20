@@ -49,8 +49,8 @@ Livelock can occur in the following conditions:
 
 When all the threads in a program executed on an object with zero parameters. The program is live-locked and never processed until one or more threads call Object.notify () or Object.notifyAll() on the relevant objects.
 Livelock also happens when all the threads in a program are stuck in infinite loops.
-9) What is a monitor?
 
+9) What is a monitor?
 The monitor is a body of code that can be executed by only one thread at a time.
 If any other thread attempts to get access at the same time, it will be suspended until the current thread releases the Monitor.
 10) What do you mean by thread starvation?

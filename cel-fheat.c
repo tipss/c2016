@@ -3,6 +3,7 @@
 int main(int argc, char *argv[]) {
  int x;
 char c;
+//Remember float here
 float farn = 70, cel;
  int upper = 120;
 c='A';

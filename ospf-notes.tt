@@ -1,12 +1,56 @@
+OSI model:
+L7 A
+L6 P
+L5 S
+L4 T    BGP
+L3 N    OSPF    ICMP, ICMPv6, Neighbor Discovery 
+L2 D    IS-IS,  ARP
+L1 P   
+
 
 What is MPLS? Multi Protocol Label Switching.
 
 Drawback of Distance Vector Protocol(RIP) :
 1. Send routing updates at a regular scheduled time.
 2. They contain full routing table, which takes up valuable BW on the N/W.
+e.g RIB, BGP, EIGRP
+distance = metric == hop-count
+vector = direction(Interface)
+NBR's advertise routes as a measure of metric and direction.(distance vector).
+Thus a table of distance-vector is built from that information. They built topology
+only from its NBR's which are directly connected. Means, NBR's do not pass on infor
+of distance-vector of its NBR. Instead it digests and converts and give it to its NBR's.
+Entire routing table updates are sent out periodically(RIB), BGP is a bit smart,
+only sends when there is change. and does route-refresh periodically.
 
 
-OSPF: is a link state 
+
+
+What is admin distance?.
+When you have route reachablity from different type of protocol, it will
+resolved based on who has lowest admin-distance.
+e.g
+AD   Protocol
+0    Connected,
+1    Static,
+110  OSPF
+120  RIP
+
+Distance Vector based protocols are good for 'flat non-hirachical' or hub-and-spoke type of
+network.
+They take long time to converge.
+
+IS-IS and OSPF are link state based protocols
+They build a common tree of the topology by exchanging
+link-state(interfaces) of each other, which eventually help see each
+router complete network topology. From that tree, each router put its location as root
+of the tree, and computes shortest-path to routes advertised by other
+routers in the tree vertex.
+
+Good for hirarchial and compelex topologies. Converge faster with the aid of
+hiraarchy(level or areas).
+
+OSPF:
 Admin Dist is 110.
 Cost based metric, across multiple hops. Cost is derived from PortType.
 Router-ID Indentifies the router.(loopback interface is picked if not configured).

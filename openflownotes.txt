@@ -1,10 +1,9 @@
 Cisco ACI: Application Centric Infra
 
-Ofdatapath: the switch implementation
-Ofprotocol: secure channel for connecting the switch to the controller
-Oflib: a library for converting to/from 1.3 wire format
-Dpctl: a tool for configuring the switch from the console
-
+ofdatapath: the switch implementation
+ofprotocol: secure channel for connecting the switch to the controller
+oflib: a library for converting to/from 1.3 wire format
+dpctl: a tool for configuring the switch from the console
 
 
 NF and YANG are not SDN but they can be used in a SDN environment.  
@@ -18,27 +17,37 @@ with lock, unlock, commit and rollback functionality.  SNMP MIBs can be deployed
 the YANG build, tail-f offer all sorts of useful tools to integrate YANG, SNMP and CLI.
 
 How EVPN is different from VPLS ?.
-In EVPN PE's learn and advertise MAC addresses using MP-BGP in control plane using BGP updates with newly defined NLRI, like VPN IPV4 routes. no pseudo-wire full mesh required.(because broadcast/flood domains are not needed, this is done in control plane of MP-BGP), L2 Traffic is sent over a specific PE tunnel after learning is done.
+In EVPN PE's learn and advertise MAC addresses using MP-BGP in control plane using BGP updates
+with newly defined NLRI, like VPN IPV4 routes. no pseudo-wire full mesh required.
+(because broadcast/flood domains are not needed, this is done in control plane of MP-BGP),
+L2 Traffic is sent over a specific PE tunnel after learning is done.
  
-This is not the case for VPLS. Where in VPLS establishes virtual broadcast domain, MAC addreses are not seen by BGP control plane in VPLS.
+This is not the case for VPLS. Where in VPLS establishes virtual broadcast domain,
+MAC addreses are not seen by BGP control plane in VPLS.
 
 Why we do not need to run STP in VPLS Bridge ?.
-Each PE has a P2MP view of all other PEs it sees itself as a root bridge, split horizon loop protection
-Full mesh topology obviates STP requirements in the service provider network
+Each PE has a P2MP view of all other PEs it sees itself as a root bridge, split horizon
+loop protection. Full mesh topology obviates STP requirements in the service provider network
 Customer STP is transparent to the SP / customer BPDUs are forwarded transparently
 Traffic received from the network will not be forwarded back to the network
 
 How STP works?
-STP is a Layer 2 protocol that passes data back and forth to find out how the switches are organized on the network and then takes all the information it gathers and uses it to create a logical tree. Part of the information STP receives defines exactly how all the network switches are interconnected.
+STP is a Layer 2 protocol that passes data back and forth to find out how the switches are organized
+on the network and then takes all the information it gathers and uses it to create a logical tree.
+Part of the information STP receives defines exactly how all the network switches are interconnected.
 
-STP builds this information by sending out network packets called Bridge Protocol Data Units (BPDUs or sometimes BDUs). These BPDUs — or rather the data in them — control the way STP determines the network topology.
+STP builds this information by sending out network packets called Bridge Protocol Data Units
+(BPDUs or sometimes BDUs). These BPDUs — or rather the data in them —
+control the way STP determines the network topology.
 
 Every participating sends out STP BPDU , with Bridge ID/priority. Root Bridge will be the one
 with lowest priroty(or MAC address).
-Each swich will find lowest cost port to reach RootBridge(least number of hops based on the Tree). and this port is called Root Port.
-Cost is calculated based on the Interface-Type.
+Each swich will find lowest cost port to reach RootBridge(least number of hops based on the Tree).
+and this port is called Root Port. Cost is calculated based on the Interface-Type.
+
 Designated Port?.
-Rest of the ports are made blocking ports(meaning flood traffice and data traffic will not be sent or received), but they still can receive BPDU's
+Rest of the ports are made blocking ports(meaning flood traffice and data traffic
+will not be sent or received), but they still can receive BPDU's
 
 How to detect loops ?.
 Find which port is dropping most packets.
@@ -65,6 +74,7 @@ stuffing it into a VPLS. That does not mean you should simply use VxLAN in the W
 In VxLAN
  A tenant identifier, the VXLAN Network Identifier (VNI), is encoded in the VXLAN
 header and allows each tenant to have an isolated Layer 2 domain.
+
 • VXLAN supports multi-pathing scalability through ECMP. VXLAN uses the outer source
 UDP port as an entropy field that can be used by the core IP routers to balance the load
 across different paths.
@@ -132,7 +142,6 @@ When a PE capable of flooding (say PEx) receives a broadcast Ethernet
    reflect the new port P'.  A VE MAY implement a mechanism to damp
    flapping of source ports for a given MAC address.
 
-
 VPLS PEs SHOULD have an aging mechanism to remove a MAC address
    associated with a logical port, much the same as learning bridges do.
    This is required so that a MAC address can be relearned if it "moves"
@@ -153,9 +162,6 @@ VPLS PEs SHOULD have an aging mechanism to remove a MAC address
    time T on a per-VPLS basis.  In addition, an implementation MAY
    accelerate aging of all MAC addresses in a VPLS if it detects certain
    situations, such as a Spanning Tree topology change in that VPLS.
-
-
-
 
 OpenFlow Messages:
 

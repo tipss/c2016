@@ -11,22 +11,29 @@ http://www.cafeaulait.org/course/week11/02.html
 
 
 Signal Handler?, Why we need them, and when we need them.
+
+
+
+/* Life cycle of Server socket : socket(), bind(), listen(), accept() read() .. listen() */
+/* Life cycle of Client socket : socket(), bind(), connect(), write() */
+
 What is a Linux Socket?.
 Socket in linux is an end point  for communication, 
 sock_id= socket(domain, type,protocol)
 e.g domain=(AF_NETLINK,PF_ROUTE, PF_UNIX/PF_LOCAL etc)
-e.g type SOCK_STREAM: reliable connection based,
-         SOCK_DGRAM: connectionless, unreliable messages.
+e.g type SOCK_STREAM: reliable connection based, e.g TCP
+         SOCK_DGRAM: connectionless, unreliable messages UDP.
          SOCK_RAW: 
 What is a Linux bind(sockfd, sockaddr, len) mean?
 When socket is created using 'socket()', it exists in a name space,
-but has no address assigned to it. bind() assigns the address specified b addr to the socket to the sockfd. its also called assigning
-a name to a socket.
+but has no address assigned to it. bind() assigns the address specified b addr
+to the socket to the sockfd. its also called assigning a name to a socket.
 After socket is bound, a buffer size is set.
 
 What is listen() ?. when to use.
 After socket is bound, we have to listen() on that socket via 
-blocking calls.
+blocking(poll) calls.
+
 When there is a an incoming connection, we can accept() peers
 connection via that socket.
  listen() marks the socket referred to by sockfd as a passive socket,
@@ -34,13 +41,10 @@ that is as a socket that will be used to accept incoming connection request usin
 
 When to use read() ?.
 
-After accept() by a passive socket 
-
-
-:q
-:, we start read() on that
+After accept() by a passive socket we start read() on that
 socket. When read is done, or nothing to read, we wait in 'accept()
 while loop.
+
 
 Clients act as producer, 
 Server act as consumer, both running in different processes.
@@ -64,10 +68,12 @@ write();
 
 What is the difference between sleep() vs pthread_yield() ?
 sleep: makes the calling process sleep for the duration given, no other thread is scheduled
-pthread_yield: calling thread politely give a way for other waiting threads to run if there are waiting. This is done by
-relinquishing use of procesor, and moving itself to run-queue for its turn to come.
+pthread_yield: calling thread politely give a way for other waiting threads to
+run if there are waiting. This is done by relinquishing use of procesor,
+and moving itself to run-queue for its turn to come.
 
 What does 'select() do' ?.
+
 Why to use 'select() before read(on socket)?.
 
 Kubernetics:
@@ -75,34 +81,84 @@ Container orchestration tools are : kubernetics, docker swarm, mesos
 
 What are Dockers?(also called Docker Container Virtulization).
 
-Solves this problem for everone, by making an image of an entire application, with all its dependencies and ship it to your required target environment / server. So in short, if the app worked in your local system, it should work anywhere in the world(because you are shipping the entire thing).
+Solves this problem for everone, by making an image of an entire application,
+with all its dependencies and ship it to your required target environment / server.
+So in short, if the app worked in your local system, it should work anywhere
+in the world(because you are shipping the entire thing).
+
 The above problem can be solved using VM. But Dockers are very light weight, size, time etc.
+
 =============================
 Linux Namespace and CGroups
+
 Its a isolated networking environments running on a single physical host or VM.
-It has its own interface,routing table and forwarding table, 
+It has its own interface, routing table and forwarding table, 
 process id lists, network devices, file system, user lists etc
 Process can be dedicated to one network namespace.
-Used in Linux Containers, OpenStack, Mininet, Docker etc
+Used in Linux Containers, OpenStack, Mininet, Docker etc.
 
-Root Namespace: Its the default network Namespace, all other namespaces are launched form this.
-E.g add new namespace:  ip netns add red, ip netns add green, ip netns, ip netns
+Root Namespace: Its the default network Namespace, all other namespaces
+are launched from this.
+
+E.g add new namespace: ip netns add red, ip netns add green, ip netns, ip netns
 ls /var/run/netns/
 ======================================================
 Cgroups:
 By default on a Linux system,
 1. all processes are children of the INIT process.
    Which means all processes are part of a single tree structure.
-   Now in Cgroup method, different process groups, can exist on a single system.
+   Now in Cgroup method, different process groups can exist on a single system.
    So instead of a single process tree of default linux method,
    cgroup method can have different trees of process structure
    (with different parents, and childs will inherit stuff from their parents),
    all isolated from each other.
-   Now you might have got an idea of how cgroups and namespace are leveraged by container based virtualization. 
+   Now you might have got an idea of how cgroups and namespace are
+   leveraged by container based virtualization. 
 
-What is Virtual Memory?
+VRF-lite:(New thing as opposed to usng namespace based VRF's in FRR)
+https://www.kernel.org/doc/Documentation/networking/vrf.txt
+Virtual Routing and Forwarding (VRF)
+====================================
+The VRF device combined with ip rules provides the ability to create virtual
+routing and forwarding domains (aka VRFs, VRF-lite to be specific) in the
+Linux network stack. One use case is the multi-tenancy problem where each
+tenant has their own unique routing tables and in the very least need
+different default gateways.
+
+Processes can be "VRF aware" by binding a socket to the VRF device. Packets
+through the socket then use the routing table associated with the VRF
+device. An important feature of the VRF device implementation is that it
+impacts only Layer 3 and above so L2 tools (e.g., LLDP) are not affected
+(ie., they do not need to be run in each VRF). The design also allows
+the use of higher priority ip rules (Policy Based Routing, PBR) to take
+precedence over the VRF device rules directing specific traffic as desired.
+
+In addition, VRF devices allow VRFs to be nested within namespaces. For
+example network namespaces provide separation of network interfaces at the
+device layer, VLANs on the interfaces within a namespace provide L2 separation
+and then VRF devices provide L3 separation.
+
+What is a Swap?.
+Swap is a filesystem type – a raw disk partition is formatted as swap upon
+system installation. It's treated as second-level RAM by the OS.
+When the OS runs out of RAM, it uses swap. As a rough heuristic,
+system administrators sometimes configure the size of the swap partition to be twice that of available RAM
+
+What is Virtual Memory(Swap)?
 Simply put, virtual memory is a combination of RAM and disk space that running processes can use.
 Swap space is the portion of virtual memory that is on the hard disk, used when RAM is full.
+
+With the use of Virtual Memory, each process is isolated to its own memory space thus isolating each process .
+
+What is valgrind?
+Valgrind uses a technology called dynamic binary instrumentation (DBI) to instrument code.
+Usage : valgrind df
+Generates a report of dynamic memory allocation used by program 'df'.
+
+
+What's a core dump anyway?
+A core dump is a snapshot of certain dynamic regions (segments) of the process at the time it crashed (technically, it's a snapshot of minimally the data and stack segments). The core dump can be analyzed postmortem using debuggers such as GDB
+
 
 As for why 32bit CPU is limited to 4gb virtual memory ?.
 By definition, a 32-bit processor uses 32 bits to refer to the location of each byte of memory. 
@@ -112,8 +168,8 @@ By definition, a 32-bit processor uses 32 bits to refer to the location of each 
 Very good read here for windows OS :
 https://support.microsoft.com/en-us/kb/294418
 ==============================================================
-What is a shared memory ?.
 
+What is a shared memory ?.
 One way to communicate between two process is by using shared memory.
 One process writes, other process reads.
 
@@ -232,7 +288,7 @@ Mutex =  Mutual Exclusion.
 One thread holds this lock(winner thread) excluding other threads(loosers).
 Why we need mutex?.
 Linux has critical sections which are shared writable address space.
-without the use of mutex multiple threads can write to the same critical section at the same time,
+without the use of mutex, multiple threads can write to the same critical section at the same time,
 which is not ok.
 
 In Java, Mutex-like behaviour is accomplished using the synchronized keyword.
@@ -259,7 +315,7 @@ Ch15.
 What kernel version we support in nvOSd?.
 4.18 linux kernel,
 What ubuntu version we support
-18.04.
+16.04 xilix, latest is 18.04 bionic(which we do not support)
 
 
 reader-writer mutex lock?.
@@ -271,7 +327,7 @@ Yes its possible to take mutex lock recursively, if mutex is created with attrib
 while creating mutex.
 
 Mutexes can be applied only to threads in a single process and do not work between processes as do semaphores. 
-semaphores are preimarily used for process syncronization.
+semaphores are primarily used for process syncronization.
 mutex are for thread syncronication.
 
 What is self deadlock?.
@@ -284,6 +340,8 @@ How to commmunicate between two 'process' in linux in a syncronouse way ?.
 Why we need condition variable ?.
 If a thread want wait until certain work is done, it can wait on a condition variable.
 The other thread can touch this condition variable and signal the waiting thread to continue to work.
+Without the use of condition-varibale, both threads access same resource leading to
+race condition,
 
 Basically a thread can be put in a wait queue, by making it wait on a condition variable.
 It gets scehuled only after that condition variable is ready to be used.
@@ -403,3 +461,8 @@ Well, let’s say we want to have our host’s /var/cache/lxc
 shared with “p1”, we can edit /var/lib/lxc/p1/fstab and append:
 
 /var/cache/lxc var/cache/lxc none bind,create=dir
+
+
+Crash-only software refers to computer programs that handle failures by simply restarting, without attempting any sophisticated recovery.[1] Correctly written components of crash-only software can microreboot to a known-good state without the help of a user. Since failure-handling and normal startup use the same methods, this can increase the chance that bugs in failure-handling code will be noticed, except when there are leftover artifacts, such as data corruption from a severe failure, that don't occur during normal startup.
+
+Crash-only software also has benefits for end-users. All too often, applications do not save their data and settings while running, only at the end of their use. For example, word processors usually save settings when they are closed. A crash-only application is designed to save all changed user settings soon after they are changed, so that the persistent state matches that of the running machine. No matter how an application terminates (be it a clean close or the sudden failure of a laptop battery), the state will persist.

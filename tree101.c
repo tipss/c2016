@@ -39,7 +39,7 @@ elem_t * DFS(elem_t *r,int value) {
   if(r == NULL)
     return NULL;
   printf("%d ",r->value);
-  if(r->value == value){
+  if(r->value == value) {
     return r;
   }
   r->count = 1; //Visited this node

@@ -33,6 +33,17 @@ void printBin(int n) {
 
 }
 
+//Remember this also works, easy to remember?
+void printBin2(int n) {
+  if (n > 1) {
+    int	i  = n >> 0x1;
+    printBin(i);
+  }
+  printf("%c", (n & 0x01)?'1':'0');
+
+}
+
+
 //Remember
 //SetBit , where the bit is inside an array or integer
 void  SetBit( int A[],  int k )

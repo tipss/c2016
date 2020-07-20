@@ -1,15 +1,21 @@
  2) how will you search a sequence of bits over array of bytes
+ 
  3) Design Qs: You have an incoming stream of bits. You have infinite memory, 
     processing power. Design a system that will check for viruses. 
     You have all the viruses signatures.
+    
  4) Same qs, You have limited processing power. How would you do?
+ 
  5) When do you use Red Black tree, Avl tree
+ 
  6) swap the nibbles in a byte. 0101 0001 -> 0001 0101
+ 
  7) some pointer output qs.
  -> void *p=0; p+=2; printf(“%d”,*p);
  -> int **p=0; printf(“%d”,**p);
 
  8) count the number of set bits in a byte( in the best possible way)
+ 
  9) What packets are generated when a networking device tries to reach another 
     networking device in a different network , connected through intermediate two routers. 
     Explain in detail

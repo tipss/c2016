@@ -1,12 +1,44 @@
+WHat is TLS/SSL termination ?
+
+A TLS termination proxy (or SSL termination proxy[1], or SSL offloading[2]) is a proxy server that is used
+by an institution to handle incoming TLS connections, decrypting the TLS and passing on the unencrypted
+request to the institution's other servers (it is assumed that the institution's own network is secure
+so the user's session data does not need to be encrypted on that part of the link).
+TLS termination proxies are used to reduce the load on the main servers by offloading the
+cryptographic processing to another machine, and to support servers that do not support SSL, like Varnish.
+
+SSL and TLS:
+TLS is newer version of SSL, and it more secure.
+Which layer it belongs to ?:
+Application Layer or Presentation (encryption/decription), or session layer.
+All are true.
+If the Handshake involves : TCP then its fair to say (application layer protocol.
+
+How SSL/TLS session connection is established?.
+client(browser) <------------->server(tomcat/apache)
+1. Client send list f supported SSL/TLS version and suported encryption  to server->
+2. Server sends Digital Certificate(CA) and Public Key in response to it.
+3. Client verifies this data via outside (Certificate Autority) to confirm authenticty of the webserver.
+4. Client now trusts Server and sends its shared secret encrypted with Servers Public Key.
+5. Cliet sends Finished message, indicate client part of handshake is complete.
+6. Server Responds with its Fiished message.
+
+Now client/server exchange symmetrically encrypted data with shared secret key.
+
+What are some important port number
 
 TCP vs UDP.
 Both are Transport Layer protocols
 TCP : 20byte header, stream based/reliable/connection-based .
-Connection is established using 3way hand shake( TX SYN,receive SYN-ACK, TX ACK).
-In-order delivery, acks every packets received, expects ack. Segments are numbered. Delays
-Tx when network is congested. Splits data into smaller chunks if N/S is congested, and re-assembles.
+Connection is established using 3way hand shake(TX SYN,RX SYN-ACK, TX ACK).
+Connection is tear down is also done via handshake.
+This is the reason why TCP is called connection oriented.
+In-order delivery, acks every packets received, expects ack.
+Segments are numbered. Delays
+Tx when network is congested.
+Splits data into smaller chunks if N/S is congested, and re-assembles.
 
-3way hand shake shown in the picture with 3 steps:
+3 way hand shake shown in the picture with 3 steps:
 
 Client A---------------------------------Server B
 1. (Seq#100, Ack#0, Syn#1  SYN requiest)-------->
@@ -19,12 +51,26 @@ Note Syn# field is used to request synchronization
 
 UDP: 8byte packet header, connection less,message based, order not guaranteed, no-handshakes, 
 no congestion control, good for SNMP, HD-Video etc.
+     Sending of UDP packet does not need a prior session established, nor an ACK is
+     expected after send and receive.
+     Meaning, there must be a listener on the server at port e.g for SNMP 161.
+     Client sends packet to that server. Server uses clients source port to reply
+     e.g SNMP querry reply.
+
+Some commonly used port numbers used at transport layers.
+22  SSH
+23  TELNET
+53  DNS
+80  HTTP
+443 HTTPS(over SSL/TLS)
+161 SNMP
+
 
 VXLAN: 
 VTEP Virtual Tunnel End Point.(Adds 50byte overhead in L3 network) for every packet.
 Original 'L2' frame(e.g ARP request, or unknown MAC's are) are embedded into UDP packet with
 8byte VXLAN header and sent to multicast group on the IP transport. This enables learning
-of SMAC by each VTEP, including innder 'SMAC'. (HOSTMAC,VTEPIP,VTEPMAC,SEGMENTID) 
+of SMAC by each VTEP, including inner 'SMAC'. (HOSTMAC,VTEPIP,VTEPMAC,SEGMENTID) 
 =======================================================================================
 HOST-MAC1---VETP1---Shared Transport Network(IP and Multicast)----VTEP2---HOST-MAC2.
           ->ENCAP-> +50bytes                                      DECAP ->-50bytes
@@ -62,15 +108,36 @@ VXLAN bridging with MC-LAG
 
 VRRP:
 Virtual Router Redundancy Protocol:
-VRRP instance is limited to single subnet, it does not advertise subnets beyond that subnet or affect the routing table in anyway.
+VRRP instance is limited to single subnet, it does not advertise subnets beyond that subnet
+or affect the routing table in anyway.
+An instance is idenitified by instance ID , which can range from 1 to 255.
 
-VRRP creates a 'virtual router' with unique IP address(Gateway address) that hosts(users) will know as. 'Virtual Router' is made of an 'active' and 'slave' physical router. 
-These routers must use unique MAC address, 00.00.5E.00.01.xx.
-xx is the VRRP ID.  This mac is used for ARP reply , and only one router will use at a time(Master).
+VRRP instance creates a 'virtual router' with unique IP address(Gateway address)
+that hosts(users) will know as. 'Virtual Router' is made of an 'active' and 'slave' physical router.
+State is elected based on vrrp priority and other elements like who starts advertising first.
 
-Physical routers within the 'virtual router' group must communicate with each other on a well known multicast IP address 224.0.0.18, Using the 'priority' a router with highest priority will become master.
-Failure to receive multi-cast IP packet from master, triggers switch, and slave will become master.
-Only Master sends IP multicast packets periodically. All of these routers must be in the same LAN segment.
+Both routers use same unique MAC address on there virtual NIC, e.g 00.00.5E.00.01.xx.
+xx is the VRRP ID.  This mac is used for ARP reply by active node,
+Other node will not reply, thats how it attracts active traffic from clients  for forwarding.
+
+Physical routers within the 'virtual router' group must communicate with each other on a well
+known multicast IP address 224.0.0.18, Using the 'priority' a router with highest priority will become master.
+Failure to receive multi-cast IP packet(vrrp hello) from master,
+triggers switch, and slave will become master.
+Only Master sends IP multicast packets periodically.
+All of these routers must be in the same LAN segment.
+
+Linux has interface dependancy(master) , this is used while creating a VRRP VIP interface.
+
+
+e.g R1 (PIP1, VIP)    ------R2(PIP1, VIP)
+PIP1,2 Primary IP interface(Usually a physical interface).
+VIP Virtual IP interface(Usually latches on the PIP in that router).
+Note that PIP should always be UP on both sides, as clients when using VIP do not
+send traffic directly to PIP address. Clients are not blocked from
+sending traffic directly to PIP address, but redunancy is not guaranteed.
+
+All PIP1, PIP2, and VIP must belong to same subnet.
 
 ===========================================================================================================
 SNORT: is an open source network intrusion prevention and detection system (IDS/IPS) developed by Sourcefire. 
@@ -99,23 +166,36 @@ e.g 'Action log,
      sport, dip,dport
      'msg detected' < --Rule Options
 ==========================================================================================================
-ARP(Address Resolution Protocol): 
+ARP(Address Resolution Protocol): L2, data-link layer prototocol
 L2HDR+L2Payload(SMAC,SIP,TARGETMAC,TARGETIP)
 IP packets are always encapsulated in Ethernet Header(with DMAC and SMAC) on the wire.
 Meaning, to send and IP packet to say a destination D, you must know D's (Router)MAC address also.
-What ARP protocls does it send 'ARP Request(broadcast messsage)' asking for MAC-address, given an IP address. 
+What ARP protocls does it send 'ARP Request(broadcast messsage)'
+asking for MAC-address, given an IP address.
+
 ARP Reply(unicast to sender of ARP Request) with a MAC address. Results are store in 'ARP Cache'
 This is done dynamically on a need basis(say e.g ping to D, firt ARP query is sent).
 ARP Cache is queried first, to find D's mac address.
 
-Proxy ARP: Its a feature on 'Routers', wherein they respond to an 'ARP Reuest' for an 'Target IP' address
-for which they are not the owners. They do this, because there routinging table knows how to route IP packets with that
-destination D to the next hop if its received by this router with DMAC equal to its own MAC.
+ICMP ping before sending IP packet to destination must know the mac address of the destination
+IP. It finds this by looking at local ARP table. If not found, it sends ARP request.
+The interface on the remote router/host which has this IP configured replies to this ARP request
+saying that my MAC and IP bindings are here. Thus ARP table is updated, and ICMP pings
+can be sent out.
+
+We can flush /clear ARP table, In that case, ping like applications resend ARP requests to relearn.
+
+Proxy ARP: Its a feature on 'Routers', wherein they respond to an 'ARP Reuest' for an
+'Target IP' address
+for which they are not the owners. They do this, because there routinging table knows how
+to route IP packets with that destination D to the next hop if its received by this router
+with DMAC equal to its own MAC.
 
 Gratuitous ARP?.
 When Sending-IP and Target-Ip in a 'ARP Request' is same it s called a Gratuitous ARP.
 This is done for : a. Host Registration, b. Duplicate IP deletion.
-If there is an 'ARP Reply' for this message, it means, there is a duplicate address exist in the network.
+If there is an 'ARP Reply' for this message, it means, there is a duplicate address
+exist in the network.
 
 
 MAC Address Basic:
@@ -150,7 +230,7 @@ This is called OLDP proto(not official).
 ========================================================================================
 
 IPv6:
-16byte address, 128bits.
+Each address is of size 16 byte, or, 128bits. mask can be up to /128
 4MSBytes form 'network prefix'
 4LSByte identifies IntfID/MAC of the device if choosen.
 Represented as 8 chunks seperated by colon.
@@ -159,6 +239,7 @@ When a chunk has zero value it can be skipped.
 2001:db8:49:0:ab00:0:0:102 => 2001:db8:49:0:ab00::102
 Note the zeros between 49 and ab are not compresses.
 Only leading zeros are compressed.
+
 IPSec: IPv6 mandates use of IPsec, which is not the case of IPv4.
 Because of increased addres space, NAT is not needed.
 So its easier to troubleshoot IPv6 networks.
@@ -167,11 +248,33 @@ etype 0x86DD is used to distinguish at link-layer,
 TTL is renamed as HOPLIMIT.
 Header Checksum field is not there.
 FlowLabel field is added.
+What is link-layer address in IPV6 ?.
+What is Neighbor Discovery Protocol?
+Its equivalent of ARP used in IPv4.
+Mainly it uses ICMPv6 packets.
+NS Neighbor Solicitation
+NR Neighbor Reply
+Routers register for different multicast mac address, and they have better role.
+
+RS Router Solicitation
+RR Router Reply
+
+DHCPv6 ?.
+Used for IPv6 global IP configuration.  ND helps discover DHCPv6 server.
+
+What is DAD ?
+Duplicate Address Detection.
+
+ARP spoofing?.
+Its a man-in-the-middle attack where, between server and client(victim)
+someone sends ARP with clients IP address, thus attracting clients traffic dirctly to him self.
+He first has to sniff traffic and get IP address of cliient. Use that address and send
+Gratitus ARP with client-ip and attackers host MAC address.
 
 
 IP Fragmentation:
-When you join multile networks, MTU can vary. to address this issue, packet can be fragmented to fit the size.
-
+When you join multile networks, MTU can vary. to address this issue, packet can be
+fragmented to fit the size.
 
 =============================================
 IPSec:
