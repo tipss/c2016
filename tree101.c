@@ -10,6 +10,18 @@
  * node, a string can be constructed.
  */
 
+
+/*
+What's the main reason for choosing Red black trees instead of AVL trees?
+Both red-black trees and AVL trees are the most commonly used balanced binary search trees and they support insertion, deletion and look-up in guaranteed O(logN) time. However, there are following points of comparison between the two:
+
+AVL trees are more rigidly balanced and hence provide faster look-ups. Thus for a look-up intensive task use an AVL tree.
+For an insert intensive tasks, use a Red-Black tree.
+AVL trees store the balance factor at each node. This takes O(N) extra space. However, if we know that the keys that will be inserted in the tree will always be greater than zero, we can use the sign bit of the keys to store the colour information of a red-black tree. Thus, in such cases red-black tree takes no extra space.
+What are the application of Red black tree?
+Red-black trees are more general purpose. They do relatively well on add, remove, and look-up but AVL trees have faster look-ups at the cost of slower add/remove. Red-black tree is used in the following:
+ */
+
 typedef struct elem_t {
 	int     value;
 	int     count;
@@ -442,19 +454,20 @@ elem_t *findMaxValNode(elem_t *root) {
 
 /*
  * Delete node from tree,
+ * a: Find node by traversing compare by value
  * a: only leaf node: easy, return NULL to root
  * b: one child: return child to root 
  * c: both child Replace this node with largest element of left sub tree, 
+ *             inorder predessor, or inorder successor.
  * and recursively delete that node
 */
 void delete(elem_t **root, int key) {
   elem_t *temp;
+  
   if ((*root) == NULL)
     return;
- 
   if ((*root)->value < key) {
     delete(&(*root)->right,key);
-
   } else if ((*root)->value > key) {
     delete(&(*root)->left,key);
   } else { //Found node
@@ -465,17 +478,14 @@ void delete(elem_t **root, int key) {
       delete(&(*root)->left,(*root)->value);
     } else { //One Child case, free root, and replace root with child
       temp = *root;
-      if((*root)->left)
-	{
-	  (*root) = (*root)->left;
-	} else {
+      if ((*root)->left) {
+	(*root) = (*root)->left;
+      } else {
 	(*root) = (*root)->right;
       }
       printf("Freeing %d\n",temp->value);
       free(temp);
-      
     }
-
   }
 }
 

@@ -39,15 +39,21 @@ The thread is a subset of process. The process can contain multiple threads. The
 
 7) What is deadlock?
 
-Deadlock is a situation when a thread is waiting for an object lock, that is acquired by another thread and second thread also waiting for an object lock that is acquired by the first thread. As both threads are waiting for each other to release this condition is called deadlock.
+Deadlock is a situation when a thread is waiting for an object lock,
+that is acquired by another thread and second thread also waiting
+for an object lock that is acquired by the first thread.
+As both threads are waiting for each other to release this condition is called deadlock.
 
 8) What is LiveLock?
 
-Livelock occurs when all threads are blocked and not able to execute because of the unavailability of required resources, and non-existence of any unblocked thread.
+Livelock occurs when all threads are blocked and not able to execute
+because of the unavailability of required resources, and non-existence of any unblocked thread.
 
 Livelock can occur in the following conditions:
 
-When all the threads in a program executed on an object with zero parameters. The program is live-locked and never processed until one or more threads call Object.notify () or Object.notifyAll() on the relevant objects.
+When all the threads in a program executed on an object with zero parameters.
+The program is live-locked and never processed until one or more threads call
+Object.notify () or Object.notifyAll() on the relevant objects.
 Livelock also happens when all the threads in a program are stuck in infinite loops.
 
 9) What is a monitor?

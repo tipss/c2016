@@ -12,11 +12,13 @@ nd * merge(nd *a,  nd *b){
 
   nd *result= NULL;
   
-  if(a == NULL)
+  if(a == NULL) {
     return b;
-  if(b == NULL)
+  }
+  if(b == NULL) {
     return a;
-
+  }
+  /* Remember logic : wait and recursively merge */
   if(a->val >= b->val) {
     result =a;
     result->next = merge(a->next,b);
@@ -29,39 +31,46 @@ nd * merge(nd *a,  nd *b){
 
 
 void print_ll(nd *node) {
-    nd *tmp = node;
+  nd *tmp = node;
 
-printf("\n");
- while(tmp) {
+  printf("\n");
+  while(tmp) {
     printf("%d ", tmp->val);
     tmp = tmp->next;
- }
- printf("\n");
+  }
+  printf("\n");
 
 }
 
+
+/* 
+ * LL has elements in ascending  order from head to tail 
+ * 1 2 3 4 5 -> NULL
+ * 6 7 8 9 -> NULL
+ * 
+ * Will be mergesd as 
+ * 1 2 3 4 5 6 7 8 9 -> NULL
+ */
 int main (int argc, char *argv[]) {
-  int    i = 1;
+  int i = 1;
   nd *node;
   nd *a = NULL;
   nd *b = NULL;
-
-  for (i=1; i <= 5; i++) {
+  for (i = 1; i <= 5; i++) {
     node       = (nd *)malloc( sizeof(nd) );
     node->next = a;
     a          = node;
     node->val  = i;
   }
- print_ll(a);
+  print_ll(a);
 
- for (i=6; i <= 10; i++) {
+  for (i = 6; i <= 10; i++) {
     node       = (nd *)malloc( sizeof(nd) );
     node->next = b;
     b          = node;
     node->val  = i;
   }
- print_ll(b);
-
- node = merge(a,b);
- print_ll(node);
-} 
+  print_ll(b);
+  node = merge(a,b);
+  print_ll(node);
+}

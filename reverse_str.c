@@ -7,11 +7,11 @@ int isPalindrome (char *str) {
   char *end = str;
   if (str  == NULL)
     return 0;
-  while(*end) {
+  while (*end) {
     end++;
   }
   end--;
-
+  
   while(end > str){
 
     if(*end != *str){

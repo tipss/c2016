@@ -53,13 +53,14 @@ int main (int argc, char *argv[]) {
   char *dst;
   int len = strlen(src);
   printf("src %s len %d\n",src,len);
-  dst = ((char *)dst+8);
-  mymove((void *)dst,(void *)(src),len);
-  printf("src %s, dst(+8) %s %d\n",src,dst,len);
+  dst = ((char *)src + 8);
+  mymove((void *)dst, (void *)(src), len);
+  printf("src %s, dst(+8) %s %d\n", src, dst, len);
  
-  // dst = ((char *)dst-8);
-    //mymove((void *)dst,(void *)(src),len+1);
-  //printf("src %s, dst(+8) %s %d\n",src,dst,len);
- 
+  char src2[100] = {"abcdefghijklmnopqrstuvwxyz"};
+  len = strlen(src2);
+  dst = ((char *)src2 + 50);
 
+  mymove((void *)dst, (void *)(src2), len + 1);
+  printf("src2 %s, dst(+8) %s %d\n", src2, dst, len);
 }

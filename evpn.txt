@@ -20,6 +20,15 @@ establish a common broadcast domain. Since these tunnels are established via L3 
 they do not create any loops. A split-horizon way of not sending BUM traffic on the receiving tunnel prevents
 any kind of loops here.
 
+VXLAN does not forwared vxlan received traffic to another vxlan tunnel.
+Even in case of meshed vxlan tunnel, Each source and destinations are like one way pipes.
+Brdige->vxlan-tunnel
+vxlan-tunnen->Bridge.
+vxlan-tunnel -> vxlan-tunnel not allowed
+bridge-bridge -> allowed, so loops possible
+Good read:
+https://www.cisco.com/c/en/us/support/docs/lan-switching/vlan/212682-virtual-extensible-lan-and-ethernet-virt.html
+
 This also puts some basic requirements for broadcast domain over a virtual overlay network to work.
 
 1. Discovery of edge device(In VXLAN terminology , its called VTEP, VxLAN tunnel end point)  
@@ -83,7 +92,6 @@ All of the above three type of traffic is sent over VXLAN overlay , via one of t
 
 How a multidestination traffic is flooded in VXLAN based overlay network?.
 E.g multidestination traffic is ARP request, where in DMAC is FFFF FFFF FFFF.
-
 
 1 [multicast-less]]One way is to use 'ingress-replication' to all the remote VTEP.
   It has its limitation of scalability to replicate packet in H/W.

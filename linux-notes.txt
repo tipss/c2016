@@ -66,6 +66,14 @@ connect() to the PORT?addres used in server.
 write();
 
 
+These are both POSIX functions, and their standard definitions are:
+
+sched_yield() "The sched_yield() function shall force the running thread to relinquish the processor until it again becomes the head of its thread list." This function has a standard C++ analog, std::this_thread::yield().
+sleep() "The sleep() function shall cause the calling thread to be suspended from execution until either the number of realtime seconds specified by the argument seconds has elapsed or a signal is delivered to the calling thread"
+
+If you call sleep(0), the implementation is allowed to do exactly nothing and return immediately. Linux implementation of sleep(0) actually does exactly that, nothing. The code literally says
+
+
 What is the difference between sleep() vs pthread_yield() ?
 sleep: makes the calling process sleep for the duration given, no other thread is scheduled
 pthread_yield: calling thread politely give a way for other waiting threads to
@@ -259,6 +267,11 @@ For example, if one thread has locked mutex A and needs to lock mutex B to finis
 while another thread is holding mutex B and is waiting for mutex A to be released, 
 they are in a state of deadlock. 
 The threads are stuck, and cannot finish. 
+
+p1 mA wait for mB
+p2 mB wait for mA
+
+
 How to avoid deadlock ?.
 1. One way to avoid deadlock is to acquire necessary mutexes in the same order (always get mutex A then B). 
 2. Another is to see if a mutex is available via pthread_mutex_trylock, 
@@ -466,3 +479,15 @@ shared with “p1”, we can edit /var/lib/lxc/p1/fstab and append:
 Crash-only software refers to computer programs that handle failures by simply restarting, without attempting any sophisticated recovery.[1] Correctly written components of crash-only software can microreboot to a known-good state without the help of a user. Since failure-handling and normal startup use the same methods, this can increase the chance that bugs in failure-handling code will be noticed, except when there are leftover artifacts, such as data corruption from a severe failure, that don't occur during normal startup.
 
 Crash-only software also has benefits for end-users. All too often, applications do not save their data and settings while running, only at the end of their use. For example, word processors usually save settings when they are closed. A crash-only application is designed to save all changed user settings soon after they are changed, so that the persistent state matches that of the running machine. No matter how an application terminates (be it a clean close or the sudden failure of a laptop battery), the state will persist.
+
+
+NETLINK:
+Replacement for ioctl(oldstyle).
+Its an IPC interface.
+famalies: rtnetlink : used for interface and routes.
+          genetlink : generic extensible netlink family.
+	  nfnetlink : kernel netfilter system
+
+How user space use this socket ?.
+Create socket(), bind(), sendmsg() recvmsg().
+Header : Fixed Part, Lenght Type Value(LTV) array .

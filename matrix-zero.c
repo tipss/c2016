@@ -12,7 +12,12 @@
 
 //1. make a copy of elements whose values are zero, in a single dimension array,
 //2. walk each array, zero respecitve row or column.
-
+/*
+ * Logic is to identify and store an element which is zero.
+ * Then walk the matrix by rows, and zero matching colunms
+ * Then walk the matric by columns and zero matching the rows.
+ */
+//Remember how to pass multidimension array to function 
 void matrix_zero(int rows, int columns, int m[][columns]) {
   int zero_rows[rows];
   int zero_columns[columns];
@@ -28,10 +33,10 @@ void matrix_zero(int rows, int columns, int m[][columns]) {
     printf("\n");
   }
   //Walk rows and zero columns
-  for (int i=0;i<rows;i++) {
-    if(zero_rows[i] == 1){
-      for(int j=0; j<columns; j++){
-	m[i][j]=0;
+  for (int i = 0; i < rows; i++) {
+    if (zero_rows[i] == 1){
+      for (int j = 0; j < columns; j++){
+	m[i][j] = 0;
       }
     }
 
@@ -56,6 +61,8 @@ void matrix_zero(int rows, int columns, int m[][columns]) {
 }
 
 int main(int argc, char *argv[]){
-   int m[][4] = { {1,2,3,4}, {5,0,0,8}, {9,10,11,12}}; 
-   matrix_zero(3,4 ,m);
+   int m[][4] = { {1, 2, 3, 4},
+		  {5, 0, 0, 8},
+		  {9,10,11,12}}; 
+   matrix_zero(3, 4, m);
  }

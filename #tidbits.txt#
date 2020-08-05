@@ -1,0 +1,245 @@
+i1. TRILL drafts
+1.dts94480:Cisco includes authentication in LSPs but not SNPs unless specifically configured.
+2.dts91637 : least-fill fix
+3. Summary Routes
+4. Puzzles to remember:
+a. Lift number of chairs you cross is 100% as opposite-side of you and yourself are moving, and its a 360degree view.
+b. Lockers:
+Prime Numbers have even factors, 1 and the number itself ,so they have no effect of toggle.
+open-close.
+Even Number of factors of a numbers also has no effect its equivalent to open-close,open-close.
+Odd number of factors of a number has effect where its like
+open-close-open.
+Odd number of factors are is only true for a perfect squares like 4 ,16,25,36,49 etc.  Square-root of a any number (rounded to closest full number) gives number of perfect squares in that range, eg sqrt of 100 has 10 perfect squares.
+c. Three switches:
+Use common sense, feel the bulb and figure out location of two switches.
+d. Bridges:
+Try multiple combination easy answers but multiple answers will narrow down to better answer.
+e. RFC/ISO number to remember:
+10589 iSis ISO
+1195 ISIS IP
+5302 Domain wide prefix distribution
+5305 Traffic Engg Extension has TLV 135 Extended IP Reachbility TLV,
+128 Internal IP Reach TLV
+130 external IP Reach TLV
+
+22 Extended IS Reach TLV
+2   Old IS ReachTlv
+
+TBD:
+1. tree, data structures.
+2. OS detail compare netbsd/vxworks
+3. C Programming
+4. Why we have lists ?.
+5. How FRR works.
+6. dis-joint tree, when primary is not there ?.
+7. What is a radix tree, what is a red-black tree.
+8. PSNP procedure for broadcast and ptop ?
+9. what is the difference between ospf and isis.
+10. Refresh tower of Hanoi
+
+C Program Tips to remember:
+1. celsius = 5/9 (fahr-32)
+   Correct is:
+   (5 * (fahr - 32))/5
+   Note : 5/9 is zero as integer division truncates fraction, and in this case the result is zero.
+2. printf vs scanf
+    printf is not part of C language, instead its part of library.
+    scanf reads input,printf writes to output.
+3. #define is a symbolic constant.
+4. input/output are handled as stream of characters in C.
+    c=getchar();
+    char c; is not ok
+    int c;  is correct,as EOF is an int.
+5. printf uses %f for both double and float, %ld is for long
+5.1 long vs int
+     'long' means 'long int'. 'long' is a qualifier used as prefix to int.
+     it usually means 32bit integer.
+     Rule is short and int should be at least 16bits,
+    Rule is long should be at least 32 bits.
+    This is guaranteed by compiler for which hardware its compiling to.
+6. What is call by value ?.
+    function arguments in C are passed in a temp variables,means called function is given the values of its arguments in temp variables rather than in original variable. manipulating these temp variables within the function has no effect on the original variable that caller has passed to this function.
+void test(const char[]);
+Means the element this arry can't be modified within the function.
+7. Array name as variable to function  is not callbyvalue !
+   Array name is the address of the beginning of the array element.
+   So array itself can't be copied in the arguments.
+8. Pointer
+Address of a variable.
+9. What is '\0' ?
+   Is a null character whose value is zero,%s expects that input terminated by null character.
+10. automatic (local) variabled, external variables
+    Any thing defined within a function is automatic/local variable,
+    they get activated when the function is called, they are not
+    initialized by default, so there will be garbage, their scope is function only.
+
+   External variable are those defined outside of a  function, and their scope is entire module of the c.
+   They should be declared by using keyword 'extern'  in any function before they are used, or use 'extern' in h file and include them in .c file which has no 'definition of this extern variable inthat c.file.
+
+external and static variables are initialized to zero by default.
+11. definition vs declaration of a variable ?.
+     definition is the place where storage is allocated,
+     declaration is the place where nature of the variable is stated,but not storage.
+12. What are basic data types in C,
+ int,char,float,double,
+      qualifiers: short,long,signed,unsigned.
+      When qualifies short/long are used, we can skip int.
+13. What is a constant,
+      1234 is an integer constant
+      1234l  is a long constant,
+      1234ul unsigned-long constant.
+      31   is an integer
+      037 octal notation of integer constant 31
+      0x1f hex notation of integer constant 31
+      0x1FUL    hex notation unsigned long constant 31
+      '0'  character constant, its value is 48.
+      '\x7'    Hext notation character constant 7,which is BELL.
+                Byte sized bit pattern
+                using escape character \  to represent its a hex.
+    "hello"    string-constant, or string literal, quotes are not part of string, also its equivalent to an array of character terminated by null
+
+
+14. % is a modulo is a binary arithmetic operator.
+
+     10%4   =   2, remainder
+     10%5   =  0   no remainder left.
+     10/20  = 0 ,fractions are truncated to zero
+     20/10  = 2
+
+% operator can't be applied to float or double.
+15. Leap year program ?.
+
+     Year divisible by 4,but not by 100, except divisible by 400 is leap year.
+
+    if((Y%4 == 0 && Y%100 != 0 ) || (Y%400 == 0))
+is-leap-year.
+15. precedence
+      Higher the value, more its preferred.
+
+16. Read secction 2.6,2.7 again from K&R, type conversion etc
+17 prefix operator,post fix operator,
+     ++i, In an expression i is incremented first and its value is used.
+    i++   In an expression i's value is first used, and its incremented
+
+18 Bitwise operators
+    & | ^ ~ << >>
+    ^ exclusive OR,
+    a^b = puts 1 in place where bits are different, and zero in place they are same
+
+Note when a signed number is right shifted, left most bits will be filled with 1's, so its important to right shift on a unsigned-number only
+ 19 Logical operators && ||
+20 x *= y+1 means x=x*(y+1)
+21. shellsort,binary search algorithm
+22, string reversal
+23, break: exits immediate loop. But not that in 'do while(x==y), it will extue while part of the loop before ending.
+24 Pointers Pointers Pointers
+    Its a variable which stores the address of a variable.
+25 What is the difference between & and *
+     char c;
+     &c will give the address to the contents of c.
+     & is used for objects which are already in memory.
+     & is a uniary operator , can't be used for register variable.s
+     * is an indirection or de-referencing operator, when applied to ptr
+       it accesses the object that the pointer points to .
+     ++*ip or (*ip)++ : Increments value of ip(not the address)
+       *ip++: Increments the address ip is storing and then access value in the new address,
+
+
+     Unary operator bind more tightly than arithmetic operators(+,-,/,%).
+     int *iq
+     int *ip
+int i =10;
+   ip =&i;
+   iq=ip : Now iq points to the location of ip, so it points to i's content.
+26. int array[10]
+
+     array give address to first element
+     array[0] access first element
+     &array[0] address of first element.
+
+27 what is the difference between an array and a pointer.
+
+     int a[10];
+int *p;
+
+     p=a;
+a=p ;  //is wrong.
+
+    array is not a variable, but p is a variable.
+    when you pass an array name to function parameter, within the function this becomes a pointer variable to that array pointing to first element.
+
+  func(char s[]) or func(char *s) both are same,but later is preferred, because we say explicitly this.
+
+
+28 ; What is a NULL in C ?. why used ,
+
+       NULL is defined in stdio.h, it means zero.
+       Why zero ?.
+       C gurantees that a zero is never an valid address for a data.
+       So a NULL pointer return, means an invalid address.
+29:
+    int *p,
+    int *q
+    p+10, means   address of the 10th element, not increment the address by value 10.
+    So the new address is determined by the deceleration of p type.
+    similarly p-10 works.
+
+    p+q //Not correct
+    p>>10//Not correct
+    p*10 //Not correct
+
+  30 what is a void * mean.
+
+ You can assign a pointer of one type to a pointer of another type without a cast.
+31.  func(char *s){}
+     func can use  char ptr either as an array like s[x] or *s, there
+     is no restrictions.
+     One line program to strcpy
+     strcpy(char *s,char *t){
+while((*s++ = *t++) != '\0');
+}
+32. Learn program for quick sort from KandR
+33. Ctraps and Pitfalls, refresh
+
+Multidimensional array vs array of pointers 
+
+in array of pointers, each element can point to a varied size element,
+in multidimensional  , size must is fixed in the definition.
+
+char *b[10] ; Array of ptr-to-char each element is of any size
+char a[10][20]; array of strings of size 20byte each.
+
+34. Pointer to a function usage example.
+E.g :int (*comp)(void *,void *)
+Says that comp is a pointer to a function that has two void * args, and return int.
+int *comp(void *,void *) //Wrong,
+The above says comp is a function returning int pointer which has two void * args.
+
+Usage
+
+void qsort(void *v[],int left,int right, int (*comp)(void *,void *))
+
+35. Refresh IPv6 basics.
+36: Refressh some of this
+http://www.eskimo.com/~scs/C-faq/top.html
+
+http://www.embedded.com/2000/0005/0005feat2.htm
+http://www.programmersheaven.com/articles/pathak/article2.htm
+http://graphics.stanford.edu/~seander/bithacks.html
+Very Good.
+
+http://cslibrary.stanford.edu/
+http://c.snippets.org/browser.php
+http://williamstallings.com/StudentSupport.html
+http://www.cprogramming.com/tutorial.html
+36 OSI Layers: (User data moves from Application layer into Physical ----Physical to Appln-user)
+     Application HTTP,POP3,Radius,
+     Presentation,
+Session[DNS,LDAP,]
+Transport[TCP/UDP,MobileIP,],
+Network[L3 IP(4,6), RSVP, PIM, RIP2, VRRP,ICMP],
+Data Link,[L2 protocols, ARP]
+Physical
+   APS-T-NDP
+
