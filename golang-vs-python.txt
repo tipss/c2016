@@ -1,0 +1,164 @@
+
+G:2009:statically typed, compiler
+Exteremely fast(like Java and C, ) about 40times faster than Python.
+Compiler infer type if user has not speciied, based on the value.
+Garbage collector built in, and there is no 'free()' in go!.
+go is Gopher, is a CPU, add more CPU(cores) to improve time.
+go-routines:
+'go funcxx()' is like ambersend in shell
+they feel like threads, but they are much lighter verion of thread
+
+Concurrency: Dealing with lots of things at once.
+Is a way to structure a program by breaking it into pieces that can be executed independently
+communication is the means to co-ordinate the independent execution.
+Erlang is one example.
+Spliting a task into smaller independant task is the trick to leverage this.
+Independant components to solve the whole problem.
+
+
+Composition of independent execution of (processes or threads, or functions)
+Parrellism: Simultabuous execution of related or unrelated same things.
+Doing with lot of things at once,
+
+P:1989:dyanamically typed, interpreted language,
+Garbage collector build in.
+
+Apple IOS used Objective C, not its Swift
+Objective C is replaced by Swift(eastier to grasp and robus)
+Ruby is replaced by Java Script,
+
+
+
+--------------------
+P
+# List , do not need to know size and its extendable
+arr = []
+
+#Add one element
+arr.append(20)
+
+#access by index
+a[0] = 21
+len(arr)
+#extend
+arr.extend([2,3,4])
+
+# Dictionaries
+
+py_map = {}
+# Add key:value pair
+py_map["first_key"] = 25
+# Remove key:value pair
+py_map.pop("first_key")
+
+# while loop
+
+while i < 100:
+      print i
+
+print ("Hello")
+
+names := ["a", "b", "c"]
+for name in enumerage(names):
+    print "%s"%(name)
+
+# switch : There is no switch statement, instead use if, elif ...
+if value == 1:
+   print value
+elif value == 2:
+  print value
+else:
+  print "None"
+
+class Car:
+      door; 
+      # Method
+      def __init__(self, name, model):
+      	  self.name = name
+	  self.model = model
+	  self.doors = 0
+      def open_door(self, door_id):
+      	  if door_id > 4
+	    raise ValueError
+      	  self.doors[0] = 1
+      def close_door(self, door_id):
+      	  self.doors[0] = 0
+      def is_door_open(self, door_id):
+      	  if self.door == 1 :
+	     return True
+	  else:
+	     return False
+
+
+car = Car("Altima1","Altima")
+try
+	car.open_door(5)
+except TypeError 'Invalid door value'
+--------------------
+
+
+//Example GoLang
+
+package main
+import (
+"fmt"
+)
+
+
+// Everything goes in main, or some other function
+func main() {
+
+// Go do not have list, instead its an array.
+// List is intialized to zero by default
+// must know size and so not extendable.
+var arr [3]int
+// Accesss by index
+arr[0] = 21
+// Slices when you do not know size of list
+// and its extendable
+arr :=  []int{10, 12}
+//Equivalent to python extend, adding 1 element here
+arr = append(arr, 30)
+len(arr)   // how many elements you have which are usable
+cap(arr)   // how many max elements you can have by extending it or append
+
+//Dictionaries, e.g key is string,vlue is int
+go_map := make(map[string]int)
+// Add key:value pair
+go_map["first_key"]= 25
+
+//Remove key:value pair
+delete(go_map, "first_key")
+
+//While, there is while keyword, instead for can be used
+for i < 100 {
+
+}
+
+for i:=0;i<100;i++ {
+    fmt.Println(i);
+}
+     fmt.Println("Hello")
+}
+// Range
+
+names := []string{"a", "b", "c"}
+
+for name := range names {
+    fmt.Printf("%d %s\n", name)
+}
+
+// swtich statement
+
+switch value {
+case  1:
+      fallthrough         //Reverse of C, use this keyword explicitly for fallthrough
+case 2:
+      fmt.Println("two")  //Note break is always there, Reverse of C
+default:
+      fmt.Println("anything")
+}
+
+// Class
+// There is no 'Class', 'self', 'this', 'inheritance', 'hierarchy', 'no explicity relationships between data and interfaces' , no method overloading
+---------------------

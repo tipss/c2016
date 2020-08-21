@@ -1,0 +1,29 @@
+ntp: network time protocol
+
+designed for Log file event timing.
+kerberose time based authentication.
+Fault tolerance built in via redundancy.
+
+
+
+
+PTP : precision time protocol
+
+Clock sync protocol.
+Sync clocks of n number of computer via messaging.
+Designed to work on only LAN, not IP/Routing/Internaet.
+Its an admin free, Computers must just run PTP procols, them all clocks in the
+LAN network will sync there clock time.
+Network bandwidth required is pretty low.
+sync message
+follow up
+delay request
+delay eesponse
+
+
+HP invented, IEEE
+Designed for industrial automation.
+
+
+Both come from network,
+

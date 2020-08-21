@@ -267,10 +267,9 @@ Duplicate Address Detection.
 
 ARP spoofing?.
 Its a man-in-the-middle attack where, between server and client(victim)
-someone sends ARP with clients IP address, thus attracting clients traffic dirctly to him self.
+someone sends ARP(reply) with clients IP address, thus attracting clients traffic dirctly to him self.
 He first has to sniff traffic and get IP address of cliient. Use that address and send
 Gratitus ARP with client-ip and attackers host MAC address.
-
 
 IP Fragmentation:
 When you join multile networks, MTU can vary. to address this issue, packet can be

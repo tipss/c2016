@@ -5,8 +5,11 @@ i1. TRILL drafts
 4. Puzzles to remember:
 a. Lift number of chairs you cross is 100% as opposite-side of you and yourself are moving, and its a 360degree view.
 b. Lockers:
+
+
 Prime Numbers have even factors, 1 and the number itself ,so they have no effect of toggle.
 open-close.
+
 Even Number of factors of a numbers also has no effect its equivalent to open-close,open-close.
 Odd number of factors of a number has effect where its like
 open-close-open.
@@ -15,6 +18,8 @@ c. Three switches:
 Use common sense, feel the bulb and figure out location of two switches.
 d. Bridges:
 Try multiple combination easy answers but multiple answers will narrow down to better answer.
+
+
 e. RFC/ISO number to remember:
 10589 iSis ISO
 1195 ISIS IP
@@ -177,7 +182,7 @@ a=p ;  //is wrong.
        NULL is defined in stdio.h, it means zero.
        Why zero ?.
        C gurantees that a zero is never an valid address for a data.
-       So a NULL pointer return, means an invalid address.
+       So a NULL pointer return, means an in valid address.
 29:
     int *p,
     int *q

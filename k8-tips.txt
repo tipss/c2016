@@ -1,0 +1,413 @@
+
+istio-based-microservice-packt-book:
+istio runs on k8.
+istio means in greek 'sail'
+Pod is small unit of compute, can have multiple containers.
+Any k8 resource can be configured via key/value pair(is label)
+What is istio?.
+Its an open platform-independant service mesh that provides traffic mgmt, policy enforcement and
+telemetry collection. Its designed to manage communications between microservices and applications, without
+requireing changing underlying services. stio provides automated baseline traffic resilience, service metrics collection, distributed tracing, traffic encryption, protocol upgrades, and advanced routing functionality for all service-to-service communication.
+
+
+
+
+/*
+What is minikube?.
+Minikube is a tool that makes it easy to run Kubernetes locally. Minikube runs a single-node Kubernetes cluster inside a Virtual Machine (VM) on your laptop for users looking to try out Kubernetes or develop with it day-to-day
+
+How to install minikube on your mac?.
+From Microservice book pakbup
+1. curl -LO https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-hyperkit \      && chmod +x docker-machine-driver-hyperkit \  && sudo mv docker-machine-driver-hyperkit /usr/local/    bin/ \  && sudo chown root:wheel /usr/local/bin/docker-machine-driver-hyperkit \  && sudo chmod u+s     /usr/local/bin/docker-machine-driver-hyperkit
+2. brew cask install virtualbox
+3. brew install minikube
+
+4. $ minikube start --kubernetes-version=v1.13.0
+5. To troubleshoot dow the below, and follow step 4.
+   minikube delete,   rm -rf ~/.minikube
+6. minikube version
+   kubectl get nodes.
+   minikube dashboard
+   
+7. kubectl port-forward deployment/kubernetes-dashboard 9090   
+   http://localhost:9090
+
+
+
+k8 was introduced in 2014 by google.
+What is primary function?.
+Deploy and manage large number of container-based workloads on a fleet of machines(
+physical or virtual). Also enforce various scheduling constraints, pack the containers efficiently into the cluster nodes. Restart containers if they fail. Relocate loads if needed.
+
+Kubernetes utilizes client-side certificates to fully authenticast both sides of any external
+communications(for eg kubectl). All communication to the Kubernetes API from
+outside should be over HTTP.  Internal clustr communication between the API server and the kubelet on the
+nodes is over HTTPS. But it doesnt use a client certificate by default(you can enable it).
+
+Things important with microservices:
+1. Upgrading wiht zero down time.
+2. Scaling microservices.(maxReplicas, minReplicas)
+3. Monitoring microservices
+
+Basics
+nodes: worker where container(docker, rocket or cryo) is installed
+worker nodes: kubelet, kube proxy, and containers are actually hosted. 
+master nodes: kube-apiserver, etcd, controller, scheduler 
+
+api-server : frontend
+       etcd: keyvalue store, implement lock
+  scheduler: distribute work across multiple container
+ controller: wath endpoint and bringup if they fail.
+
+
+controller-runtime: docker
+kubelet: runs on each nodes, which is needed for server client communication.
+         Responsible for talking to the API server.
+	 e.g Downloading pod secrets from API server, Mounting volumes,
+	     Running the pod container via the CRI(Container Runtime interface)
+	     Reporting the status of the node and each pod,
+	     Probe container liveness.
+kube-proxy: Respondible for the networking aspects of the node.
+            Operates as a local frount for services and can forward TCP/UDP packets.
+	    It discovers the IP addresses of services via DNS .
+cluster: set of nodes
+
+kubectl: CLI to your Kubernets cluster.
+kubelets
+
+simple example:
+kubectl run hello-minikube
+kubectl cluster-info
+kubectl get nodes
+
+Common fields in YAML file:
+apiVersion:  marks the Kubernets resources version e.g apps/v1
+kind: Kind of deployment or type of API objects we are dealing with, e.g config,secret ,pod
+metadata: name of the resource(e.g nginx) and set of labels, which are key-value string pairs.
+spec: It will have subfields e.g replicas count,
+TBD more here
+, 
+*/
+
+kubectl run nginx --image=nginx --generator=run-pod/v1
+kubectl describe pod newpods-6b95g
+kubectl delete pod webapp
+kubectl run redis --image=redis123 --generator=run-pod/v1
+kubectl edit pod redis
+kubectl describe pod new-replica-set-hjzpg
+cd /root edit replicaset-definition-1.yaml
+
+kubectl get pods -o wide
+kubectl exec -it nginx-pod -- /bin/sh 
+
+
+ReplicationController and ReplicaSet
+create -f replicaset-defination.yml
+describe/delete/get replicaset myapp-replicaset
+replace -f replicaset-definition.yml
+scale -replicas=6 -f replicaset-definition.yml
+
+
+kubectl get pod my-pod -o yaml 
+
+create/get deployments
+
+/* generate pod defn file */
+kubectl run --generator=run-pod/v1 nginx --image=nginx --dry-run -o yaml
+
+--generator=run-pod/v1  or --restart=Never   <---both create Pods, omit these create Deployment
+
+shortcut:
+                 <-Deployment(if no option given)
+--restart=Never  <-pod
+--restart=OnFailure  <-Job
+--restart=OnFailure --schedule="*/1  * * *"  <-CronJob
+Moving from imperative to declerative way?.
+Use imperative commands with flag : --dry-run -o yaml
+It generates a file for you, use that file like this: kubectl create -f <>.yaml
+
+
+e.g kubectl run --generator=run-pod/v1 nginx-alpine --image=nginx-alpine
+e.g kubectl run --generator=run-pod/v1 redis --image=redis:alpine -l tier=db
+/* expose a pod to a cluster port */
+e.g  kubectl expose pod redis --port=6379 --name redis-service
+
+/* Create deployment:
+   Using deployment file helps do rolling upgrades on an existing pods, by
+   editing exiting deployment with new image version, and use
+   kubectl apply -f deployment-definition.yaml
+   you can also use:(replace nginx with newversion of the image)
+   kubectl set image deployment/myapp-deployment nginx=nginx:1.9.1
+   Note in the above command has same effect, but yaml file is not updated to reflect this
+   change
+   based on the field 'strategyType: <Recreate|RollingUpdate>
+   Recreate: means, delete and upgrade,
+   RollingUpgrade: 
+
+   kubectl rollout status deployment/myapp-deployment
+   //To rollback
+
+   kubectl rollout undo deployment/myapp-deployment
+*/
+kubectl create deployment --image=nginx nginx
+kubectl run --generator=deployment/v1beta1 nginx --image=nginx --dry-run --replicas=4 -o yaml > nginx-deployment.yaml
+kubectl create deployment webapp --image=kodekloud/webapp-color -o yaml --dry-run
+
+
+kubectl create service nodeport nginx --tcp=80:80 --node-port=30080 --dry-run -o yaml
+
+
+namespaces:
+kubectl get namespace
+kubectl get pods --namespace=research
+kubectl run redis --image=redis --generator=run-pod/v1 --namespace=finance
+
+
+
+ConfigMaps:
+kubectl create configmap <config-name> --from-liberal=<key>=<value>
+
+kubectl create configmap \
+	app-config --from-literal=APP_COLOR=blue
+
+
+e.g config-map.yaml
+apiVersion: v1
+kind: Config
+metadata:
+  name: app-config
+data:
+ APP_COLOR: blue
+ APP_MODE: prod
+
+
+kubectl create configmaps -f xx
+kubectl get configmaps
+
+
+
+How to use them?.
+Under containers: list, add the following attribute to refer an external configmap file
+
+
+envFrom:
+  - configMapRef:
+        name: app-config
+
+
+
+Secrets:
+kubectl create secret generic app-secret --from-literal=BG_Host --from-literal=BG_User=root --from-literal=BG_Password=password 
+
+or use file:
+secret-data.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secret
+data:
+   DB_Host: mysql
+   DB_User: root
+   DB_Password: passwrd
+
+
+kubectl get/describe secrets -o yaml   < to display password
+
+
+
+
+kubectl exec ubuntu-sleeper whoami
+kubectl exec -it ubuntu-sleeper -- date -s '19 APR 2012 11:14:00'
+
+
+SecurityContext:
+apiVersion: v1
+kind: Pod
+metadata:
+  name: security-context-demo-4
+spec:
+  containers:
+  - name: sec-ctx-4
+    image: gcr.io/google-samples/node-hello:1.0
+    securityContext:
+      capabilities:
+        add: ["NET_ADMIN", "SYS_TIME"]
+========================
+serviceaccount:
+kubectl create serviceaccount dashboard-sa
+
+Use this under containers definition like below:
+serviceAccount: dashboard-sa
+kubectl describe secret <dashboard-sa-secret-name>
+
+Taint and Tolerance:
+=====================
+Nodes with taint configured, will schedlue-out pods if tolerance/taint key-value do not match in 
+pod definition.
+Taints/Tolerance do not tell a pod to go to a particular 'node'.
+One best usage example is a 'master node'.
+On 'master node' using 'taint' we can prevent it from hosting 'pods', instead
+it can be used a management nodes.
+
+Node is Man,
+Pod is Bugs.
+Taint is applied on a node(man).
+Tolerance is added on  a pod(bugs)
+
+kubectl taint nodes node-name key=value:taint-effect 
+taint-effect can be one of NoSchedule, PreferNoSchedule or NoExecute
+e.g kubectl taint nodes node1 app=blue:NoSchedule
+
+Add toleration under pod defintion just below containers: 
+tolerations:
+- key: "app"
+  operator: "Equal"
+  value: "blue"
+  effect: "NoSchedule"
+
+
+Effective result will be, 
+node1 will evict all the pods whose definition does not have the above 'tolerations'.
+node1 will will not evict pods whose definition do have the above 'tolerations', but will not schedule.
+
+
+kubectl describe node 'kubemaster' | grep Taint
+
+
+how to untaint?(use minus sign)
+kubectl taint nodes master node-role.kubernetes.io/master:NoSchedule-
+
+
+master $ kubectl describe nodes node01 | grep Taint
+Taints:             app=spray:NoSchedule
+
+kubectl taint nodes node01 app:NoSchedule-
+
+
+
+Node Selectors:
+
+In pode definition use
+just below containers:
+
+nodeSelector:
+    size: Large
+
+Node creation can use 'label' using 
+kubectl label nodes xxx <label-key>=<label-value>
+
+
+Node Affinity:
+Same like above, but with logical operator to add complex expressions
+
+In pod definition add:
+below containers:
+affinity:
+ nodeAffinity:
+  requiredDurationSchedulingIgnoredDuringExecution:
+   nodeSelectorTerms:
+   - matchExpressions:
+     - key: size
+       operator: In
+       values:
+       - Large
+
+
+
+
+How to add a label to a node:
+kubectl label node node01 color=blue
+
+How to quickly deploy pods via deployments:
+/var/answers/blue-deployment.yaml
+
+
+
+
+kubectl run nginx --image=nginx:latest --generator=run-pod/v1 --limts="cpu=200m,memory=512Mi" 
+
+
+How to get into shell:
+kubectl exec -it app cat /log/app.log
+
+
+
+Good vim settings:
+im ~/.vimrc
+set nu
+set expandtab
+set shiftwidth=2
+set tabstop=2
+
+
+
+Rediness Probe
+==============
+add line under containers:
+containers:
+- name: simple-webapp
+  image: simple-webapp
+  ports:
+   - containerPort: 8080
+  readinessProbe:
+   httpGet:
+     path: /api/ready
+     port: 8080
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  failureThreshold: 8 
+or:
+readinessProbe:
+  tcpSocket:
+    port: 3306
+or
+readinessProbe:
+  exec:
+    command:
+      - cat
+      - /app/is_ready
+
+
+
+
+Metric Server: Collect perfornace metrics 
+
+minikube addons enable metrics-server
+git clone https://github.com/kuberneters-incubator/metrics-serve
+kubectl creae -f deply/1.8+/
+kubectl top node
+
+
+
+how to see logs:
+kubectl logs pods <pod-name> <container-name>
+
+Look for a specic label:
+
+kubectl get pods --selector env=dev
+kubectl get all --selector env=prod --all-namespaces
+kubectl get all --selector env=prod,bu=finance,tier=frontend
+
+
+
+Docket commands:
+docket run ubuntu expr 3+2
+Use command: under containers to do the same
+command: ['expr', '3','+','4']]
+Jobs:
+Default behavior of kubernetics is to attempt to restart,
+Jobs :
+restartPolicy: Always  <---default
+its like replicaset
+with few difference:
+
+kind is Job,
+apiVersion is batch/v1
+
+
+restartPolicy: Never <-----jobs
+
+Under specs:
+ou can add
+completion: 3 <----how many containers to create
+parallelish: 3 <----3pods at once is created.

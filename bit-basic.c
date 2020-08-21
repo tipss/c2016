@@ -19,7 +19,7 @@ int clearBit (int in, int index) {
 //Remember
 int bitCount(unsigned int n) {
   int count =0;
-  while (n){
+  while (n) {
     count += n&0x1;
     n>>=1;
   }

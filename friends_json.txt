@@ -1,0 +1,6 @@
+{
+"friends":[
+{"name":"ram",  "degree":"cs" },
+{"name":"sham", "degree":"ec" }
+]
+}

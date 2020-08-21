@@ -1,4 +1,14 @@
 
+
+
+APS-T-NDP: App Presen, Session, Transport Network Data Link Phy
+A HTTP, Radius
+P
+S  DNS, LDAP
+T  TCP, UDP
+N  ICMP, RSVP, IPv4,IPv6, PIM, VRRP
+D: ARP, L2 protosl
+P
 When to use threads, vs when to use process?.
 
 http://www.cafeaulait.org/course/week11/02.html
@@ -108,7 +118,11 @@ Used in Linux Containers, OpenStack, Mininet, Docker etc.
 Root Namespace: Its the default network Namespace, all other namespaces
 are launched from this.
 
-E.g add new namespace: ip netns add red, ip netns add green, ip netns, ip netns
+E.g add new namespace:
+ip netns add red,
+ip netns add green,
+ip netns,
+ip netns
 ls /var/run/netns/
 ======================================================
 Cgroups:
@@ -125,6 +139,7 @@ By default on a Linux system,
 
 VRF-lite:(New thing as opposed to usng namespace based VRF's in FRR)
 https://www.kernel.org/doc/Documentation/networking/vrf.txt
+
 Virtual Routing and Forwarding (VRF)
 ====================================
 The VRF device combined with ip rules provides the ability to create virtual
@@ -226,7 +241,9 @@ Container space is part of the linux Kernel feature cgroups and namespaces.
 So each container share the same kernel.
 So much lightweight than Hypervisor based virtulization, but isolation is limited?.
 But there can be many containers hosted per OS. VM's have limits.
-As the container is sharing the kernel with the base system, you can see the processes that are running inside the container from the base system. However when you are inside the container, you will only be able to see its own processes. 
+As the container is sharing the kernel with the base system, you can see the processes
+that are running inside the container from the base system.
+However when you are inside the container, you will only be able to see its own processes. 
 ===========================
 GDB: Tool used to debug a running or core of a program.
 
@@ -268,17 +285,16 @@ while another thread is holding mutex B and is waiting for mutex A to be release
 they are in a state of deadlock. 
 The threads are stuck, and cannot finish. 
 
-p1 mA wait for mB
-p2 mB wait for mA
-
+t1 mutexA wait for mutexB
+t2 mutesB wait for mutexA
 
 How to avoid deadlock ?.
 1. One way to avoid deadlock is to acquire necessary mutexes in the same order (always get mutex A then B). 
 2. Another is to see if a mutex is available via pthread_mutex_trylock, 
-and release any held locks if one isn't available.
+   and release any held locks if one isn't available.
 
 Race Condition — A program that depends on threads working in a certain sequence to complete normally. 
-Race Conditions happen when mutexes are used improperly, or not at all.
+                 Race Conditions happen when mutexes are used improperly, or not at all.
 
 Thread-Safe — A library that is designed to be used in multithreaded applications is said to be thread-safe. 
 If a library is not thread-safe, then one and only one thread should make calls to that library's functions.
@@ -292,10 +308,12 @@ any subsequent attempt to lock it, by the same thread or any other, will cause t
 until the mutex is unlocked. 
 
 These are very handy for keeping data structures correct from all the threads' 
-points of view. For example, imagine a very large linked list. 
+points of view.
+For example, imagine a very large linked list. 
 If one thread deletes a node at the same time that another thread is trying to walk the list, 
 it is possible for the walking thread to fall off the list, so to speak, 
-if the node is deleted or changed. Using a mutex to "lock" the list keeps this from happening.
+if the node is deleted or changed.
+Using a mutex to "lock" the list by both threads  protects  from happening.
 
 Mutex =  Mutual Exclusion.
 One thread holds this lock(winner thread) excluding other threads(loosers).
@@ -330,6 +348,12 @@ What kernel version we support in nvOSd?.
 What ubuntu version we support
 16.04 xilix, latest is 18.04 bionic(which we do not support)
 
+CPU we use in h/w samples e.g ?
+Broadwell: Intel Xeon® CPU    D-1557 @ 1.50GHz (12C)  NRU 03
+Intel(R) Atom(TM) CPU  C2558  @ 2.40GHz  Phoenix,
+MFR(assembly) : Dell, Accton, Celestica,   mSATA SSD, RAM 8g to 16G
+Switch chipset: Alta(Freedom series),  Trident2, Tomahawk, Trident2+
+Form factor 2U most of them
 
 reader-writer mutex lock?.
 pthread_wrlock_t,

@@ -1,0 +1,15 @@
+
+//Create a channel(note they are typed)
+//Its also unbuffered, meaning it can't hold data in-transit
+//It also mean, sender will wait for the receive
+// and receiver will wait for sender
+// until that time, sender and receiver are blocked.
+
+c = make(chan int)
+
+
+send data on channel
+c <- 3
+
+Receive data from channel
+x := <-c

@@ -4,6 +4,26 @@ Your program should create a map and add the name and address to the map using t
 keys “name” and “address”, respectively.
 Your program should use Marshal() to create a JSON object from the map,
 and then your program should print the JSON object.
+
+json: Java Script Object notation,  
+datatypes: String, numbers , booleans, null, 
+Arrays [], 
+Objects {"key": "value"}
+
+It allows nesting, list in list, list in object, objects in list , object in object.
+Thus it helps represent hierarchy of data in a flat file.
+e.g list of  company object
+
+ [
+  {
+   "name":"Apple",
+    "ceo":"Mary"
+  }, 
+  {
+   "name":"costco",
+   "ceo": null
+  }
+ ]
 */
 package main
 

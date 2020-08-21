@@ -1,0 +1,11 @@
+What is a Kubernetes pod?.
+Its a Group of containers.
+That's correct. In Kubernetes, a group of one or more containers is called a pod. Containers in a pod are deployed together. They are started, stopped, and replicated as a group.
+
+The simplest workload that Kubernetes can deploy is a pod that consists only of a single container.
+
+
+What is a Kubernetes cluster?
+Its a Group of machines where Kubernetes can schedule workloads.
+A Kubernetes cluster is a group of machines where Kubernetes can schedule containers in pods. The machines in the cluster are called “nodes.”
+

@@ -25,6 +25,7 @@ DELETE	/device-management/devices/{id} : Delete device by "id"
 
 
 TOMCAT: HTTP server and servelet container
+NGNX:  HTTP server plus more
 JERRY is also another HTTP server, 
 app-server vs webserver
 JBOSS:
@@ -52,12 +53,11 @@ using Linux kernel underneath.
 Main purpuose of container is to containerize an application and ship them.
 
 virtual-machine. VM's have an OS inside it.
-Type-1(run on baremetal)hypervisor(e.g ESXi):
+Type-1(run on baremetal) hypervisor(e.g ESXi):
      Helps Virtualize H/W and run an OS on a virtual-machine.
 Container  is not virtual-machine.
 
-e.g how docker creates a container running an already
-pre created docker image.
+e.g how docker creates a container from  already pre created docker image.
 docker run ansible
 docker run mongodb
 docker run redis,

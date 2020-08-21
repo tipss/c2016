@@ -1,17 +1,22 @@
+Used to create virtual machines,
+Not needed to create containers.(Containers share common Kernel API, and run in User space as an isolated process
+
+VM's need full copy of OS, and each VM has to have one OS,
 
 Type 1 : Installed on bare metal as OS (e.g ESXI vSphere, Citrix XEN, KVM , Miscrosoft Hyper-V)
          Generally in data centers use this.
 Type 2 : Install on top of Host OS as softwares
        	 it can be linux or windows host.
-         e.g vmware fusion, Oracle virtual box,  paralles 
-virtualized networking :
+         e.g vmware fusion, Oracle virtual box,  paralles
+	 
+virtualized networking , how VMs or containers communicate each other ?.
 Your physical NIC needs be mapped or shared across multiple VMs to make VM's talk to out side world.
 How to acheive that ?.
 Typically , on Hypervisor, we create Open vSwitch. In this vSwitch we map veth from
 VM into a physical NIC with vlan. Thus a single physical NIC can be mapped  used by multiple
 VM's with vlan as seperator, and without VM's knowing that what is the other VM using this physical NIC.
 
-How VM's to VM communicate?.
+How VM's to VM communicate if subnets are in different networks?.
 Veths if they are in different network, create vRouter, adn add veths into that vRouter to route
 these networks.
 
