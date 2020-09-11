@@ -2,9 +2,11 @@
 #include <string.h>
 
 /*
- * Note : in Permutation, position of an element is unique, that makes it different from combination.
+ * Note : in Permutation, position of an element is unique, 
+          that makes it different from combination.
  * ab : ab, ba are permutations, 
- * But 'ab' is the combination, as you can't call 'ba' as one more combination.
+ * But 'ab' is the combination, 
+        as you can't call 'ba' as one more combination.
  */
 /*
  * Given a string of n chars,taken r char at a time, find all permutation of string,

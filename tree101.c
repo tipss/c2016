@@ -347,8 +347,8 @@ void printLevelOrder (elem_t *root) {
   printf("      Tree Height %d\n", height);
   for (int i = 1; i <= height; i++) {
     k= height - i;
-    while (k>0) {
-      printf("%c",' ');
+    while (k >= 0) {
+      printf("%c",'  ');
       k--;
     }
     printPerLevel(root, i);

@@ -2,7 +2,6 @@ Provisoning Baremetal server in any form factor, sitting in a datacenter via API
 To support this, a Baremetal server must support folling basic minimum h/w and software protocols:
 
 e.g Raspberry Pi board:
-    
 
 Bare metal Network booting: How its done ?.
 0. IPMI interfaces.

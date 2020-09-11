@@ -178,10 +178,10 @@ Valgrind uses a technology called dynamic binary instrumentation (DBI) to instru
 Usage : valgrind df
 Generates a report of dynamic memory allocation used by program 'df'.
 
-
 What's a core dump anyway?
-A core dump is a snapshot of certain dynamic regions (segments) of the process at the time it crashed (technically, it's a snapshot of minimally the data and stack segments). The core dump can be analyzed postmortem using debuggers such as GDB
-
+A core dump is a snapshot of certain dynamic regions (segments) of the process at the time it crashed (technically,
+it's a snapshot of minimally the data and stack segments).
+The core dump can be analyzed postmortem using debuggers such as GDB
 
 As for why 32bit CPU is limited to 4gb virtual memory ?.
 By definition, a 32-bit processor uses 32 bits to refer to the location of each byte of memory. 

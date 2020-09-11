@@ -167,9 +167,12 @@ void print_ll(lln_t *node) {
 int findKthLast (lln_t *node, int k) {
   lln_t *first, *second;
   /*
-    Use two pointers, walk k elements, next walk till end while walking from head with another ptr
+    Use two pointers, 
+    walk k elements, 
+    next walk till end while 
+    walking from head with another ptr
   */
-  //Walk k elements first
+  // Walk k elements first
   first = node;
   for (int i = 0; i < k; i++) {
     first = first->next;
@@ -352,9 +355,14 @@ lln_t *addTwoList (lln_t *first, lln_t *second) {
 }
 
 /*
- * Given linked list, partitition it with values at left less than x, and right greater than x.
+ * Given linked list, partitition it with values at left less than x, 
+ * and right greater than x.
  * Logic: walk list, build left and right list,   merge  them at the end. 
-*/
+ *    1 2 3 4 5 6 7 8 9  , it can be unsorted, but still it works as we hand pick each node
+ *   e.g partition at 5
+     L 1 2 3 4 5
+     R 9 8 7 6 5
+ */
 void partition_at_x(lln_t **head, int x) {
   lln_t   *left  = NULL;
   lln_t   *right = NULL;
@@ -362,9 +370,9 @@ void partition_at_x(lln_t **head, int x) {
   lln_t   *node  = *head;
   lln_t   *prev  = NULL;
 
-  while(node){
+  while(node) {
     next = node->next;
-    if(node->val >= x) {//Insert at right
+    if (node->val >= x) { //Insert at right
       node->next = right;
       right = node;
     } else {
