@@ -209,6 +209,45 @@ This is done for : a. Host Registration, b. Duplicate IP deletion.
 If there is an 'ARP Reply' for this message, it means, there is a duplicate address
 exist in the network.
 
+Example ARP , ICMP, Routing, Switching , packet flow:
+https://www.youtube.com/watch?v=EqXuHMBwN88&list=LL
+
+(10.1.1.1/24)H1---------Switch1----(10.1.1.2/24)R1(30.1.1.2/24)------(30.1.1.3/24)R2(20.1.1.2/24)----Switch2-----H2(20.1.1.1)
+                                          20.1.1.0/24->NH 30.1.1.2
+    ARP-Rq(10.1.1.2)                      ARP-Rq(30.1.1.3)                         ARP-Rq(20.1.1.1) 
+ping 20.1.1.1
+1.H1 first looks at the IP, and it does not belong to its own network,
+  so it routes the ICMP ping request.
+  Since its not a router, it sends to its default gateway(10.1.1.2) 
+  Before sending, it looks for MAC address for 10.1.1.2, so ARP request is sent
+2. Switch1 will broadcast this ARP request(as DMAC is FFFF),  so R1 receives this ARP request
+   R1. looks at ARP packet, and IP address in it, which belongs to itself, so it replies to this
+   by sending out ARP Reply(unicast DMAC of H1) is used.
+   Switch1 forwards this to H1.
+3. H1 now sends ICMP echo request, with DIP20.1.1.1, SIP 10.1.1.1, DMAC(R1 mac) ,
+   R1 receives it, looks for 20.1.1.1, finds its routing entry and NH is 30.1.1.3,
+   which it needs to resolve ARP, so sends ARP request towards R2,
+4. R2 replies for ARP questest, R1 receives the MAC address of R2,
+   R1 now routes the ICMP Echo request to R2 with DMAC of R2.
+5. R2 now looks at ICMP Echo request, and looks for DIP 20.1.1.1.
+   Sends ARP request towards Switch2, to resovle MAC address of 20.1.1.1.
+6. H2 sends ARP Reply, so R2 learns MAC address of H2, 
+   R2 now routes the packet to H2 with DMAC of H2.
+7. H2 receives this, looks at ICMP ping, and its DIP is same as ping request,
+   It will generate ICMP Echo Reply, with DIP 10.1.1.1.
+8. H2 will have MAC address for Default gateway 20.1.1.2 via 
+   previous ARP-Rq received, so it sends ICMP reply with DMAC of R2.
+9. R2 will route this packet towards 10.1.1.1, with NH 30.1.1.1 
+   It already have MAC address of R1, 
+
+10.R1 will recieved this, and will have MAC address of H1 10.1.1.1
+
+Important:
+H1 will never learn MAC address of H2, as ICMP reply have MAC address of R1.
+Switches do not replace, or modify MAC address when forwards any packet.
+ICMP request has a fixed DIP and SIP throughout ping process.
+But, DMAC keeps changing based on where it has to go.
+But, SMAC keesp changing based on who sends out(In Router only)
 
 MAC Address Basic:
 A multicast MAC address will have LSBit set to 1 of the MSByte.
@@ -219,9 +258,11 @@ etype:  Value of less than or equal 1500 represents the length of the frame.
 
         Value of greater than 1500, represents 'Ether Type' and these are Ethernet II frames.
 	etype seperates 'data link layer' with 'network layer'.
+
 etype=0x8100 :indicates a presense of 802.1q header(2 byte = 12bit vlan, 3bit .1q priority) after etype.
               Its called VLAN tag.
-etype=0x88ab : .1ad   q-in-q  : double tagged
+
+etype=0x88ab : 802.1ad   q-in-q  : double tagged
 Note that after the above etype, 2bytes are used to reprsent vlan, after vlan, again 'etype' field is there
 to repsent the etype of the payload(packet) this tagged packet carrying.
 https://en.wikipedia.org/wiki/IEEE_802.1ad#/media/File:TCPIP_802.1ad_DoubleTag.svg
@@ -232,6 +273,16 @@ etype=0x0800 : (IPv4) packet.
 
               'Protocol == 47' represents 'GRE'(Meaning after IP header, we see 8byte GRE header
                GRE= Generic Routing Encapsulation, is a tunneling protocol.
+
+
+Important
+802.1p method is a Quality of Service (QoS) process defined within the IEEE 802.1Q standard.
+The technique uses a three-bit field within an Ethernet frame header to assign priority levels to packets moving within a network segment. 
+With the technique, this priority value is used to differentiate traffic. IEEE 802.1p specifies 
+traffic prioritization at Layer 2 of the OSI model. 802.1p traffic priorities are included 
+in the Virtual Local Area Network (VLAN) tags. Devices on a network that complies with the 802.1p 
+signalling standard can classify data traffic into priority classes. When network 
+congestion occurs, higher priority packets are transmitted before lower priority data.
 =======================================================================================
 LLDP: Link Layer Discovery Protocol (similar to Cisco Discovery Protocol)
 Device advertise about there identity using LLDP PDU tx at set interval.
@@ -308,7 +359,7 @@ someone sends ARP(reply) with clients IP address, thus attracting clients traffi
 He first has to sniff traffic and get IP address of cliient. Use that address and send
 Gratitus ARP with client-ip and attackers host MAC address.
 
-IP Fragmentation:
+IP Fragmentation and MTU:
 When you join multile networks, MTU can vary. to address this issue, packet can be
 fragmented to fit the size.
 IPv4 header (Network Layer) has bits to support this. Typically framgmentation
@@ -318,6 +369,12 @@ with same frament ID, so that they are identified at the destination so they get
 There is a bit(flags) to indicate 'more framents' in IPv4 header, which helps identify end of framgneted pakets.
 There is a bit(flags) to indicate 'dont fragment' (e.g ping to test the path with big size of packet, or pth MTU discovery)
 Note that re-assembly of packets only happen at the destinatination.
+
+What is MTU vs MSS?.
+MSS is the Maxium Segment Size negotiated between a pair of TCP nodes to send and receives.
+MSS value is payload value of the packet that TCP process can handle. 
+MTU is always higher than MSS. On top of MSS size, Packet headr 20+20bytes is added to make it to MTU size.
+
 
 
 =============================================
