@@ -277,12 +277,24 @@ etype=0x0800 : (IPv4) packet.
 
 Important
 802.1p method is a Quality of Service (QoS) process defined within the IEEE 802.1Q standard.
-The technique uses a three-bit field within an Ethernet frame header to assign priority levels to packets moving within a network segment. 
+The technique uses a three-bit field (8 type)within an Ethernet frame header to assign priority levels to packets moving within a network segment. 
 With the technique, this priority value is used to differentiate traffic. IEEE 802.1p specifies 
 traffic prioritization at Layer 2 of the OSI model. 802.1p traffic priorities are included 
 in the Virtual Local Area Network (VLAN) tags. Devices on a network that complies with the 802.1p 
 signalling standard can classify data traffic into priority classes. When network 
 congestion occurs, higher priority packets are transmitted before lower priority data.
+ value 0 is best effort
+
+.1p bits are part of 4byte vlan header 
+
+In IP header we have 8bit TOS field, Its also called DSCP field,
+It provides 64 classes, 0 is best service.
+TOS fields is part of IPv4 header
+
+User has to map DSCP to .1p (64 to 8 values). via some egress policy.
+L2 head will have this bits enabled based IPv4 DSCP fields.
+DSCP replaces precedence fiels(earlier known )
+
 =======================================================================================
 LLDP: Link Layer Discovery Protocol (similar to Cisco Discovery Protocol)
 Device advertise about there identity using LLDP PDU tx at set interval.
