@@ -210,7 +210,6 @@ The problem with this approach is inefficiency.
 
 Each protocol instance on a router maintains its own database, its own adjacencies, and sends its own Hellos. 
 
-
 The MT extensions use a single database and maintain single adjacencies across a given link, 
 no matter how many topologies actually use the link. 
 Only the SPF calculations and the RIBs are maintained separately for each topology. 

@@ -7,14 +7,14 @@ Any k8 resource can be configured via key/value pair(is label)
 What is istio?.
 Its an open platform-independant service mesh that provides traffic mgmt, policy enforcement and
 telemetry collection. Its designed to manage communications between microservices and applications, without
-requireing changing underlying services. stio provides automated baseline traffic resilience, service metrics collection, distributed tracing, traffic encryption, protocol upgrades, and advanced routing functionality for all service-to-service communication.
-
-
-
+requireing changing underlying services. istio provides automated baseline traffic resilience, service metrics collection,
+distributed tracing, traffic encryption, protocol upgrades, and advanced routing functionality for all service-to-service communication.
 
 /*
 What is minikube?.
-Minikube is a tool that makes it easy to run Kubernetes locally. Minikube runs a single-node Kubernetes cluster inside a Virtual Machine (VM) on your laptop for users looking to try out Kubernetes or develop with it day-to-day
+Minikube is a tool that makes it easy to run Kubernetes locally.
+Minikube runs a single-node Kubernetes cluster inside a Virtual Machine (VM)
+on your laptop for users looking to try out Kubernetes or develop with it day-to-day
 
 How to install minikube on your mac?.
 From Microservice book pakbup
@@ -32,14 +32,12 @@ From Microservice book pakbup
 7. kubectl port-forward deployment/kubernetes-dashboard 9090   
    http://localhost:9090
 
-
-
 k8 was introduced in 2014 by google.
 What is primary function?.
-Deploy and manage large number of container-based workloads on a fleet of machines(
-physical or virtual). Also enforce various scheduling constraints, pack the containers efficiently into the cluster nodes. Restart containers if they fail. Relocate loads if needed.
+Deploy and manage large number of container-based workloads on a fleet of machines(physical or virtual).
+Also enforce various scheduling constraints, pack the containers efficiently into the cluster nodes. Restart containers if they fail. Relocate loads if needed.
 
-Kubernetes utilizes client-side certificates to fully authenticast both sides of any external
+Kubernetes utilizes client-side certificates to fully authenticate both sides of any external
 communications(for eg kubectl). All communication to the Kubernetes API from
 outside should be over HTTP.  Internal clustr communication between the API server and the kubelet on the
 nodes is over HTTPS. But it doesnt use a client certificate by default(you can enable it).
@@ -50,27 +48,28 @@ Things important with microservices:
 3. Monitoring microservices
 
 Basics
-nodes: worker where container(docker, rocket or cryo) is installed
+       nodes: worker where container(docker, rocket or cryo) is installed
 worker nodes: kubelet, kube proxy, and containers are actually hosted. 
 master nodes: kube-apiserver, etcd, controller, scheduler 
 
-api-server : frontend
+api-server : front end
        etcd: keyvalue store, implement lock
   scheduler: distribute work across multiple container
  controller: wath endpoint and bringup if they fail.
 
+container-runtime: docker
+   kubelet: runs on each nodes, which is needed for server client communication.
+            Responsible for talking to the API server.
+   	    e.g Downloading pod secrets from API server, Mounting volumes,
+	        Running the pod container via the CRI(Container Runtime interface)
+	        Reporting the status of the node and each pod,
+	        Probe container liveness.
 
-controller-runtime: docker
-kubelet: runs on each nodes, which is needed for server client communication.
-         Responsible for talking to the API server.
-	 e.g Downloading pod secrets from API server, Mounting volumes,
-	     Running the pod container via the CRI(Container Runtime interface)
-	     Reporting the status of the node and each pod,
-	     Probe container liveness.
 kube-proxy: Respondible for the networking aspects of the node.
-            Operates as a local frount for services and can forward TCP/UDP packets.
+            Operates as a local front for services and can forward TCP/UDP packets,
+	    by installing iptable rules.
 	    It discovers the IP addresses of services via DNS .
-cluster: set of nodes
+   cluster: set of nodes
 
 kubectl: CLI to your Kubernets cluster.
 kubelets
@@ -126,7 +125,6 @@ Moving from imperative to declerative way?.
 Use imperative commands with flag : --dry-run -o yaml
 It generates a file for you, use that file like this: kubectl create -f <>.yaml
 
-
 e.g kubectl run --generator=run-pod/v1 nginx-alpine --image=nginx-alpine
 e.g kubectl run --generator=run-pod/v1 redis --image=redis:alpine -l tier=db
 /* expose a pod to a cluster port */
@@ -158,13 +156,16 @@ kubectl create service nodeport nginx --tcp=80:80 --node-port=30080 --dry-run -o
 
 
 namespaces:
+==================
 kubectl get namespace
 kubectl get pods --namespace=research
+kubectl get pods --all-namespaces
 kubectl run redis --image=redis --generator=run-pod/v1 --namespace=finance
 
 
 
 ConfigMaps:
+======================
 kubectl create configmap <config-name> --from-liberal=<key>=<value>
 
 kubectl create configmap \
@@ -189,11 +190,9 @@ kubectl get configmaps
 How to use them?.
 Under containers: list, add the following attribute to refer an external configmap file
 
-
 envFrom:
   - configMapRef:
         name: app-config
-
 
 
 Secrets:
@@ -210,15 +209,10 @@ data:
    DB_User: root
    DB_Password: passwrd
 
-
 kubectl get/describe secrets -o yaml   < to display password
-
-
-
 
 kubectl exec ubuntu-sleeper whoami
 kubectl exec -it ubuntu-sleeper -- date -s '19 APR 2012 11:14:00'
-
 
 SecurityContext:
 apiVersion: v1
@@ -232,6 +226,7 @@ spec:
     securityContext:
       capabilities:
         add: ["NET_ADMIN", "SYS_TIME"]
+
 ========================
 serviceaccount:
 kubectl create serviceaccount dashboard-sa
@@ -265,25 +260,19 @@ tolerations:
   value: "blue"
   effect: "NoSchedule"
 
-
 Effective result will be, 
 node1 will evict all the pods whose definition does not have the above 'tolerations'.
 node1 will will not evict pods whose definition do have the above 'tolerations', but will not schedule.
 
-
 kubectl describe node 'kubemaster' | grep Taint
-
 
 how to untaint?(use minus sign)
 kubectl taint nodes master node-role.kubernetes.io/master:NoSchedule-
-
 
 master $ kubectl describe nodes node01 | grep Taint
 Taints:             app=spray:NoSchedule
 
 kubectl taint nodes node01 app:NoSchedule-
-
-
 
 Node Selectors:
 
@@ -295,7 +284,6 @@ nodeSelector:
 
 Node creation can use 'label' using 
 kubectl label nodes xxx <label-key>=<label-value>
-
 
 Node Affinity:
 Same like above, but with logical operator to add complex expressions
@@ -312,25 +300,16 @@ affinity:
        values:
        - Large
 
-
-
-
 How to add a label to a node:
 kubectl label node node01 color=blue
 
 How to quickly deploy pods via deployments:
 /var/answers/blue-deployment.yaml
 
-
-
-
 kubectl run nginx --image=nginx:latest --generator=run-pod/v1 --limts="cpu=200m,memory=512Mi" 
-
 
 How to get into shell:
 kubectl exec -it app cat /log/app.log
-
-
 
 Good vim settings:
 im ~/.vimrc
@@ -338,8 +317,6 @@ set nu
 set expandtab
 set shiftwidth=2
 set tabstop=2
-
-
 
 Rediness Probe
 ==============

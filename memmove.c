@@ -10,57 +10,55 @@
 – If the end of dest overlaps, copy from beginning to end
 */
 void mymove(void *dst , void *src, int size) {
-  char *d =(char *)dst;
-  char *s =(char *)src;
+	
+	char *d =(char *)dst;
+	char *s =(char *)src;
 
-  if( size <= 0 || !dst || !src) {
-    printf("invalid input\n");
+	if( size <= 0 || !dst || !src) {
+		printf("invalid input\n");
 
-    return;
-  }
-
-  if (d == s) {
-    printf("dst %p src %p Equal PTRs no need to copy\n",d,s);
-    return;
-   }
-
-  for (int i = 0; i < size; i++) {
-
-    if(d == s+i ) {
-      printf("Overlap detected at index %d  BEGINNING of DST overlaps, Copy  End-to-End\n",i);
-      for(i=size-1; i>=0; i--) {
-	d[i] = s[i];
-      }
-      return;
-    }
-  }
- 
- for (int i = 0; i < size; i++) {
-    if(s == d+i) {
-      printf("Overlap detected at index %d  END of destination overaps, Copy Beg-to-Beg\n",i);
-      for (i = 0; i<size; i++) {  
-	d[i] = s[i];
-      }
-      return;
-    }
- }
- //TBD : copy any direction here  
+		return;
+	}
+	if (d == s) {
+		printf("dst %p src %p Equal PTRs no need to copy\n",d,s);
+		return;
+	}
+	for (int i = 0; i < size; i++) {
+		if(d == s+i ) {
+			printf("Overlap detected at index %d  BEGINNING of DST overlaps, Copy  End-to-End\n",i);
+			for(i=size-1; i>=0; i--) {
+				d[i] = s[i];
+			}
+			return;
+		}
+	}
+	for (int i = 0; i < size; i++) {
+		if(s == d+i) {
+			printf("Overlap detected at index %d  END of destination overaps, Copy Beg-to-Beg\n",i);
+			for (i = 0; i<size; i++) {  
+				d[i] = s[i];
+			}
+			return;
+		}
+	}
+	//TBD : copy any direction here  
 }
 
 
 int main (int argc, char *argv[]) {
-  char src[100] = {"123456789"};
-  char *dst;
-  int len = strlen(src);
-  printf("src %s len %d\n",src,len);
-  dst = ((char *)src + 8);
-  mymove((void *)dst, (void *)(src), len);
-  printf("src %s, dst(+8) %s %d\n", src, dst, len);
+	char src[100] = {"123456789"};
+	char *dst;
+	
+	int len = strlen(src);
+	printf("src %s len %d\n",src,len);
+	dst = ((char *)src + 8);
+	mymove((void *)dst, (void *)(src), len);
+	printf("src %s, dst(+8) %s %d\n", src, dst, len);
  
-  char src2[100] = {"abcdefghijklmnopqrstuvwxyz"};
-  len = strlen(src2);
-  dst = ((char *)src2 + 50);
+	char src2[100] = {"abcdefghijklmnopqrstuvwxyz"};
+	len = strlen(src2);
+	dst = ((char *)src2 + 50);
 
-  mymove((void *)dst, (void *)(src2), len + 1);
-  printf("src2 %s, dst(+8) %s %d\n", src2, dst, len);
+	mymove((void *)dst, (void *)(src2), len + 1);
+	printf("src2 %s, dst(+8) %s %d\n", src2, dst, len);
 }

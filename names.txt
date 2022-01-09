@@ -1,3 +1,0 @@
-name age
-thip 30
-mop  40

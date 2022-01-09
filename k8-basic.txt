@@ -1,11 +1,170 @@
+CNI: Container Network Interface < network vendors implemtn this
+CSI : container storage interface  < storage vendors will implement this
+CRI : Container Runtime interface. containerd
+
+PersistentVolume(Admin creates) and PersistentVolumeClaims(users claims):
+If Volume is not available with requirement, it will be in pending state.
+e.g
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod
+spec:
+  containers:
+    - name: myfrontend
+      image: nginx
+      volumeMounts:
+      - mountPath: "/var/www/html"
+        name: mypd
+  volumes:
+    - name: mypd
+      persistentVolumeClaim:
+        claimName: myclaim
+
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-log
+spec:
+  persistentVolumeReclaimPolicy: Retain
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 100Mi
+  hostPath:
+    path: /pv/log
+========
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-log
+spec:
+  persistentVolumeReclaimPolicy: Retain
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 100Mi
+  hostPath:
+    path: /pv/log
+========
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: claim-log-1
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 50Mi
+================How to use the claim?=====
+apiVersion: v1
+kind: Pod
+metadata:
+         name: webapp
+spec:
+  containers:
+  - name: event-simularot
+    image: kodekloud/event-simulator
+    env:
+    - name: LOG_HANDLERS
+      value: file
+    volumeMounts:
+    - mountPath: /log
+      name: log-volume
+
+  volumes:
+  - name: log-volume
+    persistentVolumeClaim:
+            claimName: claim-log-1
+=============================
+
+
+Example how we specify mount(volume) while we create docker container.
+target is the location of container,
+source is the host machine.
+
+docker run --mount type=bind, source=/data/mysql,target=/var/lib/mysql mysql
+storage drivers example:
+btrfs,
+aufs,<-----ubuntu
+to persist storage, we must create volumes, device drivers do not manage volumes,
+volume drivers plugin manage volumes(e.g Local, Azure File Storage, Convoy, Digital Ocean Block Storage,  Flocker, gce-docker etc)
+
+Best site for questions:
+https://www.interviewbit.com/kubernetes-interview-questions/
+
 What is a Kubernetes pod?.
-Its a Group of containers.
-That's correct. In Kubernetes, a group of one or more containers is called a pod. Containers in a pod are deployed together. They are started, stopped, and replicated as a group.
+Its a Group of containers. That's correct. In Kubernetes, a group of one or more containers is called a pod.
+Containers in a pod are deployed together. They are started, stopped, and replicated as a group.
 
 The simplest workload that Kubernetes can deploy is a pod that consists only of a single container.
 
 
 What is a Kubernetes cluster?
 Its a Group of machines where Kubernetes can schedule workloads.
-A Kubernetes cluster is a group of machines where Kubernetes can schedule containers in pods. The machines in the cluster are called “nodes.”
+A Kubernetes cluster is a group of machines where Kubernetes can schedule containers in pods. 
+The machines in the cluster are called “nodes.”
+
+
+How to put pod in maintenance mode?
+    kubectl cordon
+    kubectl drain –ignore-daemon set
+
+The first command moves the node to maintenance mode or makes the node unavailable, followed by kubectl drain which will finally discard the pod from the node. After the drain command is a success you can perform maintenance.
+
+Note: If you wish to perform maintenance on a single pod following two commands can be issued in order:
+
+    kubectl get nodes: to list all the nodes
+    kubectl drain <node name>: drain a particular node
+How to limit resource on a pod ?.
+
+apiVersion: v1
+kind: Pod
+metadata:
+ name: demo
+spec:
+ containers:
+ - name: example1
+ image:example/example1
+ resources:
+   requests:
+     memory: "_Mi"
+     cpu: "_m"
+   limits:
+     memory: "_Mi"
+     cpu: "_m"
+
+
+
+Executor node: (This runs on master node)
+
+Kube-proxy: This service is responsible for the communication of pods within the
+            cluster and to the outside network, which runs on every node. This service is responsible to maintain network protocols when your pod establishes a network communication.
+    kubelet: Each node has a running kubelet service that updates the running node accordingly with the configuration(YAML or JSON) file. NOTE: kubelet service is only for containers created by Kubernetes.
+
+Master services:
+
+    Kube-apiserver: Master API service which acts as an entry point to K8 cluster.
+    Kube-scheduler: Schedule PODs according to available resources on executor nodes.
+    Kube-controller-manager:  is a control loop that watches the shared state of the cluster through the apiserver and makes    changes attempting to move the current state towards the desired stable state
+
+
+Example yaml file to define a service?.
+apiVersion: networking.k8s.io/v1
+kind: Service
+metadata:
+  name: some-service
+spec:
+ selector:
+   app: some-app
+ type: LoadBalancer <----------Can be nodePort, Cluster
+ ports:
+   - protocol: UDP
+     port: 8080
+     targetPort: 8080
+     nodePort: 32412
+
+
 

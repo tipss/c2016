@@ -20,21 +20,22 @@ Input number
 *  e.g 5225 will become 5225, ! so a palindrome test can be done using this */
 
 void reverse(int input) {
-  int rightdigit;
-  int sum = 0;
-  while (input >0) {
-    printf("%d=> %d\n", input, sum);
-    rightdigit = input % 10;
-    sum = sum * 10 + rightdigit;
-    input = input/10;
-  }
-  printf("%d=> %d\n", input, sum);
+	int rightdigit;
+	int sum = 0;
+	while (input >0) {
+		printf("%d=> %d\n", input, sum);
+		rightdigit = input % 10;
+		printf("%d,", rightdigit);
+		sum = sum * 10 + rightdigit;
+		input = input/10;
+	}
+	printf("%d=> %d\n", input, sum);
   
 }
 
 int main(int argc, char *argv[]) {
-  unsigned int d = 0;
-  printf("Input number \n");
-  scanf("%d", &d);
-  reverse(d);
+	unsigned int d = 0;
+	printf("Input number \n");
+	scanf("%d", &d);
+	reverse(d);
 }

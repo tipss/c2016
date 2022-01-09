@@ -1,4 +1,4 @@
-WHat is TLS/SSL termination ?
+What is TLS/SSL termination ?
 
 A TLS termination proxy (or SSL termination proxy[1], or SSL offloading[2]) is a proxy server that is used
 by an institution to handle incoming TLS connections, decrypting the TLS and passing on the unencrypted
@@ -16,10 +16,10 @@ If the Handshake involves : TCP then its fair to say (application layer protocol
 
 How SSL/TLS session connection is established?.
 client(browser) <------------->server(tomcat/apache)
-1. Client send list f supported SSL/TLS version and suported encryption  to server->
+1. Client send list of supported SSL/TLS version and suported encryption  to server->
 2. Server sends Digital Certificate(CA) and Public Key in response to it.
 3. Client verifies this data via outside (Certificate Autority) to confirm authenticty of the webserver.
-4. Client now trusts Server and sends its shared secret encrypted with Servers Public Key.
+4. Client now trusts Servera and sends its data with shared secret encrypted with Servers Public Key.
 5. Cliet sends Finished message, indicate client part of handshake is complete.
 6. Server Responds with its Fiished message.
 
@@ -29,28 +29,34 @@ What are some important port number
 
 TCP vs UDP.
 Both are Transport Layer protocols
-TCP : 20byte header, stream based/reliable/connection-based .
-Connection is established using 3way hand shake(TX SYN,RX SYN-ACK, TX ACK).
+TCP : 20 byte header, stream based/reliable/connection-based .
+Connection is established using 3 way hand shake(TX SYN,RX SYN-ACK, TX ACK).
 Connection is tear down is also done via handshake.
 This is the reason why TCP is called connection oriented.
-In-order delivery, acks every packets received, expects ack.
-Segments are numbered. Delays
-Tx when network is congested.
+In-order delivery, receiver ACKS every packets received, client expects ACK.
+Segments are numbered.
+Delays Tx when network is congested.
 Splits data into smaller chunks if N/S is congested, and re-assembles.
 
-3 way hand shake shown in the picture with 3 steps:
+TCP uses a congestion window in the sender side to do congestion avoidance.
+The congestion window indicates the maximum amount of data that can be sent
+out on a connection without being acknowledged. TCP detects congestion when
+it fails to receive an acknowledgement for a packet within the estimated timeout.
+
+TCP 3 way hand shake shown in the picture with 3 steps:
 
 Client A---------------------------------Server B
-1. (Seq#100, Ack#0, Syn#1  SYN requiest)-------->
-2.         <--------------------(Seq#200, Ack#101, Syn#1  SYN reply)
-3. (Seq#101 Ack#201, Syn#0  ACK)------->
+1. SYN (Seq#100, Ack#0, Syn#1  SYN request)-------->
+2. SYN-ACK        <--------------------(Seq#200, Ack#101, Syn#1  SYN reply)
+3. ACK (Seq#101 Ack#201, Syn#0  ACK)------->
 
 Note Ack field is used to fill sequeunce number of sender,
 Note Seq# is always filled by originator to indicate his current running seq number.
 Note Syn# field is used to request synchronization
+Note that Ack field always increment value by one of the received Seq before replying.
 
 UDP: 8byte packet header, connection less,message based, order not guaranteed, no-handshakes, 
-no congestion control, good for SNMP, HD-Video etc.
+     no congestion control, good for SNMP, HD-Video etc.
      Sending of UDP packet does not need a prior session established, nor an ACK is
      expected after send and receive.
      Meaning, there must be a listener on the server at port e.g for SNMP 161.
@@ -73,7 +79,7 @@ Original 'L2' frame(e.g ARP request, or unknown MAC's are) are embedded into UDP
 of SMAC by each VTEP, including inner 'SMAC'. (HOSTMAC,VTEPIP,VTEPMAC,SEGMENTID) 
 =======================================================================================
 HOST-MAC1---VETP1---Shared Transport Network(IP and Multicast)----VTEP2---HOST-MAC2.
-          ->ENCAP-> +50bytes                                      DECAP ->-50bytes
+          ->ENCAP-> + 50 bytes                                      DECAP ->-50bytes
       ----->MAC1 Entry(ARP-Request)                               MAC1 Entry
             MAC2 Entry                                            MAC2 Entry(ARP-Reply) <----
 =======================================================================================           
@@ -81,8 +87,8 @@ Note: After discovery of destination mac address(using ARP), VTEP's forwarding t
 is used to forward HOST packets(still embeded in UDP/VXLANHDR) to destination VTEP, and then to destination HOST.
 
 ============================================
-MC-LAG: Multi Chassis LAG,
 
+MC-LAG: Multi Chassis LAG,
 https://supportforums.cisco.com/document/9868751/asr9000xr-multichassis-lag-or-mc-lag-mclag-guide
 Multichassis LAG is a tricky concept. In general the members of a bundle (also called LAG, Link Aggregation Group, Etherchannel, Portchannel) are between 2 distinct devices. The advantage of using a bundle is that there is a single routing peering, no worries about spanning tree and things like that. However the redundancy is compromised when either one of the peers fail. Using ECMP (Equal Cost Multipath) in L3 scenarios allows me to dual home to 2 different devices so I have a back up also when one of the peers fail for me, but that negates the benefit of using bundle having a single routing peering.
 
@@ -112,13 +118,15 @@ VRRP instance is limited to single subnet, it does not advertise subnets beyond 
 or affect the routing table in anyway.
 An instance is idenitified by instance ID , which can range from 1 to 255.
 
-VRRP instance creates a 'virtual router' with unique IP address(Gateway address)
+VRRP instance creates a 'virtual router' with unique IP address(Gateway address) or VIP
 that hosts(users) will know as. 'Virtual Router' is made of an 'active' and 'slave' physical router.
 State is elected based on vrrp priority and other elements like who starts advertising first.
 
-Both routers use same unique MAC address on there virtual NIC, e.g 00.00.5E.00.01.xx.
-xx is the VRRP ID.  This mac is used for ARP reply by active node,
+Both routers use same unique MAC address for VIP address on there virtual NIC, e.g 01.00.5E.00.01.xx.
+xx is the VRRP ID.  This mac is used for ARP reply by primary node,
 Other node will not reply, thats how it attracts active traffic from clients  for forwarding.
+VRRP periodic advertisements are sent over a well known multicast address  e.g 224.0.0.18, so
+recepient must have 'IGMP snooping' enabled to process these.
 
 Physical routers within the 'virtual router' group must communicate with each other on a well
 known multicast IP address 224.0.0.18, Using the 'priority' a router with highest priority will become master.
@@ -166,8 +174,12 @@ e.g 'Action log,
      sport, dip,dport
      'msg detected' < --Rule Options
 ==========================================================================================================
-ARP(Address Resolution Protocol): L2, data-link layer prototocol
-L2HDR+L2Payload(SMAC,SIP,TARGETMAC,TARGETIP)
+ARP(Address Resolution Protocol):
+
+ATNDP(Application, Transport, Network, Data-link(2), Physical)
+L2, data-link layer prototocol
+L2HDR + L2Payload(SMAC, SIP, TARGETMAC, TARGETIP)
+
 IP packets are always encapsulated in Ethernet Header(with DMAC and SMAC) on the wire.
 Meaning, to send and IP packet to say a destination D, you must know D's (Router)MAC address also.
 What ARP protocls does it send 'ARP Request(broadcast messsage)'
@@ -179,6 +191,7 @@ ARP Cache is queried first, to find D's mac address.
 
 ICMP ping before sending IP packet to destination must know the mac address of the destination
 IP. It finds this by looking at local ARP table. If not found, it sends ARP request.
+
 The interface on the remote router/host which has this IP configured replies to this ARP request
 saying that my MAC and IP bindings are here. Thus ARP table is updated, and ICMP pings
 can be sent out.
@@ -186,10 +199,9 @@ can be sent out.
 We can flush /clear ARP table, In that case, ping like applications resend ARP requests to relearn.
 
 Proxy ARP: Its a feature on 'Routers', wherein they respond to an 'ARP Reuest' for an
-'Target IP' address
-for which they are not the owners. They do this, because there routinging table knows how
-to route IP packets with that destination D to the next hop if its received by this router
-with DMAC equal to its own MAC.
+'Target IP' address for which they are not the owners.
+They do this, because there routinging table knows how to route IP packets with
+that destination D to the next hop if its received by this router with DMAC equal to its own MAC.
 
 Gratuitous ARP?.
 When Sending-IP and Target-Ip in a 'ARP Request' is same it s called a Gratuitous ARP.
@@ -199,16 +211,21 @@ exist in the network.
 
 
 MAC Address Basic:
-A multicast MAC address will have LSBit set of the MSByte.
-Sizeof MAC address is 8bytes, or 48bits, 3MSByte's form OUI
-
+A multicast MAC address will have LSBit set to 1 of the MSByte.
+Sizeof MAC address is 6bytes, or 48bits, 3MSByte's form OUI
+Generally represented with 4 group of numbers 01:02:03:04:05:06
 etype:  Value of less than or equal 1500 represents the length of the frame.
         These are 802.3 type of frames.(e.g STP/RSTP frames)
 
         Value of greater than 1500, represents 'Ether Type' and these are Ethernet II frames.
 	etype seperates 'data link layer' with 'network layer'.
-etype=0x8100 :indicates a presense of 802.1q header(2byte, 12bit vlan,3bit priority) after etype.
+etype=0x8100 :indicates a presense of 802.1q header(2 byte = 12bit vlan, 3bit .1q priority) after etype.
               Its called VLAN tag.
+etype=0x88ab : .1ad   q-in-q  : double tagged
+Note that after the above etype, 2bytes are used to reprsent vlan, after vlan, again 'etype' field is there
+to repsent the etype of the payload(packet) this tagged packet carrying.
+https://en.wikipedia.org/wiki/IEEE_802.1ad#/media/File:TCPIP_802.1ad_DoubleTag.svg
+
 etype=0x8847 : indicates a presense of MPLS LABLE after etype.
                MPLS header is 4byte label stack, each label has 20bit label,(TTL, S< EXP bit etc)
 etype=0x0800 : (IPv4) packet.
@@ -220,7 +237,7 @@ LLDP: Link Layer Discovery Protocol (similar to Cisco Discovery Protocol)
 Device advertise about there identity using LLDP PDU tx at set interval.
 Its not two way,or ACK based.
 DMAC is wellknown multicast address
-ChassisID,PortID,Time-To-Live
+ChassisID, PortID, Time-To-Live
 This is advertisement only protocol.
 These packets are never forwarded, meaning, that only directly connected devices are known to NBRS.
 
@@ -231,39 +248,59 @@ This is called OLDP proto(not official).
 
 IPv6:
 Each address is of size 16 byte, or, 128bits. mask can be up to /128
-4MSBytes form 'network prefix'
-4LSByte identifies IntfID/MAC of the device if choosen.
-Represented as 8 chunks seperated by colon.
-Each chunk represent 2byte, represented in 4char hex.
-When a chunk has zero value it can be skipped.
-2001:db8:49:0:ab00:0:0:102 => 2001:db8:49:0:ab00::102
-Note the zeros between 49 and ab are not compresses.
+Note IPv4 is 4 bytes long with 32bits width, meaning IPv6 is 4 times bigger in size.
+
+4 MSB Bytes form 'network prefix'
+4 LSB Byte identifies Intf ID/MAC of the device if choosen.
+Represented as 8 chunks of 2 bytes seperated by colon.
+Each chunk represent 2 byte, represented in 4 char hex.
+
+When a chunk has zero value it can be skipped(via :: notation).
+2001:db8:49:0:ab00:0:0:102 => 2001:db8:49:0:ab00::102<----two zeros are skipped here
+Note the zeros between 49 and ab are not compresses.<-----very important
 Only leading zeros are compressed.
 
 IPSec: IPv6 mandates use of IPsec, which is not the case of IPv4.
-Because of increased addres space, NAT is not needed.
-So its easier to troubleshoot IPv6 networks.
+Because of increased addres space, NAT is not needed.<-----very important.
+So its easier to troubleshoot IPv6 networks.(but link-local address is generated automatically,
+and make this dynamic value bit harder in routing protocol to remember and use as NH.
 etype 0x86DD is used to distinguish at link-layer,
       0x800 for IPv4.
+
 TTL is renamed as HOPLIMIT.
 Header Checksum field is not there.
 FlowLabel field is added.
 What is link-layer address in IPV6 ?.
-What is Neighbor Discovery Protocol?
-Its equivalent of ARP used in IPv4.
-Mainly it uses ICMPv6 packets.
-NS Neighbor Solicitation
-NR Neighbor Reply
-Routers register for different multicast mac address, and they have better role.
 
-RS Router Solicitation
-RR Router Reply
+What is Neighbor Discovery Protocol?
+ Its equivalent of ARP used in IPv4. So its only designed
+ for mac discovery(link-layer) given an IPv6 address.
+
+ Mainly it uses ICMPv6 packets.
+ Different Message types of ND
+ ============================
+ Msg between two host:
+ NS Neighbor Solicitation: To check if NBR is still reachable,
+ It will have request like what is your MAC, given IPv6 adress.
+ It also has a special multcast destination address,
+ 
+ NR Neighbor Reply
+ Confirms that it has MAC address for IPv6 address.
+
+
+ Routers register for different multicast mac address for NDP to work
+ and they have better role.
+ RS Router Solicitation (multicast DST) sent to Router from host
+ RR Router Reply sent from Routr to host
+ RA Router advertisement(multicast DST, ipv6 address the local link can use)
 
 DHCPv6 ?.
 Used for IPv6 global IP configuration.  ND helps discover DHCPv6 server.
 
 What is DAD ?
 Duplicate Address Detection.
+Since all device in IPv6 interface must have self generated Link Local address.
+Before it allocates, it send DAD message , and if no reply seen, it will assign the Ipv6 link local address .
 
 ARP spoofing?.
 Its a man-in-the-middle attack where, between server and client(victim)
@@ -274,18 +311,24 @@ Gratitus ARP with client-ip and attackers host MAC address.
 IP Fragmentation:
 When you join multile networks, MTU can vary. to address this issue, packet can be
 fragmented to fit the size.
+IPv4 header (Network Layer) has bits to support this. Typically framgmentation
+is done based on destination outgoing interface of the packet before forwarding.
+If outgiong MTU is 1500bytes, and packet is 2000bytes, packet is split into two fragment 1500 and 500 bytes
+with same frament ID, so that they are identified at the destination so they get re-assembled.
+There is a bit(flags) to indicate 'more framents' in IPv4 header, which helps identify end of framgneted pakets.
+There is a bit(flags) to indicate 'dont fragment' (e.g ping to test the path with big size of packet, or pth MTU discovery)
+Note that re-assembly of packets only happen at the destinatination.
+
 
 =============================================
 IPSec:
 IPSec tunnel mode is used to protect site-to-site (gateway-to-gateway) traffic between networks, such as site-to-site networking through the Internet. The sending gateway encapsulates the entire IP datagram by adding a new IP header and then protects the new packet using one of the IPSec protocols.
-
 AH : Authenticaion Header: 
 The AH protocol provides data origin authentication, data integrity, and anti-replay protection for the entire packet (both the IP header and the data payload carried in the packet), except for the fields in the IP header that are allowed to change in transit. AH does not provide data confidentiality, which means that it does not encrypt the data. The data is readable, but protected from modification and spoofing.
 ESP: Encapsulating Security Payload:
 The ESP protocol provides data origin authentication, data integrity, anti-replay protection, and the option of confidentiality for the IP payload only. ESP in transport mode does not protect the entire packet with a cryptographic checksum nor does it protect the IP header.
 =============================================
 DNS:
-
 DHCPv4:Dynamic Host Configuration Protocol:
 1. Clients configured as DHCP clients during boot time request an IP address using
 broadcast message DHCPDISCOVER(computer name, MACaddress).
@@ -293,21 +336,20 @@ broadcast message DHCPDISCOVER(computer name, MACaddress).
 3. Client responds with DHCPREQUEST.
 4. Server sends DHCPACK(has IP address) completing the process.
 DHCPv6:
-
 =======================================================================================
 ICMP:Internet Control Message Protocol.
 Its header starts after IPv4 header, with proto id 1.
 with 8byte header and variable size data section.
 Type 0 : is used for 'Echo Reply' for Ping
 Type 8 : is used for 'Echo Request' for Ping.
-Type 5 : 'Redirect Message'
+Type 5 : 'Redirect Message' : Sent from source if there is better address on other router.
 Type 3 :  Destination Unreachable (say TCP/UDP/ICMP port/transaction not reachable)
 Type 11: Time Exceeded.(by Traceroute for TTL exceed)
 
 =======================================================================================
 
 NAT/CGNAT:
-Its a way of replacing a source-ip/portx with wellknow(public-ip)/porty before forwarding it to Internet.
+Its a way of replacing a source-ip and port with wellknow(public-ip)/ports before forwarding it to Internet.
 NAT forwarding Table
 Note that 12.13.14.15 is public address given by Service Provider for your DSL or Modem.
 
@@ -323,24 +365,31 @@ this table.
 
 This saves lots of IP addresses.
 
-
 Device Behind      NAT Router 
 NAT Router
 Due to shortage of IPv4 addresses(4.5billion max IPv4),
 ===========================================================================================
-Carrier-grade NAT (CGN), also known as large-scale NAT (LSN), is an approach to IPv4 network design in which end sites, in particular residential networks, are configured with private network addresses that are translated to public IPv4 addresses by middlebox network address translator devices embedded in the network operator's network, permitting the sharing of small pools of public addresses among many end sites. This shifts the NAT function and configuration thereof from the customer premises to the Internet service provider network.
+Carrier-grade NAT (CGN), also known as large-scale NAT (LSN), is an approach to IPv4 network design in which end sites,
+in particular residential networks, are configured with private network addresses that are translated to public
+IPv4 addresses by middlebox network address translator devices embedded in the network operator's network,
+permitting the sharing of small pools of public addresses among many end sites.
+This shifts the NAT function and configuration thereof from the customer premises to the Internet service provider network.
 DisAdvantage: Difficult host services, Makes it difficult for LawEnforcement to trace back, unless NAT tables are logged.
 PortForwarding by end-user is difficult to implement.
 Significant security, scalability and reliability issues.
 ===================================================================
 
 DOS Attack: (Denial of Service):
-Generally one a unique source attacks a system by sending unwanted junk packets.
+Generally once a unique source attacks a system by sending unwanted junk packets.
+
 Traffic Attack: Send huge volume of TCP/UDP and ICMP packet, during this
 legitimate packets gets lost, so actual user will loose service.
+
 Bandwidth Attacks: Overload with massive amount of junk data, resulting
 into loss of bandwidth , can lead to complete denial of service.
+
 Application Attacks: Application-layer data messages are sent.
+
 DDOS Attack: Incoming bad traffic to the victim originates from
 many different sources(often infected with Trojan) makeit it
 hard for Victim to stop the attack.

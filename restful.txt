@@ -1,6 +1,3 @@
-
-
-
 RESTful:Representational state of on object(sent in JSON or XML format)
 
 HTTP GET
@@ -25,7 +22,7 @@ DELETE	/device-management/devices/{id} : Delete device by "id"
 
 
 TOMCAT: HTTP server and servelet container
-NGNX:  HTTP server plus more
+NGNX:   HTTP server plus more
 JERRY is also another HTTP server, 
 app-server vs webserver
 JBOSS:

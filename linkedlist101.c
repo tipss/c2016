@@ -10,42 +10,42 @@
 * It doesn't know that when loading an element at address X that the next address is the contents of (X + 8).
  */
 typedef struct lln {
-    int val;
-    struct lln *next;
-    struct lln *prev; // Used only if your API is for DLL,
+	int val;
+	struct lln *next;
+	struct lln *prev; // Used only if your API is for DLL,
 } lln_t; 
 
 lln_t *head;
 
 void Insert (lln_t **head, lln_t *node, int position) {
-  lln_t *aux_node, *p_node = NULL;
-  int cur = 0;
+	lln_t *aux_node, *p_node = NULL;
+	int cur = 0;
 
-  if (*head == NULL) {
-    (*head) = node;
-    (*head)->next = NULL;
-    return;
-  }
+	if (*head == NULL) {
+		(*head) = node;
+		(*head)->next = NULL;
+		return;
+	}
 
-  if (position == 1) {
-    node->next = (*head);
-    (*head)    = node;
-    return;
-  }
+	if (position == 1) {
+		node->next = (*head);
+		(*head)    = node;
+		return;
+	}
 
-  aux_node = (*head);
+	aux_node = (*head);
 
-  /* locate a node at position */
-  while (aux_node && (cur < position)) {
-    p_node   = aux_node;
-    aux_node = aux_node->next;
-    cur++;
-  }
+	/* locate a node at position */
+	while (aux_node && (cur < position)) {
+		p_node   = aux_node;
+		aux_node = aux_node->next;
+		cur++;
+	}
 
-  p_node->next = node;
-  if (aux_node) {
-    node->next = aux_node;
-  }
+	p_node->next = node;
+	if (aux_node) {
+		node->next = aux_node;
+	}
 
 }
 
@@ -56,81 +56,81 @@ void Insert (lln_t **head, lln_t *node, int position) {
  * Tip: Delete the next node
  */
 void delete_node2 (lln_t *node) {
-  lln_t *tmp;
-  if (!node) {
-    return;
-  }
+	lln_t *tmp;
+	if (!node) {
+		return;
+	}
 
-  if (node->next)
-    {
-      node->val  = node->next->val;
-      tmp  = node->next->next;
-      printf("Deleted node with value %d\n", node->next->val);
-      free(node->next);
-      node->next = tmp;
-    } else {
-    node->val = -1;
-    printf("Can't delete, as next node is null, but marked as DUMMY\n");
-  }
+	if (node->next)
+	{
+		node->val  = node->next->val;
+		tmp  = node->next->next;
+		printf("Deleted node with value %d\n", node->next->val);
+		free(node->next);
+		node->next = tmp;
+	} else {
+		node->val = -1;
+		printf("Can't delete, as next node is null, but marked as DUMMY\n");
+	}
 }
 
 void delete_node (lln_t **head, int val) {
-  lln_t *tmp, *prev;
+	lln_t *tmp, *prev;
 
-  if (*head == NULL){
-    return;
-  }
+	if (*head == NULL){
+		return;
+	}
 
-  printf("delete_node: %d\n",val);
-  tmp = *head;
+	printf("delete_node: %d\n",val);
+	tmp = *head;
 
-  if (tmp->val == val) {
-    *head = tmp->next;
-    printf("Freeing head node with val %d tmp= %p head = %p \n", tmp->val,tmp,*head);
-    free(tmp);
-    printf("New head is head %p, val %d\n",*head, (*head)->val);
-    return;
-  }
+	if (tmp->val == val) {
+		*head = tmp->next;
+		printf("Freeing head node with val %d tmp= %p head = %p \n", tmp->val,tmp,*head);
+		free(tmp);
+		printf("New head is head %p, val %d\n",*head, (*head)->val);
+		return;
+	}
 
-  while (tmp != NULL && tmp->val != val) {
-    prev = tmp;
-    tmp = tmp->next;
-  }
+	while (tmp != NULL && tmp->val != val) {
+		prev = tmp;
+		tmp = tmp->next;
+	}
 
-  if (tmp == NULL) {
-    printf("Node not found\n");
-    return;
-  }
-  prev->next = tmp->next;
-  printf("Freed node with val %d\n", tmp->val);
-  free(tmp);
+	if (tmp == NULL) {
+		printf("Node not found\n");
+		return;
+	}
+	prev->next = tmp->next;
+	printf("Freed node with val %d\n", tmp->val);
+	free(tmp);
 }
 
 void delete_duplicate(lln_t **head) {
-  lln_t *outer = *head;
-  lln_t *inner; 
-  int i = 0, j = 0;
+	lln_t *outer = *head;
+	lln_t *inner; 
+	int i = 0, j = 0;
 
-  /* 1. Walk outerloop .
-   * 2. Walk inner loop with rest of the node to find duplicate
-   */
-  while (outer) {
-    i++;
-    inner = outer;
-    j = 0;
-    while (inner) {
-      j++;
-      if (inner->next && inner->next->val == outer->val) {
-	printf("Found Duplicate nodes "
-	       "with index %d and index %d value %d\n",
-	       i, j, outer->val);
-	inner->next = inner->next->next;
-      } else {
-	inner = inner->next;
-      }
-    }
-    outer = outer->next;
-  }  
+	/* 1. Walk outerloop .
+	 * 2. Walk inner loop with rest of the node to find duplicate
+	 */
+	while (outer) {
+		i++;
+		inner = outer;
+		j = 0;
+		while (inner) {
+			j++;
+			if (inner->next && inner->next->val == outer->val) {
+				printf("Found Duplicate nodes "
+				    "with index %d and index %d value %d\n",
+				    i, j, outer->val);
+				inner->next = inner->next->next;
+			} else {
+				inner = inner->next;
+			}
+		}
+		outer = outer->next;
+	}  
 }
 
 void delete_all(lln_t **head) {
@@ -147,45 +147,47 @@ void delete_all(lln_t **head) {
 
 
 //Print recursively in reverse order.
-void print_ll_reverse(lln_t *head)
-{
-  if(head == NULL)
-    return;
+void print_ll_reverse(lln_t *head) {
+	if(head == NULL)
+		return;
    
-  print_ll_reverse(head->next);
-  printf("%d  ", head->val);
+	print_ll_reverse(head->next);
+	printf("%d  ", head->val);
 }
 
 void print_ll(lln_t *node) {
- while(node) {
-   printf("%d ", (node)->val);
-   node = (node)->next;
- }
+	while(node) {
+		printf("%d ", (node)->val);
+		node = (node)->next;
+	}
 }
 
-/* Find kth element from the last */
+/* 
+ * Find kth element from the last 
+ * remember
+ */
 int findKthLast (lln_t *node, int k) {
-  lln_t *first, *second;
-  /*
-    Use two pointers, 
-    walk k elements, 
-    next walk till end while 
-    walking from head with another ptr
-  */
-  // Walk k elements first
-  first = node;
-  for (int i = 0; i < k; i++) {
-    first = first->next;
-    if (first == NULL)
-      return (-1);
-  }
+	lln_t *first, *second;
+	/*
+	  Use two pointers, 
+	  walk k elements, 
+	  next walk till end while 
+	  walking from head with another ptr
+	*/
+	// Walk k elements first
+	first = node;
+	for (int i = 0; i < k; i++) {
+		first = first->next;
+		if (first == NULL)
+			return (-1);
+	}
 
-  second = node;
-  while (first) {
-    first  = first->next;
-    second = second->next;
-  }  
-  return second->val;
+	second = node;
+	while (first) {
+		first  = first->next;
+		second = second->next;
+	}  
+	return second->val;
 }
 
 /*
@@ -205,43 +207,43 @@ int findKthLast (lln_t *node, int k) {
 */
 int findLoop (lln_t *head) {
 
-  lln_t *fastp = head; 
-  lln_t *slowp = head;
-  int     loop = 0;
+	lln_t *fastp = head; 
+	lln_t *slowp = head;
+	int     loop = 0;
 
-  // Check for NULL next pointers indicating no loop 
-  while (fastp && fastp->next) {
-    slowp = slowp->next;
-    fastp = fastp->next->next;
-    if (slowp == fastp) {
-      break;
-    }
-  }
+	// Check for NULL next pointers indicating no loop 
+	while (fastp && fastp->next) {
+		slowp = slowp->next;
+		fastp = fastp->next->next;
+		if (slowp == fastp) {
+			break;
+		}
+	}
  
-  if (!fastp || !fastp->next) {
-    return loop;
-  }
+	if (!fastp || !fastp->next) {
+		return loop;
+	}
 
-  /* Find the loop length, by moving one step */
-  fastp = fastp->next;
-  while (slowp != fastp) { 
-    fastp = fastp->next;
-    loop++;
-  }
+	/* Find the loop length, by moving one step */
+	fastp = fastp->next;
+	while (slowp != fastp) { 
+		fastp = fastp->next;
+		loop++;
+	}
 
-  /* Find the beginning of the loop */
-  fastp = slowp;
-  slowp = head;
+	/* Find the beginning of the loop */
+	fastp = slowp;
+	slowp = head;
 
-  while (fastp != slowp) {
-    fastp = fastp->next;
-    slowp = slowp->next;
-  }
+	while (fastp != slowp) {
+		fastp = fastp->next;
+		slowp = slowp->next;
+	}
   
-  if (fastp && slowp)
-    printf("Loop starts at node %d\n",fastp->val);
+	if (fastp && slowp)
+		printf("Loop starts at node %d\n",fastp->val);
   
-  return (loop+1); //No Loop
+	return (loop+1); //No Loop
 }
 
 
@@ -258,18 +260,18 @@ current = next
 NCPC
  */
 void reverse (lln_t **head) {
-  lln_t *current = *head;
-  lln_t *next = NULL;
-  lln_t *prev= NULL;
+	lln_t *current = *head;
+	lln_t *next    = NULL;
+	lln_t *prev    = NULL;
   
-  while(current) {
-    next = current->next;
-    current->next = prev;
-    prev = current;
-    current = next;
-  }
-  if(prev != NULL)
-    *head = prev;
+	while (current) {
+		next = current->next;
+		current->next = prev;
+		prev    = current;
+		current = next;
+	}
+	if(prev != NULL)
+		*head = prev;
 }
 
 /*
@@ -292,20 +294,24 @@ void reverse_dll(lln_t **head_ref)
     *head_ref = prev->prev;
 }
 
+/*
+ * When fast node reach NULL(end), slow node will be
+ * pointing to middle of LL
+ * remember
+ */
 lln_t * findMiddleNode(lln_t *head) {
-  lln_t *slow = head;
-  lln_t *fast = head;
+	lln_t *slow = head;
+	lln_t *fast = head;
 
-  if(!slow){
-    return NULL;
-  }
+	if (!slow) {
+		return NULL;
+	}
 
-  while (fast && fast->next) {
-    slow = slow->next;
-    fast = fast->next->next;
-  }
-  return slow;
-
+	while (fast && fast->next) {
+		slow = slow->next;
+		fast = fast->next->next;
+	}
+	return slow;
 }
 
 /*
@@ -320,38 +326,34 @@ lln_t * findMiddleNode(lln_t *head) {
     * watch for shorter number(MSB node (at the TAIL ) will be missing,(substitute with zero)    
 */
 lln_t *addTwoList (lln_t *first, lln_t *second) {
-  lln_t *prev, *temp, *res = NULL;
-  int carry = 0;
-  int sum;
-  while (first || second){
+	lln_t *prev, *temp, *res = NULL;
+	int carry = 0;
+	int sum;
+	while (first || second) {
+		sum = carry + (first?first->val:0) + (second?second->val:0);
+		carry = sum >= 10 ? 1:0;
+		sum = sum%10;
+		temp = malloc(sizeof(lln_t));
+		temp->val = sum;
+		temp->next = NULL;
+		if (res == NULL)
+			res = temp;
+		else 
+			prev->next = temp;
+		prev = temp;
+		if (first) 
+			first = first->next;
+		if (second )
+			second = second->next;
+	}
 
-    sum = carry + (first?first->val:0) + (second?second->val:0);
-    carry = sum >= 10 ? 1:0;
-    sum = sum%10;
-    temp = malloc(sizeof(lln_t));
-    temp->val = sum;
-    temp->next = NULL;
-    if(res == NULL)
-      res = temp;
-    else 
-      prev->next = temp;
-    prev = temp;
-
-    if(first) 
-      first = first->next;
-
-    if(second )
-      second = second->next;
-  }
-
-  if(carry > 0) {
-    temp = malloc(sizeof(lln_t));
-    temp->val = carry;
-    temp->next = NULL;
-    prev->next = temp;
-  
-  }
-  return res;
+	if (carry > 0) {
+		temp = malloc(sizeof(lln_t));
+		temp->val = carry;
+		temp->next = NULL;
+		prev->next = temp;
+	}
+	return res;
 }
 
 /*
@@ -427,112 +429,112 @@ lln_t * reverse2(lln_t *head, lln_t *prev) {
 */
 
 int main (int argc, char *argv[]) {
-  /*
-   * LinkedList Operations
-   1. Insert or Delete at End,Beginning, Middle.
-   2. Count Nodes
-   3. Delete All.
-  */
-  lln_t *node, *lastnode;
-  lln_t *first;
-  lln_t *second;
-  lln_t *sum;
+	/*
+	 * LinkedList Operations
+	 1. Insert or Delete at End,Beginning, Middle.
+	 2. Count Nodes
+	 3. Delete All.
+	*/
+	lln_t *node, *lastnode;
+	lln_t *first;
+	lln_t *second;
+	lln_t *sum;
 
-  int    d = 0;
-  for (int i=1; i <= 7; i++) {
-    node       = (lln_t *)malloc( sizeof(lln_t) );
-    node->next = NULL;
-    node->val  = 8-i;
-    Insert(&head, node, 1);
-  }
+	int    d = 0;
+	for (int i=1; i <= 7; i++) {
+		node       = (lln_t *)malloc( sizeof(lln_t) );
+		node->next = NULL;
+		node->val  = 8-i;
+		Insert(&head, node, 1);
+	}
 
-  lastnode = node;
-  // Add Duplicate
-  for (int i=1; i <= 6; i++) {
-    node       = (lln_t *)malloc( sizeof(lln_t) );
-    node->next = NULL;
-    node->val  = i;
-    //Insert(&head, node, 1);
-  }
+	lastnode = node;
+	// Add Duplicate
+	for (int i = 1; i <= 6; i++) {
+		node       = (lln_t *)malloc( sizeof(lln_t) );
+		node->next = NULL;
+		node->val  = i;
+		//Insert(&head, node, 1);
+	}
 
-  //print_ll(head);
-  //head = reverse2(head, NULL);
+	//print_ll(head);
+	//head = reverse2(head, NULL);
 
-  print_ll(head);
-  printf("\nPrinting Reverse Order:");
-  print_ll_reverse(head);
-  node=  findMiddleNode(head);
-  printf("Middle Node Val %d\n",node->val);
-  reverse(&head);
-  print_ll(head);
+	print_ll(head);
+	printf("\nPrinting Reverse Order:");
+	print_ll_reverse(head);
+	node=  findMiddleNode(head);
+	printf("Middle Node Val %d\n",node->val);
+	reverse(&head);
+	print_ll(head);
 
-  node=  findMiddleNode(head);
-  printf("Middle Node Val %d\n",node->val);
+	node=  findMiddleNode(head);
+	printf("Middle Node Val %d\n",node->val);
 
-  printf("Finding 3rd Last Element:");
-  printf("Value of Kth Last %d\n", findKthLast(head,3));
+	printf("Finding 3rd Last Element:");
+	printf("Value of Kth Last %d\n", findKthLast(head,3));
 
 
-  delete_duplicate(&head);
-  print_ll(head);
+	delete_duplicate(&head);
+	print_ll(head);
 
-  //Create Loop and test code
-  lastnode->next = head;
-  printf("Created loop by connecting copying head ptr into last node->next\n");
-  printf("Has %d length loop \n", findLoop(head));
+	//Create Loop and test code
+	lastnode->next = head;
+	printf("Created loop by connecting copying head ptr into last node->next\n");
+	printf("Has %d length loop \n", findLoop(head));
 
-  //Undo loop
-  printf("Undoloop\n");
-  lastnode->next = NULL;
-  print_ll(head);
-  printf("Has %d length loop now \n", findLoop(head));
+	//Undo loop
+	printf("Undoloop\n");
+	lastnode->next = NULL;
+	print_ll(head);
+	printf("Has %d length loop now \n", findLoop(head));
 
-  print_ll(head);
+	print_ll(head);
 
-  partition_at_x(&head, 4);
-  printf("partition at 4:\n");
-  print_ll(head);
+	partition_at_x(&head, 4);
+	printf("partition at 4:\n");
+	print_ll(head);
 
-  printf("Trying to Delete Node with val %d, without passing HEAD\n", node->val);
-  delete_node2(node);
+	printf("Trying to Delete Node with val %d, without passing HEAD\n", node->val);
+	delete_node2(node);
 
-  print_ll(head);
+	print_ll(head);
 
-  delete_node(&head, 8);
-  print_ll(head);
-  delete_node(&head, 1);
-  print_ll(head);
-  delete_node(&head, 3);
-  print_ll(head);
-  delete_node(&head, 5);
-  print_ll(head);
-  delete_all(&head);
-  print_ll(head);
+	delete_node(&head, 8);
+	print_ll(head);
+	delete_node(&head, 1);
+	print_ll(head);
+	delete_node(&head, 3);
+	print_ll(head);
+	delete_node(&head, 5);
+	print_ll(head);
+	delete_all(&head);
+	print_ll(head);
 
-  //Add two number using LL
-  // 566 
-  // 566
-  //1132
-  node       = (lln_t *)malloc( sizeof(lln_t) );
-  node->next = NULL;
-  node->val  = 6;
+	//Add two number using LL
+	// 566 
+	// 566
+	//1132
+	node       = (lln_t *)malloc( sizeof(lln_t) );
+	node->next = NULL;
+	node->val  = 6;
    
-  Insert(&first,node,1);
-  node       = (lln_t *)malloc( sizeof(lln_t) );
-  node->next = NULL;
-  node->val  = 6;
-  Insert(&first,node,1);
+	Insert(&first,node,1);
+	node       = (lln_t *)malloc( sizeof(lln_t) );
+	node->next = NULL;
+	node->val  = 6;
+	Insert(&first,node,1);
  
-  node       = (lln_t *)malloc( sizeof(lln_t) );
-  node->next = NULL;
-  node->val  = 5;
-  Insert(&first,node,1);
-  printf("Adding two list:\n");
-  print_ll(first);
-  printf("\n");
-  print_ll(first);
-  printf("----------");
-  sum = addTwoList(first,first);
-  print_ll(sum);
+	node       = (lln_t *)malloc( sizeof(lln_t) );
+	node->next = NULL;
+	node->val  = 5;
+	Insert(&first,node,1);
+	printf("Adding two list:\n");
+	print_ll(first);
+	printf("\n");
+	print_ll(first);
+	printf("----------");
+	sum = addTwoList(first,first);
+	print_ll(sum);
 
 }

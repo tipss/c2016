@@ -1,64 +1,75 @@
 
-G:2009:statically typed, compiler
+Golang:2009: statically typed, its High Level Language, so has a compiler
 Exteremely fast(like Java and C, ) about 40times faster than Python.
-Compiler infer type if user has not speciied, based on the value.
+
+Compiler can infer data type of variable if user has not speciied based on the assigned value.
 Garbage collector built in, and there is no 'free()' in go!.
 go is Gopher, is a CPU, add more CPU(cores) to improve time.
-go-routines:
-'go funcxx()' is like ambersend in shell
-they feel like threads, but they are much lighter verion of thread
 
-Concurrency: Dealing with lots of things at once.
-Is a way to structure a program by breaking it into pieces that can be executed independently
-communication is the means to co-ordinate the independent execution.
+go-routines:
+'go funcxx()' is like ampersend(&) in shell
+they work like threads, but they are much lighter verion of thread
+
+Concurrency: 
+
+Moore law states that every 18 months speed doubles(clock rate) of CPU as transister density increases.
+Its no longer holding true, as heat dessipation of high density transistor is no longer in managabe range with air
+cooling. Meaning user who want to run a program fast better go into parallel (concurrent) programming to acheive speed. 
+
+Managing multiple tasks same time, Dealing with lots of things at once.
+
+Is a way to structure a program by breaking it into pieces that can be executed independently.
+Communication is the means to co-ordinate the independent execution.
+
 Erlang is one example.
 Spliting a task into smaller independant task is the trick to leverage this.
 Independant components to solve the whole problem.
-
 
 Composition of independent execution of (processes or threads, or functions)
 Parrellism: Simultabuous execution of related or unrelated same things.
 Doing with lot of things at once,
 
-P:1989:dyanamically typed, interpreted language,
+Python:1989:dyanamically typed, interpreted language,
 Garbage collector build in.
 
-Apple IOS used Objective C, not its Swift
-Objective C is replaced by Swift(eastier to grasp and robus)
+Apple IOS used Objective C, now its Swift
+Objective C is replaced by Swift(easier to grasp and robust)
 Ruby is replaced by Java Script,
 
 
 
 --------------------
-P
-# List , do not need to know size and its extendable
-arr = []
-
+Python
+#List , do not need to know size and its extendable
+arr = [] # empty list or array
+arr2=[1,5,6,10]
 #Add one element
 arr.append(20)
 
 #access by index
-a[0] = 21
+arr[0] = 21
 len(arr)
-#extend
-arr.extend([2,3,4])
 
-# Dictionaries
+#Extend list
+arr.extend([2, 3, 4])
 
+# Dictionaries(equivalent to maps as in Golang)
+#Initialize or declare, element type is determined by first element use
 py_map = {}
-# Add key:value pair
+# Add key:value pair   key is of type string, value is of type int
 py_map["first_key"] = 25
-# Remove key:value pair
+
+# Remove key:value pair, Imp
 py_map.pop("first_key")
 
-# while loop
-
-while i < 100:
-      print i
+# e.g while loop
+while i < 100:<-----is must
+      print i<--------semi colon not required
 
 print ("Hello")
 
-names := ["a", "b", "c"]
+#e.g for loop
+names = g["a", "b", "c"]
 for name in enumerage(names):
     print "%s"%(name)
 

@@ -7,18 +7,18 @@
 * log(n) order.
 */
 int binSearch2 (int a[], int l, int r, int x) {
-  int mid;
+	int mid;
 
-  if (r >= l) {
-    mid = l + (r-l)/2;
-    printf("looking for %d, mid %d, l=%d,r=%d\n",x,mid,l,r);
-    if (a[mid] == x)
-      return (mid);
-    if (a[mid] > x)  //Meaning x lies at the right half section
-      return   binSearch2(a, l, (mid - 1), x);
-    return binSearch2(a, (mid + 1), r, x);    
-  }
-  return (-1); // Not found
+	if (r >= l) {
+		mid = l + (r-l)/2;
+		printf("looking for %d, mid %d, l = %d,r = %d\n", x, mid, l, r);
+		if (a[mid] == x)
+			return (mid);
+		if (a[mid] > x)  //Meaning x lies at the left half section
+			return   binSearch2(a, l, (mid - 1), x);
+		return binSearch2(a, (mid + 1), r, x);    
+	}
+	return (-1); // Not found
 }
 
 /*
@@ -28,18 +28,18 @@ int binSearch2 (int a[], int l, int r, int x) {
  * Step2. Do binary search with modified range
  * Return the index, else -1 if not found 
 */
-int findInInfiniteArray(int *a, int key){
-  int val = a[0];
-  int   l = 0;
-  int   r = 1; //approximated high end of array
+int findInInfiniteArray(int *a, int key) {
+	int val = a[0];
+	int   l = 0;
+	int   r = 1; //approximated high end of array
 
-  while (val < key) {
-    l = r;
-    r = 2 * r;
-    val = a[r];
-    printf("high %d\n",r);
-  }
-  return binSearch2(a,l,r,key);
+	while (val < key) {
+		l = r;
+		r = 2 * r;
+		val = a[r];
+		printf("high %d\n",r);
+	}
+	return binSearch2(a,l,r,key);
 }
 
 int main ( int argc, char *argv[]) {

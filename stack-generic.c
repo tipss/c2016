@@ -19,8 +19,8 @@
 
 
 typedef struct s_s {
-  int index; //Keeps track of current index of top element
-  int capacity; //Max capacity
+  int index;    // Keeps track of current index of top element
+  int capacity; // Max capacity
   void **container;
 } S;
 

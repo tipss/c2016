@@ -1,5 +1,39 @@
 
+===============
+Hypervisor is a software. Once installed, this software help  create and maintain virtual machines that will share physical resource,
+Not needed to create containers.(Containers share common Kernel API, and run in User space as an isolated process
 
+VM's need full copy of OS, and each VM has to have one OS, and on a single Baremetal server with Hypervisor installed, VM's OS can be mix and match.
+Hypervisor types:
+Type 1 : Installed on bare metal as OS (e.g ESXI vSphere, Citrix XEN, KVM , Miscrosoft Hyper-V)
+         Generally in data centers use this.
+Type 2 : Install on top of Host OS as softwares
+       > it can be linux or windows host.
+         e.g vmware fusion, Oracle virtual box,  paralles
+>-
+virtualized networking , how VMs or containers communicate each other ?.
+Your physical NIC needs be mapped or shared across multiple VMs to make VM's talk to out side world.
+
+How to acheive that ?.
+Typically , on Hypervisor, we create Open vSwitch. In this vSwitch we map veth from
+VM into a physical NIC with vlan(running a bridge). Thus a single physical NIC can be used by multiple
+VM's with vlan as seperator, and without VM's knowing that what is the other VM using this physical NIC.
+
+How VM's to VM communicate if subnets are in different networks?.
+Veths if they are in different network, create vRouter, adn add veths into that vRouter to route
+these networks.
+
+Virtulization Use Cases.
+Server virtualization:
+e.g Migrate single purpose hosts(e.g dhcp server, dns server etc etc, db server) to VM.
+    Then host VM via Hypervisor on a single baremetal server.
+
+
+VDI: Virtual Desktop Infra:
+How user client machine on a VM.(think clients, because they have bare minimal OS infra), no info
+is stored on the thin-clients. Secure,
+
+==========================================================
 
 APS-T-NDP: App Presen, Session, Transport Network Data Link Phy
 A HTTP, Radius
@@ -9,40 +43,50 @@ T  TCP, UDP
 N  ICMP, RSVP, IPv4,IPv6, PIM, VRRP
 D: ARP, L2 protosl
 P
+
 When to use threads, vs when to use process?.
 
 http://www.cafeaulait.org/course/week11/02.html
-    Both threads and processes are methods of parallelizing an application. However, processes are independent execution units that contain their own state information, use their own address spaces, and only interact with each other via interprocess communication mechanisms (generally managed by the operating system). Applications are typically divided into processes during the design phase, and a master process explicitly spawns sub-processes when it makes sense to logically separate significant application functionality. Processes, in other words, are an architectural construct.
+    Both threads and processes are methods of parallelizing an application. 
+However, processes are independent execution units that contain their own state information, 
+use their own address spaces, and only interact with each other via interprocess communication mechanisms 
+(generally managed by the operating system). Applications are typically divided into processes 
+during the design phase, and a master process explicitly spawns sub-processes when it makes sense 
+to logically separate significant application functionality. Processes, in other words, are an architectural construct.
 
-    By contrast, a thread is a coding construct that doesn't affect the architecture of an application. A single process might contains multiple threads; all threads within a process share the same state and same memory space, and can communicate with each other directly, because they share the same variables.
+    By contrast, a thread is a coding construct that doesn't affect the architecture of an application. 
+A single process might contains multiple threads; all threads within a process share the same state 
+and same memory space, and can communicate with each other directly, because they share the same variables.
 
-    Threads typically are spawned for a short-term benefit that is usually visualized as a serial task, but which doesn't have to be performed in a linear manner (such as performing a complex mathematical computation using parallelism, or initializing a large matrix), and then are absorbed when no longer required. The scope of a thread is within a specific code module—which is why we can bolt-on threading without affecting the broader application.
+    Threads typically are spawned for a short-term benefit that is usually visualized as a serial task, 
+but which doesn't have to be performed in a linear manner (such as performing a complex mathematical 
+computation using parallelism, or initializing a large matrix), and then are absorbed when no longer 
+required. The scope of a thread is within a specific code module—which is why we can bolt-on 
+threading without affecting the broader application.
 
 
 
 Signal Handler?, Why we need them, and when we need them.
 
-
-
-/* Life cycle of Server socket : socket(), bind(), listen(), accept() read() .. listen() */
-/* Life cycle of Client socket : socket(), bind(), connect(), write() */
+/* Life cycle of Server socket : socket(), bind(), listen(), while(select(fd_list)) accept() read() and/or send() .. listen()) */
+/* Life cycle of Client socket : socket(), bind(), connect(), write() close(), repeat if needed*/
 
 What is a Linux Socket?.
 Socket in linux is an end point  for communication, 
 sock_id= socket(domain, type,protocol)
-e.g domain=(AF_NETLINK,PF_ROUTE, PF_UNIX/PF_LOCAL etc)
+e.g domain=(AF_NETLINK, PF_ROUTE, PF_UNIX/PF_LOCAL etc)
 e.g type SOCK_STREAM: reliable connection based, e.g TCP
          SOCK_DGRAM: connectionless, unreliable messages UDP.
          SOCK_RAW: 
 What is a Linux bind(sockfd, sockaddr, len) mean?
 When socket is created using 'socket()', it exists in a name space,
-but has no address assigned to it. bind() assigns the address specified b addr
+but has no address assigned to it. bind() assigns the address specified by addr
 to the socket to the sockfd. its also called assigning a name to a socket.
 After socket is bound, a buffer size is set.
 
 What is listen() ?. when to use.
 After socket is bound, we have to listen() on that socket via 
-blocking(poll) calls.
+blocking(poll) calls, then accepts(mostly done in server)
 
 When there is a an incoming connection, we can accept() peers
 connection via that socket.
@@ -50,7 +94,6 @@ connection via that socket.
 that is as a socket that will be used to accept incoming connection request using accept()
 
 When to use read() ?.
-
 After accept() by a passive socket we start read() on that
 socket. When read is done, or nothing to read, we wait in 'accept()
 while loop.
@@ -63,11 +106,11 @@ Server socket sequence is like below:
 socket(),
 bind(),
 listen(),<----make it a passive , so ready to accept connection
-while(1) {
- accept()
- read()
+while(1) {  <-------select() is used here to wait on multiple client connection on different sockets
+  accept()
+  read()
 }
-close()
+close()<-----End of server
 
 Client socket sequence is like below:
 socket()
@@ -91,6 +134,22 @@ run if there are waiting. This is done by relinquishing use of procesor,
 and moving itself to run-queue for its turn to come.
 
 What does 'select() do' ?.
+https://www.lowtek.com/sockets/select.html
+at your server cannot act like there's only one client, like with a fork()'ing solution. For example, with a fork()'ing solution, after the server fork()s, the child process works with the client as if there was only one client in the universe -- the child does not have to worry about new incoming connections or the existence of other sockets. With select(), the programming isn't as transparent.
+
+Okay, so how do you use select()?
+
+select() works by blocking until something happens on a file descriptor (aka a socket). What's 'something'? Data coming in or being able to write to a file descriptor -- you tell select() what you want to be woken up by. How do you tell it? You fill up a fd_set structure with some macros.
+
+Most select()-based servers look pretty much the same:
+
+    * Fill up a fd_set structure with the file descriptors you want to know when data comes in on.
+        * Fill up a fd_set structure with the file descriptors you want to know when you can write on.
+	    * Call select() and block until something happens.
+	        * Once select() returns, check to see if any of your file descriptors was the reason you woke up. If so, 'service' that file descriptor in whatever particular way your server needs to (i.e. read in a request for a Web page).
+		    * Repeat this process forever. ~
+
+
 
 Why to use 'select() before read(on socket)?.
 
@@ -115,9 +174,7 @@ process id lists, network devices, file system, user lists etc
 Process can be dedicated to one network namespace.
 Used in Linux Containers, OpenStack, Mininet, Docker etc.
 
-Root Namespace: Its the default network Namespace, all other namespaces
-are launched from this.
-
+Root Namespace: Its the default network Namespace, all other namespaces are launched from this.
 E.g add new namespace:
 ip netns add red,
 ip netns add green,
@@ -125,7 +182,9 @@ ip netns,
 ip netns
 ls /var/run/netns/
 ======================================================
-Cgroups:
+Cgroups:(Linux kernel constuct)
+It meters resources.
+
 By default on a Linux system,
 1. all processes are children of the INIT process.
    Which means all processes are part of a single tree structure.
@@ -142,6 +201,17 @@ https://www.kernel.org/doc/Documentation/networking/vrf.txt
 
 Virtual Routing and Forwarding (VRF)
 ====================================
+e.g : Created inside container.
+ip link add <vrf-name> type vrf table <table-no>
+ip link set swp1 master vrf-red
+
+Simmilar to 'bridge' we create vrf in linux.
+Bind socket to l3 domain.
+VRF is L3 concept(route lookups, storing)
+Kernel should support this feature.
+netdevice : allows use of netfllter, traffic control (tc) rules.
+tcpdump etc
+
 The VRF device combined with ip rules provides the ability to create virtual
 routing and forwarding domains (aka VRFs, VRF-lite to be specific) in the
 Linux network stack. One use case is the multi-tenancy problem where each
@@ -506,12 +576,35 @@ Crash-only software also has benefits for end-users. All too often, applications
 
 
 NETLINK:
+IPC between userspace process and kernel
+Primarily used to configure linux kernel, like routes, interfaces via an IPC from user-space
 Replacement for ioctl(oldstyle).
 Its an IPC interface.
-famalies: rtnetlink : used for interface and routes.
+famalies: rtnetlink : used for interface and routes. bridge-fdb
           genetlink : generic extensible netlink family.
 	  nfnetlink : kernel netfilter system
-
+rtnetlink is route-netlink(NETLINK_ROUTE) used for to configure network interfaces(links), addresses, routes etc
+message_type: RTM_NET, _GET, _SET, _DEL
 How user space use this socket ?.
+netlink_socket =socket(AF_NETLINK, sock_type, netlink_family);
 Create socket(), bind(), sendmsg() recvmsg().
 Header : Fixed Part, Lenght Type Value(LTV) array .
+
+User can register at user-space for async link notification(routesnoop)
+
+
+vmstat:  Report virtual memory statistics, paging, block IO, traps , discks and cpu activity
+ltrace : library calltrace
+stract: system calls trace
+pidstat: Process stats
+lsof: List Open Files,    : Files may be regular file, directory, block special file, stream, network file.
+mpstat: better than vmstat
+iostat: Report CPU stats and i/o stats for devices and partition
+ip -s address show
+ip neighbor
+ip tcp_metrics
+ip netlink
+ip route
+
+ss : Dump socket statistics
+sar: system activiti report

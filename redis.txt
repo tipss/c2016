@@ -1,15 +1,15 @@
 What is redis?.
 Database system like SQL but its non-SQL based.
 
-Security: has built in simple auth , restricti to a intf is supported.
+Security: has built in simple auth, restricti to a intf is supported.
 data-encryption is not supported.
 
 Opensource, in-memory, can be used as cache.
 key-value store,
 
-Data strctu list, struct and many it support.
+Data struct list, struct and many it support.
 
-Has buildin master-slave replication, multiple slave can be there, and
+Has built-in master-slave replication, multiple slave can be there, and
 Master support async replicaton, meaning clients can access while slaves are syncronizing.
 no need to define schema, much different than sql databased,
 Its exceptionally fast. 81k gets /sec, 120k sets/sec.
@@ -19,12 +19,10 @@ There are API that support this DB , e.g C, C++, Java etc API wide varity.
 
 
 node.js
-
 Runtime env for to run java script. Has java engine.
 
 Take java-script code, and convets into compute executable within a webbrowser.
 2009: invented, a way to
-
 
 v8 engine is googles Java engine that powers Chrome.
 node.js made use of this v8 engine and thus allowed user to run java-script in node.js env.

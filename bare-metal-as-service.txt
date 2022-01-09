@@ -1,17 +1,17 @@
 Provisoning Baremetal server in any form factor, sitting in a datacenter via APIs possibly REST API.
-To support this, a Baremetal server must support folling basic minimum h/w and software protocols:
+To support this, a Baremetal server must support following basic minimum h/w and software protocols:
 
 e.g Raspberry Pi board:
     
 
 Bare metal Network booting: How its done ?.
 0. IPMI interfaces.
-0. Some storage on the bord.
+0. Some storage on the bord to store OS.
 
 1. PXE/iPXE : Pre execute environment.
              iPXE is extended version or new version of the same.
 2. DHCP : Providing IP dynamically
-3. TFTP : provides intiaal file system
+3. TFTP : provides intial file system
 4. NFS : if you do not have the storage in your hw
 
 
@@ -22,7 +22,7 @@ Use case?.
 
 Challenges:
 1. Difficult manually provision in a diffrent way. so its best to automate.
-2. Increate of control comes with increase of complexity,
+2. Increse of control comes with increase of complexity,
    e.g various flavors of OS, CPU types.
 
 Tinkerbell is complete solution to address all of these:

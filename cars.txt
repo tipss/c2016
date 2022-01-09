@@ -1,1 +1,0 @@
-[{"name": "altima", "color": "black"}, {"name": "civic", "color": "red"}]

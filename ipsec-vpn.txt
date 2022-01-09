@@ -1,4 +1,3 @@
-
 Overlay Model
 point-to-point secure tunnels is what Service Provide gives to end customer when
 end customer connects to Service provider network. Means Service provides does not
@@ -25,11 +24,8 @@ Disadvantag: Service provider involoved here, and uses route-filter to keep clie
 
 If we use MPLS, it has both advantages in both model.
 
-
-
 Overlay Models Explained
 =======================
-
                  site 1                               site 2
 Private-IP 10.1.1.1/24 Public-IP A----Internet-----Public IP B---Private-IP 10.1.1.2/24
                                    (Transit N/W)
@@ -127,10 +123,7 @@ ESP: Encapsulating Security Payload:
 AH: Authentication Header Provides framework for authenicating and securing of data
 
 
-
-
 4. DMVPN(IPSec implemented over it)  ( most commnly used)
-
 
 VPN use models:
 Remote VPN access.

@@ -1,6 +1,5 @@
 import sys,getopt,os
 
-
 def primex(in_num) :
     if in_num < 2:
         return

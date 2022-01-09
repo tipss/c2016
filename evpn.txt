@@ -1,6 +1,11 @@
+L2 VXLAN Gateway
+Non VRF based, on default vrf, no routing allowed across vxlan segments
+L3 VXLAN Gateway
+VRF based always, and allows routing between subnets with a VRF
 
 
 Why Overlay network is becoming important?.
+=========================================
 With server virtualization, a server can host more than 100k VM's.
 Meaning, these VM's do need to communicate other VM's if need be hosted on the other Server.
 These VM's need a broadcast domain. 
@@ -12,15 +17,18 @@ One way to overcome this limitation is to find alternative to VLAN which should 
 Should be able to work loop-free, so we do have to depend on STP like protocols, meaning if they are loopfree, as in layer 3 based
 dynamic protocol (OSPF,IS-IS, BGP) derived paths via L3 interfaces can help avoid this limitation.
 
-To the rescue came VXLAN packet encapsulation technology(outer header is an L3, UDP), or its L2-in-L3 overlay(MAC over IP/UDP).
-TRILL, SPB are frame encapsulation technology(if the outer header if Layer2)
+To the rescue came VXLAN packet encapsulation technology(outer header is an L3, UDP),
+or its L2-in-L3 overlay(MAC over IP/UDP).
 
-VXLAN in its simplest use-case establishes a tunnel, so that two or more set of end points can
-establish a common broadcast domain. Since these tunnels are established via L3 underlay network,
-they do not create any loops. A split-horizon way of not sending BUM traffic on the receiving tunnel prevents
-any kind of loops here.
+TRILL, SPB are frame encapsulation technology(Outer header if Layer2)
 
-VXLAN does not forwared vxlan received traffic to another vxlan tunnel.
+VXLAN in its simplest use-case establishes a virtual tunnel over L3 network, so that two or more set of end points can
+establish a common broadcast domain with VNI as replacement to VLAN. 
+
+Since these tunnels are established via L3 underlay network, they do not create any loops. 
+A split-horizon way of not sending BUM traffic on the receiving tunnel prevents any kind of loops here.
+
+VXLAN does not forward vxlan received traffic to another vxlan tunnel.
 Even in case of meshed vxlan tunnel, Each source and destinations are like one way pipes.
 Brdige->vxlan-tunnel
 vxlan-tunnen->Bridge.
@@ -51,15 +59,14 @@ When TOR is connected to n number of Physical bare metal server, its called a ne
 When TOR is connected to a Virtual Server, where many VM's originate, its called Host overlays.
 Mix of this is Hybrid overlays.
 
-In both all the above cases, TOR does push/pof of over lay header.
+In both all the above cases, TOR does push/pop of over lay header.
 An overlay-service is identified by VNI(Virtual Network Identifier).
-This significantly expands the ability to accomodate a much larger scale of broadcast domains within the network.
+This significantly expands the ability to accomodate a much larger
+scale of broadcast domains within the network.
 Overlay Network
 Underlay Network
 
-
 Basics of VXLAN:
-
 VXLAN connects two or more networks over Layer 3, while allowing workloads/servers o n these different networks to continue 
 sharing same Layer 2 broadcast domain. Meaning , VLAN broadcast domain always works in Ethernet data link layer, but VXLAN broadcast
 domain operates acros Layer 3. Because it uses L3, all possible paths to remote VTEP's can be used same time via ECMP, without creating loops.
@@ -121,16 +128,13 @@ E.g multidestination traffic is ARP request, where in DMAC is FFFF FFFF FFFF.
    PIM-SSM(single source multicast).
    PIM-BIDIR(BiDirectional )
 
-
    ARP reply is unicast, so its sent as-usual via VXLAN tunnel.
    This is referred to as F&L mechanism, over L3 network.
 
    Typically multicast groups a shared across multiple VNI, as its hard to create and maintain  16mil multicast group/tree.
-
    source-mac learning is done in all the stages here.
  
-BGP-EVPN:
-BGP-EVPN differest from F&L in several ways.
+BGP-EVPN: BGP-EVPN differest from F&L in several ways.
 Both peer discovery and remote end host learning are handled by distributing this info via control plane, rather
 than using data-plane.
 
@@ -183,8 +187,6 @@ nodes now know where the new location.  There is also a Reverse ARP sentout by t
 But with BGP EVPN, the new edge device generated this MAC+ IP with incremented mac-mobility-sequence number. Upon receive by rmote VTEP's they
 see if they have stale value, based on mac-mobilty-seq number value and remove stale and update with new values.
 
-
-
 Chapter 3: VXLAN /EVPN forwarding characterstics
 Single multicast group for all VNI's:
 
@@ -192,7 +194,6 @@ Ingress Replication:
 Uses Type-3 route, VNIS determined by the extended community (Route Target AS:L2VNI)
 PMSI Tunnel Attribute is also sent along with this route-type. : Flags+ Tunnel-Type(e.g Ingress Replication) + L2VNI+Tunnel-ID(e.g VTEP-IP)
 Using this a ingress replication list per VNI is built at each edge device.
-
 
 ARP supression: It implemented per VNI, where in it looks up it ARP table and does unicast ARP response to the host
 with the correct data if its available. Thus suppressing an ARP request going ont in VXLAN flood domain of that VNI.
@@ -209,10 +210,11 @@ vrf-create name xx gw1
 vrf-route-add  ip/subnet gw1
 subnet-add ip/subnet anycast-gateway
 
-subnet-add: says it has directly connected interface with this ip/subnet , with gw1 which are understood by the host machines .
+subnet-add: says it has directly connected interface with this ip/subnet , with gw1 which
+are understood by the host machines .
 This also act like a leg into host machines, or VM's with this network. This subnet needs be advertised via Type-5 , so 
 other Fabric node can send T2 routes falling into one of these subnets for ARP resolution with correct l3vni.
-Each of this subnet-add creates an nvOSd software interface. There is a seperate list of g_anycast
+Each of this subnet-add creates an nvOSd software interface. There is a seperate list of anycast
 nvOS_create_router_subnet_if(). 
 Without the T5 route support, both the fabric should add this subnet into there VRF. e.g config below
 is not using T5, so its adding an subnet named sub1-remote also into its subnet by hand.
@@ -230,7 +232,7 @@ If your traffic is east-west, this gw is not needed.
 cli --quiet trunk-modify name vxlan-loopback-trunk ports 33,
 
 cli --quiet vlan-create id 530 scope fabric  vxlan 10530 ports 30,33
-#host resides on port 30 vlan 530 , trying to reach host in 531
+# Host resides on port 30 vlan 530 , trying to reach host in 531
 cli --quiet vlan-create id 531 scope fabric  vxlan 10531 ports 31,33
 
 cli --quiet vrf-create name vrf1
@@ -240,7 +242,6 @@ cli --quiet subnet-create name sub2-local  vxlan 10530 network 10.30.1.0/28 vrf 
 cli --quiet vrouter-bgp-network-add vrouter-name f2border network 10.20.120.0/24
 cli --quiet vtep-create vrouter-name f2leaf1 name f2leaf1-vtep ip 10.20.120.2
 
-#Primary host active on 10530
+# Primary host active on 10530
 cli --quiet vtep-vxlan-add name f2leaf1-vtep vxlan 10530
 cli --quiet vtep-vxlan-add name f2leaf1-vtep vxlan 10531
-

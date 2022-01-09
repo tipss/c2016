@@ -10,32 +10,32 @@
    address strings where    no char repeats, after convertion 
    they become 2xlen , eg   abc  => a1b1c1
 */
-void str_compress(char myStr[])
-{
-   char  *in = str;
-   char tmp[100]; /* private copy while working is good, as it will allow you to walk original string */
-  char *out = tmp;
-  /*
-    Walk 1 char, copy, find cound of repeated char,copy that , and continue;
-  */
-  while (*in) {
-    out[0] = in[0];
-    int count = 1;
+void str_compress(char str[]) {
+	
+	char  *in = str;
+	char tmp[100]; /* private copy while working is good, as it will allow you to walk original string */
+	char *out = tmp;
+	/*
+	  Walk 1 char, copy, find cound of repeated char,copy that , and continue;
+	*/
+	while (*in) {
+		out[0] = in[0];
+		int count = 1;
 
-    while (in[0] == in[1]) {
-      count++;
-      in++;
-    }
+		while (in[0] == in[1]) {
+			count++;
+			in++;
+		}
 
-    in++;
-    out++;
+		in++;
+		out++;
 
-    if (count > 1) {
-      out += sprintf(out, "%d", count);
-    }
-  }
-  out[0] = '\0';
-  strcpy(str, tmp);
+		if (count > 1) {
+			out += sprintf(out, "%d", count);
+		}
+	}
+	out[0] = '\0';
+	strcpy(str, tmp);
 }
 
 

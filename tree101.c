@@ -46,21 +46,21 @@ typedef struct elem_t {
 *  Note: DFS uses 'stack' as datastructure, vis function-call-stack	   
 *        BFS uses 'queue'
 */
-elem_t * DFS(elem_t *r,int value) {
-  elem_t *ret = NULL;
-  if(r == NULL)
-    return NULL;
-  printf("%d ",r->value);
-  if(r->value == value) {
-    return r;
-  }
-  r->count = 1; //Visited this node
-  //Iterate through adjacent nodes of r.
-  if(r->left && r->left->count == 0)
-    ret = DFS(r->left, value);
-  if(!ret && r->right && r->right->count == 0)
-    ret = DFS(r->right, value);
-  return ret;
+elem_t * DFS(elem_t *r, int value) {
+	elem_t *ret = NULL;
+	if(r == NULL)
+		return NULL;
+	printf("%d ",r->value);
+	if(r->value == value) {
+		return r;
+	}
+	r->count = 1; //Visited this node
+	//Iterate through adjacent nodes of r.
+	if (r->left && r->left->count == 0)
+		ret = DFS(r->left, value);
+	if (!ret && r->right && r->right->count == 0)
+		ret = DFS(r->right, value);
+	return ret;
 }
 
 #define INT_MIN 0
@@ -74,11 +74,12 @@ int findMax(elem_t *root) {
   l = findMax(root->left);
   r = findMax(root->right);
 
-  if(l > r)
+  if (l > r)
     max = l;
   else 
     max = r;
-  if(root->value > max)
+  
+  if (root->value > max)
     max = root->value;
   return max;
 }
@@ -135,7 +136,7 @@ int sizeoftree (elem_t *root) {
   if(root == NULL) {
     return 0;
   }
-  return 1+ sizeoftree(root->left) + sizeoftree(root->right);
+  return 1 + sizeoftree(root->left) + sizeoftree(root->right);
 }
 
 /* Print TREE contents by using pre-order traversal method( DLR)*/
@@ -435,21 +436,21 @@ int findMaxElem2(int A[], int n) {
 
 /* Find node whose value is highest in the tree */
 elem_t *findMaxValNode(elem_t *root) {
-  elem_t *r, *l,*max;
+	elem_t *r, *l,*max;
 
-  if(!root)
-    return NULL;
-  max = root;
-  r = findMaxValNode(root->right);
-  l = findMaxValNode(root->left);
+	if(!root)
+		return NULL;
+	max = root;
+	r = findMaxValNode(root->right);
+	l = findMaxValNode(root->left);
   
-  if(r && r->value > max->value) {
-    max = r;
-  }
-  if(l && l->value > max->value)
-    max = l;
+	if(r && r->value > max->value) {
+		max = r;
+	}
+	if(l && l->value > max->value)
+		max = l;
 
-  return max;
+	return max;
 }
 
 /*
@@ -462,131 +463,130 @@ elem_t *findMaxValNode(elem_t *root) {
  * and recursively delete that node
 */
 void delete(elem_t **root, int key) {
-  elem_t *temp;
+	elem_t *temp;
   
-  if ((*root) == NULL)
-    return;
-  if ((*root)->value < key) {
-    delete(&(*root)->right,key);
-  } else if ((*root)->value > key) {
-    delete(&(*root)->left,key);
-  } else { //Found node
-    if((*root)->left && (*root)->right) { // Two child case
-      printf("Two Child case delete\n");
-      temp = findMaxValNode((*root)->left);
-      (*root)->value = temp->value;
-      delete(&(*root)->left,(*root)->value);
-    } else { //One Child case, free root, and replace root with child
-      temp = *root;
-      if ((*root)->left) {
-	(*root) = (*root)->left;
-      } else {
-	(*root) = (*root)->right;
-      }
-      printf("Freeing %d\n",temp->value);
-      free(temp);
-    }
-  }
+	if ((*root) == NULL)
+		return;
+	if ((*root)->value < key) {
+		delete(&(*root)->right,key);
+	} else if ((*root)->value > key) {
+		delete(&(*root)->left,key);
+	} else { //Found node
+		if((*root)->left && (*root)->right) { // Two child case
+			printf("Two Child case delete\n");
+			temp = findMaxValNode((*root)->left);
+			(*root)->value = temp->value;
+			delete(&(*root)->left,(*root)->value);
+		} else { //One Child case, free root, and replace root with child
+			temp = *root;
+			if ((*root)->left) {
+				(*root) = (*root)->left;
+			} else {
+				(*root) = (*root)->right;
+			}
+			printf("Freeing %d\n",temp->value);
+			free(temp);
+		}
+	}
 }
 
-void testVariousTreeAPI(int A[], int n) 
-{
-  elem_t *temp;
-  elem_t *lca = NULL; 
-  elem_t *root = NULL;
-  int count  = 0;
-  int height = 0;
-  if (n <= 0) {
-    return;
-  }	
-  /*
-   * While you insert element into b.tree, if element already exist, 
-   * just increment count.
-   */
-  for (int i = 0; i < n; i++) {	
-    bstInsert(A[i], &root, &count);
-    printf("%p bstInsert val %d duplicate cound %d\n", root, A[i], count);
-  }
-  printf("Is this Binary Search Tree ?:%s\n",(isBST(&root) == 1)?"YES":"NO");
-  printf("Max value in the tree :%d\n", findMax(root));
-  printf("Min value in the tree :%d\n", findMin(root));
+void testVariousTreeAPI(int A[], int n)  {
+	elem_t *temp;
+	elem_t *lca = NULL; 
+	elem_t *root = NULL;
+	int count  = 0;
+	int height = 0;
+	if (n <= 0) {
+		return;
+	}	
+	/*
+	 * While you insert element into b.tree, if element already exist, 
+	 * just increment count.
+	 */
+	for (int i = 0; i < n; i++) {	
+		bstInsert(A[i], &root, &count);
+		printf("%p bstInsert val %d duplicate cound %d\n", root, A[i], count);
+	}
+	printf("Is this Binary Search Tree ?:%s\n",(isBST(&root) == 1)?"YES":"NO");
+	printf("Max value in the tree :%d\n", findMax(root));
+	printf("Min value in the tree :%d\n", findMin(root));
 
-  printf("Max value in the bin-search-tree :%d\n", findMax2(root));
-  printf("Min value in the bin-search-tree :%d\n", findMin2(root));
-  temp =findMaxValNode(root);
-  printf("Max value node using findMaxValNode %d\n",temp->value);
-  delete(&root,temp->value);
-  temp =findMaxValNode(root);
-  printf("Max value node using findMaxValNode(after delete prev) %d\n",temp->value);
-  printf("Print LevelOrder:\n");
-  printLevelOrder(root);
-  mirror(root);
-  printf("Print LevelOrder:(after mirror)\n");
-  printLevelOrder(root);
+	printf("Max value in the bin-search-tree :%d\n", findMax2(root));
+	printf("Min value in the bin-search-tree :%d\n", findMin2(root));
+	temp =findMaxValNode(root);
+	printf("Max value node using findMaxValNode %d\n",temp->value);
+	delete(&root,temp->value);
+	temp =findMaxValNode(root);
+	printf("Max value node using findMaxValNode(after delete prev) %d\n",temp->value);
+	printf("Print LevelOrder:\n");
+	printLevelOrder(root);
+	mirror(root);
+	printf("Print LevelOrder:(after mirror)\n");
+	printLevelOrder(root);
   
-  delete(&root, 9);
- printf("Print LevelOrder(after root 9 is removed):\n");
- printLevelOrder(root);
+	delete(&root, 9);
+	printf("Print LevelOrder(after root 9 is removed):\n");
+	printLevelOrder(root);
 
-  printf("\nPrint PreOrder:\n");
-  preOrderTraversal(root);
+	printf("\nPrint PreOrder:\n");
+	preOrderTraversal(root);
 
-  printf("\nPrint PostOrder:\n");
-  postOrderTraversal(root);
+	printf("\nPrint PostOrder:\n");
+	postOrderTraversal(root);
 
-  printf("\nPrint InOrder:\n");
-  inOrderTraversal(root);
-  printf("Search using DepthFirstSearch for value 4 :\n");
-  lca = DFS(root, 4);
-  printf("\nDFS node with value 4 %s\n", lca?"FOUND":"NOT FOUND");
-  preOrderTraversalCleanup(root);
+	printf("\nPrint InOrder:\n");
+	inOrderTraversal(root);
+	printf("Search using DepthFirstSearch for value 4 :\n");
+	lca = DFS(root, 4);
+	printf("\nDFS node with value 4 %s\n", lca?"FOUND":"NOT FOUND");
+	preOrderTraversalCleanup(root);
 
-  lca = LCA(root,2,4);
-  if(lca)
-    printf("\nLowest Common Ancestor of nodes with value 2,4 is with value %d\n", lca->value);
+	lca = LCA(root,2,4);
+	if(lca)
+		printf("\nLowest Common Ancestor of nodes with value 2,4 is with value %d\n", lca->value);
 
-  lca = LCA(root,6,8);
-  if(lca)
-    printf("\nLowest Common Ancestor of nodes with value 6,8 is with value %d\n", lca->value);
+	lca = LCA(root,6,8);
+	if(lca)
+		printf("\nLowest Common Ancestor of nodes with value 6,8 is with value %d\n", lca->value);
 
-  lca = findMaxValNode(root);
-  if(lca)
-    printf("\nMaxValue in the Tree %d\n",lca->value);
-  printf("\nChecking is this tree balanced( heigt of l-subtree and r-subtree can differ at most by 1\n");
-  height = maxDepth(root,1);
-  if(height >= 0) {
-    printf("Its a balanced TREE %d\n",height);
+	lca = findMaxValNode(root);
+	if(lca)
+		printf("\nMaxValue in the Tree %d\n",lca->value);
+	printf("\nChecking is this tree balanced( heigt of l-subtree and r-subtree can differ at most by 1\n");
+	height = maxDepth(root,1);
+	if(height >= 0) {
+		printf("Its a balanced TREE %d\n",height);
     
-  } else {
+	} else {
 
-    printf("Not a balanced tree, %d\n",height);
-}
+		printf("Not a balanced tree, %d\n",height);
+	}
 }
 
 
 int main(int argc, char *argv[]) {
 
-  /* Note: If you pass an sorted list to BST Insert,
-   * Tree HEIGHT will increase at same rate, like linked list,
-   * This is normal behavior, thats why you need RedBlack tree or AVL tree
-   * where in L and R sub trees are balanced to at most 1 different in height.
-   * Put different Array, and watch the output.
-   * AVL trees maintain a more rigid balance than red-black trees. The path from the root to the 
-   * deepest leaf in an AVL tree is at most ~1.44 lg(n+2), while in red black trees 
-   * it's at most ~2 lg (n+1).
-   *
-   * As a result, lookup in an AVL tree is typically faster, but this comes at the cost of slower 
-   * insertion and deletion due to more rotation operations. So use an AVL tree if you 
-   * expect the number of *lookups to dominate the number of updates to the tree.
-   */
-  int A[] = { 9,7,6,5, 1,2,3,4,5,6,7,7,7,7,7,7,7,7 };
-  int B[] = { 5,7,3,8,2,4,6};
-  int C[] = { 9,12,15,2,3,4,8,5,6,7,1};
+	/* Note: If you pass an sorted list to BST Insert,
+	 * Tree HEIGHT will increase at same rate, like linked list,
+	 * This is normal behavior, thats why you need RedBlack tree or AVL tree
+	 * where in L and R sub trees are balanced to at most 1 different in height.
+	 * Put different Array, and watch the output.
+	 * AVL trees maintain a more rigid balance than red-black trees. The path from the root to the 
+	 * deepest leaf in an AVL tree is at most ~1.44 lg(n+2), while in red black trees 
+	 * it's at most ~2 lg (n+1).
+	 *
+	 * As a result, lookup in an AVL tree is typically faster, but this comes at the cost of slower 
+	 * insertion and deletion due to more rotation operations. So use an AVL tree if you 
+	 * expect the number of *lookups to dominate the number of updates to the tree.
+	 */
+	int A[] = { 9,7,6,5, 1,2,3,4,5,6,7,7,7,7,7,7,7,7 };
+	int B[] = { 5,7,3,8,2,4,6};
+	int C[] = { 9,12,15,2,3,4,8,5,6,7,1};
 
-  int b = findMaxElem (A, sizeof(A)/sizeof(int));
+	int b = findMaxElem (A, sizeof(A)/sizeof(int));
 	printf("MaxElem index %d val %d\n", b, b?A[b]:b);
 	b = findMaxElem2 (A, sizeof(A)/sizeof(int));
 	printf("MaxElem index %d val %d(via binary insert method\n", b, b?A[b]:b);
 
-  testVariousTreeAPI(B,sizeof(B)/sizeof(int));
+	testVariousTreeAPI(B,sizeof(B)/sizeof(int));
 }

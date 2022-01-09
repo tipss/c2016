@@ -15,7 +15,6 @@ int const *const constant_pointer_to_constant_int;
 
 int main( )
 {
-  unsigned int x = 1;
   double y;
     
   struct t {
@@ -60,10 +59,9 @@ int main( )
   // If Little indian, it will print 1,
   // LSB in Lowest Address = Little Endian
   // MSB in Lowest Address = Big Endian(N/W Byte Order)
+  unsigned int x = 1;
   printf ("%d\n", (int) (((char *)&x)[0]));
   printf("Must print 1 if you have machine which is Little Endian\n");
-
-
   printf("size of struct t %ld\n",sizeof(struct t));
   return 0;
 }
