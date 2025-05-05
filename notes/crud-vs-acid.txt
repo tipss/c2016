@@ -1,0 +1,52 @@
+CRUD stands for:
+
+Create – Insert new data
+
+Read – Retrieve data
+
+Update – Modify existing data
+
+Delete – Remove data
+
+Characteristics:
+Operation-centric.
+
+Maps directly to SQL commands: INSERT, SELECT, UPDATE, DELETE.
+
+Often used in REST APIs and simple data manipulation systems.
+
+Stateless: Each operation is independent.
+
+No built-in concept of atomicity, consistency, isolation, or durability (ACID).
+
+Use Cases:
+Web apps (basic RESTful services).
+
+Admin dashboards, content management systems.
+
+Systems where operations don't need to span multiple resources.
+
+🔹 Transaction-Based Model
+A transaction is a logical unit of work that must be atomic, consistent, isolated, and durable (ACID).
+
+Characteristics:
+Enforces atomicity: all operations succeed or none do.
+
+Ensures data integrity even in complex or concurrent environments.
+
+Manages concurrency via locks or MVCC.
+
+Supports rollback and commit semantics.
+
+Ideal for multi-step, interdependent operations.
+
+Use Cases:
+Banking and financial systems.
+
+E-commerce checkout flows.
+
+Distributed systems (via distributed transactions).
+
+Systems that need strong consistency.
+
+
