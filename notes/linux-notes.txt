@@ -1,4 +1,7 @@
 
+
+
+
 ===============
 Hypervisor is a software. Once installed, this software help  create and maintain virtual machines that will share physical resource,
 Not needed to create containers.(Containers share common Kernel API, and run in User space as an isolated process
@@ -36,12 +39,12 @@ is stored on the thin-clients. Secure,
 ==========================================================
 
 APS-T-NDP: App Presen, Session, Transport Network Data Link Phy
-A HTTP, Radius
+A HTTP, Radius, BGP
 P
 S  DNS, LDAP
 T  TCP, UDP
-N  ICMP, RSVP, IPv4,IPv6, PIM, VRRP
-D: ARP, L2 protosl
+N  ICMP, RSVP, IPv4,IPv6, PIM, VRRP, OSPF(proto-id)
+D: ARP, L2 protosl, ISIS(etype)
 P
 
 When to use threads, vs when to use process?.
@@ -117,6 +120,133 @@ socket()
 bind()
 connect() to the PORT?addres used in server.
 write();
+
+
+
+===============chatgpt=======
+🔔 What is a Signal Handler in Linux?
+A signal handler is a function defined in user-space that is called automatically when the kernel delivers a signal to a process.
+
+✅ Why We Need Signal Handlers:
+To gracefully handle asynchronous events (e.g., SIGINT from Ctrl+C, SIGTERM, SIGHUP, etc.).
+
+To clean up resources (e.g., close open sockets, free memory) before the process exits.
+
+To catch and respond to runtime events like segmentation faults (SIGSEGV), pipe breaks (SIGPIPE), or child termination (SIGCHLD).
+
+📌 When To Use:
+In network daemons or servers to clean up before shutdown.
+
+To avoid zombie processes (by handling SIGCHLD when using fork()).
+
+To reload configuration without restarting (e.g., handle SIGHUP).
+
+Example:
+c
+Copy
+Edit
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+void handle_sigint(int sig) {
+    printf("Caught signal %d, cleaning up and exiting...\n", sig);
+    exit(0);
+}
+
+int main() {
+    signal(SIGINT, handle_sigint); // Handle Ctrl+C
+    while (1) {
+        // Server or processing logic
+    }
+}
+📡 What is a Linux Socket?
+A socket in Linux is an abstraction representing an endpoint of a two-way communication link between two programs (local or remote).
+
+socket() Parameters:
+c
+Copy
+Edit
+int sockfd = socket(domain, type, protocol);
+domain: Communication domain (e.g., AF_INET, AF_INET6, AF_UNIX)
+
+type: Communication semantics (SOCK_STREAM, SOCK_DGRAM, SOCK_RAW)
+
+protocol: Usually 0 to select the default protocol for the domain/type
+
+🔌 What is bind() in Linux?
+The bind() system call assigns a local protocol address to a socket:
+
+c
+Copy
+Edit
+int bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
+It associates a name (IP address and port) with the socket.
+
+Essential for server-side sockets to receive connections or messages.
+
+📞 What is listen()?
+listen() marks the socket as passive, i.e., ready to accept incoming connection requests:
+
+c
+Copy
+Edit
+int listen(int sockfd, int backlog);
+Used only with SOCK_STREAM (e.g., TCP).
+
+Transitions the bound socket into a listening state.
+
+📥 What is accept()?
+accept() extracts the first connection request from the pending queue and creates a new socket:
+
+c
+Copy
+Edit
+int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+Returns a new socket for data communication.
+
+Original listening socket continues to accept new connections.
+
+📚 What is read() used for?
+Once a connection is accepted, you use read() or recv() to receive data:
+
+c
+Copy
+Edit
+ssize_t read(int fd, void *buf, size_t count);
+read() is used with SOCK_STREAM.
+
+Blocks until data is available (unless socket is non-blocking or used with select()/poll()).
+
+🧵 Lifecycle of a Server Socket:
+c
+Copy
+Edit
+sockfd = socket();
+bind(sockfd, ...);
+listen(sockfd, ...);
+while (1) {
+    FD_SET + select(); // optional for handling multiple sockets
+    newfd = accept(sockfd, ...);
+    read(newfd, ...);
+    // handle client
+}
+close(sockfd);
+📬 Lifecycle of a Client Socket:
+c
+Copy
+Edit
+sockfd = socket();
+bind(sockfd, ...); // optional for client
+connect(sockfd, server_addr);
+write(sockfd, ...);
+close(sockfd);
+🧭 Summary Analogy:
+Server = consumer, waits and handles client requests.
+
+Client = producer, initiates connections and sends data.
+
+=====================chatgptend========
 
 
 These are both POSIX functions, and their standard definitions are:

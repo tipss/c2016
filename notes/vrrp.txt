@@ -1,0 +1,89 @@
+What is VRRP?
+VRRP (RFC 5798) is a Layer 3 redundancy protocol that allows multiple routers to work together to present a single virtual default gateway IP address to end hosts. If the primary router fails, one of the backups takes over seamlessly, ensuring continuous gateway availability.
+
+🧩 Core Components
+Virtual IP (VIP): Shared IP used as default gateway by clients.
+
+Master Router: The router currently forwarding traffic for the VIP.
+
+Backup Routers: Monitors master and takes over if it fails.
+
+VRID (Virtual Router ID): Identifies the VRRP group.
+
+Priority: Higher number = higher chance to become master (default master = priority 255).
+
+🏢 VRRP in Data Center Deployments
+✅ Typical Use Case:
+L2/L3 boundary (ToR or aggregation layer)
+
+Provides gateway redundancy for:
+
+Bare-metal servers
+
+Hypervisors (KVM, ESXi)
+
+Leaf-spine fabrics with VLANs or VRFs
+
+📦 Deployment Models
+1. Active-Passive ToR Setup
+Two Top-of-Rack (ToR) switches share a VIP.
+
+One ToR is VRRP master, the other backup.
+
+End-hosts (e.g., servers) use the VIP as default gateway.
+
+2. Layer 3 Leaf-Spine
+VRRP may be used on leaf switches to offer redundancy to compute nodes.
+
+Spine switches usually run pure L3 ECMP and don't need VRRP.
+
+3. Mixed Fabric (Overlay Underlay)
+VRRP may provide gateway redundancy at overlay edge (VXLAN VTEP) or at the border leaf.
+
+📡 How It Works
+Master sends periodic advertisements (default 1s).
+
+Backup listens; if it misses 3 consecutive advertisements, it promotes itself.
+
+Failover time: ~3 seconds (tunable using timers for faster failover).
+
+Gratuitous ARP is sent on failover to update MAC-to-IP mappings.
+
+⚙️ Key Configuration Parameters
+vrrp <group-id>
+
+priority <1-254> (255 = master)
+
+advertisement-interval
+
+preempt (whether backup takes over if it becomes higher priority)
+
+🔍 VRRP vs Alternatives
+Protocol	Use Case	Notes
+VRRP	L3 gateway redundancy	Vendor-neutral, easy to deploy
+HSRP	Cisco environments	Cisco proprietary
+GLBP	Load-sharing gateway	Cisco proprietary, multi-active
+EVPN GW	Overlay gateway (VXLAN)	Uses anycast gateways (MAC+IP)
+⚠️ Limitations in Modern DCs
+Active-passive only: No load sharing (unless using multiple groups).
+
+State sync: No session/stateful failover like firewall pairs.
+
+Not ideal for EVPN-VXLAN with anycast gateway (use BGP EVPN instead)
+
+🔧 Example (Cisco-like)
+bash
+Copy
+Edit
+interface Vlan100
+ ip address 192.168.1.2 255.255.255.0
+ vrrp 1 ip 192.168.1.1
+ vrrp 1 priority 150
+ vrrp 1 preempt
+🚀 Summary
+Feature	VRRP in DC Context
+Purpose	L3 gateway redundancy
+Best Fit	Small/medium deployments, edge VLANs
+Failover Time	~3 sec (customizable)
+Load Sharing	Not native (multiple groups possible)
+EVPN Compatibility	Replaced by Anycast Gateway in EVP
